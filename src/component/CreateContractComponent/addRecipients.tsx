@@ -47,8 +47,6 @@ export default function RecipientForm({
       ""
     );
 
-    console.log("PHONE RAW --->", phone);
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{7,14}$/;
 
