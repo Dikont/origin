@@ -1,3 +1,4 @@
+import "@/app/global.css";
 import MainLayout from "@/component/mainLayout";
 import ThemeRegistry from "@/component/ThemeRegistry";
 import { Providers } from "@/store/provider";

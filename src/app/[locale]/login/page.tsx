@@ -11,13 +11,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function LoginPage() {
   const t = useTranslations("login");
   const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
+  const [phoneValue, setPhoneValue] = useState("");
   const router = useRouter();
+
+  const rawPhone = phoneValue.toString().trim();
+  const phoneForBackend = rawPhone.startsWith("+") ? rawPhone : `+${rawPhone}`;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,7 +64,7 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
 
-    if (!values.email || !values.PhoneNumber || !values.Name) {
+    if (!values.email || !phoneValue || !values.Name) {
       showSnackbar(t("snackFillEmailOnly"), "error");
 
       return;
@@ -70,7 +76,7 @@ export default function LoginPage() {
       method: "POST",
       body: JSON.stringify({
         email: values.email,
-        PhoneNumber: values.PhoneNumber,
+        PhoneNumber: phoneForBackend,
         Name: values.Name,
       }),
       headers: {
@@ -162,6 +168,7 @@ export default function LoginPage() {
                   backgroundColor: "rgba(255, 255, 255, 1)",
                   zIndex: 9,
                   borderRadius: "24px",
+                  overflow: "visible",
                 }}
               >
                 <Typography variant="h5" gutterBottom textAlign="center">
@@ -233,22 +240,31 @@ export default function LoginPage() {
                       name="Name"
                       sx={inputStyle}
                     />
-                    <TextField
-                      fullWidth
-                      label={t("phoneNumber")}
-                      variant="outlined"
-                      name="PhoneNumber"
-                      type="tel"
-                      inputProps={{
-                        inputMode: "numeric",
-                        maxLength: 11,
+                    <PhoneInput
+                      country="tr"
+                      value={phoneValue}
+                      onChange={(value) => setPhoneValue(value)}
+                      inputProps={{ name: "PhoneNumber" }}
+                      containerStyle={{
+                        width: "100%",
+                        marginBottom: "16px",
                       }}
-                      onInput={(e) => {
-                        const target = e.target as HTMLInputElement;
-                        target.value = target.value.replace(/\D/g, "");
+                      inputStyle={{
+                        width: "100%",
+                        height: "56px",
+                        borderRadius: "24px",
+                        border: "1px solid #d0d0d0",
+                        paddingLeft: "64px",
+                        fontSize: "16px",
+                        backgroundColor: "#fff",
                       }}
-                      sx={inputStyle}
+                      buttonStyle={{
+                        border: "none",
+                        backgroundColor: "transparent",
+                        width: "56px",
+                      }}
                     />
+
                     <Button
                       fullWidth
                       variant="contained"
@@ -282,6 +298,7 @@ export default function LoginPage() {
                 maxWidth: "600px",
                 display: { xs: "none", lg: "block" },
                 borderRadius: "24px",
+                overflow: "visible",
               }}
             >
               <Typography variant="h5" gutterBottom textAlign="center">
@@ -351,22 +368,48 @@ export default function LoginPage() {
                     name="Name"
                     sx={inputStyle}
                   />
-                  <TextField
-                    fullWidth
-                    label={t("phoneNumber")}
-                    variant="outlined"
-                    name="PhoneNumber"
-                    type="tel"
-                    inputProps={{
-                      inputMode: "numeric",
-                      maxLength: 11, // 11 hane sınırı
+                  <PhoneInput
+                    country="tr"
+                    value={phoneValue}
+                    onChange={(value) => setPhoneValue(value)}
+                    inputProps={{ name: "PhoneNumber", required: true }}
+                    containerStyle={{
+                      width: "100%",
+                      marginBottom: "16px",
                     }}
-                    onInput={(e) => {
-                      const target = e.target as HTMLInputElement;
-                      target.value = target.value.replace(/\D/g, ""); // rakam dışı karakteri sil
+                    inputStyle={{
+                      width: "100%",
+                      height: "56px",
+                      borderRadius: "24px",
+                      border: "1px solid #c3c3c3",
+                      paddingLeft: "70px",
+                      fontSize: "16px",
+                      backgroundColor: "#fff",
+                      boxShadow: "none",
                     }}
-                    sx={inputStyle}
+                    buttonStyle={{
+                      backgroundColor: "transparent",
+                      border: "none",
+                      width: "56px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "12px 0 0 12px",
+                    }}
+                    dropdownStyle={{
+                      borderRadius: "12px",
+                      boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+                      padding: "10px",
+                      fontSize: "15px",
+                    }}
+                    searchStyle={{
+                      marginBottom: "8px",
+                      borderRadius: "8px",
+                      padding: "8px 12px",
+                      border: "1px solid #ddd",
+                    }}
                   />
+
                   <Button
                     fullWidth
                     variant="contained"

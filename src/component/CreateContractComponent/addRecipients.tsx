@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { setRecipients } from "@/store/slices/formSlice";
 import { useSnackbar } from "@/component/SnackbarProvider";
 import { useTranslations } from "next-intl";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 type Recipient = {
   label: string;
@@ -40,10 +42,15 @@ export default function RecipientForm({
   const validate = (id: string, data: FormData): Partial<Recipient> => {
     const name = data.get(`name-${id}`)?.toString().trim() || "";
     const email = data.get(`email-${id}`)?.toString().trim() || "";
-    const phone = data.get(`phone-${id}`)?.toString().trim() || "";
+    const phone = (data.get(`phone-${id}`)?.toString().trim() || "").replace(
+      /\s+/g,
+      ""
+    );
+
+    console.log("PHONE RAW --->", phone);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^0?5\d{9}$/;
+    const phoneRegex = /^\+?[1-9]\d{7,14}$/;
 
     const err: Partial<Recipient> = {};
     if (!name) err.name = t("signerNameRequired") as any;
@@ -75,7 +82,7 @@ export default function RecipientForm({
           label: data.get(`label-${id}`),
           SignerName: data.get(`name-${id}`)?.toString().trim(),
           Signer: data.get(`email-${id}`)?.toString().trim(),
-          phoneNumber: data.get(`phone-${id}`)?.toString().trim(),
+          phoneNumber: `+${data.get(`phone-${id}`)?.toString().trim()}`,
           color: colorList[recipients.length % colorList.length],
         });
       }
@@ -150,14 +157,38 @@ export default function RecipientForm({
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  fullWidth
-                  name={`phone-${id}`}
-                  label={t("phoneNumberLabel")}
-                  error={!!errors[id]?.phone}
-                  helperText={errors[id]?.phone}
-                />
+                <Box>
+                  <PhoneInput
+                    country="tr"
+                    value={""}
+                    onChange={(value) => {
+                      const input = document.querySelector(
+                        `input[name="phone-${id}"]`
+                      ) as HTMLInputElement;
+                      console.log(value);
+                      if (input) input.value = value;
+                    }}
+                    inputProps={{ name: `phone-${id}` }}
+                    containerClass="recipient-phone-container"
+                    inputClass="recipient-phone-input"
+                    buttonClass="recipient-phone-button"
+                    dropdownClass="recipient-phone-dropdown"
+                  />
+
+                  {errors[id]?.phone && (
+                    <p
+                      style={{
+                        color: "red",
+                        fontSize: "12px",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {errors[id]?.phone}
+                    </p>
+                  )}
+                </Box>
               </Grid>
+
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth

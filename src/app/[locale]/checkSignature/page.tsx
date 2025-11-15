@@ -1,20 +1,18 @@
 "use client";
 
 import {
-  AppBar,
   Backdrop,
   CircularProgress,
-  Container,
   IconButton,
-  Link,
   Paper,
-  Toolbar,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -29,14 +27,28 @@ export default function Index() {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const documentId = searchParams.get("documentId");
   const docGroupId = searchParams.get("docGroupId");
+
   const [signerInformation, setSignerInformation] = useState({}) as any;
   const [otpCode, setOtpCode] = useState(null) as any;
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [isSms, setIsSms] = useState("false");
-  const router = useRouter();
+
+  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
+    null
+  );
+
+  const changeLanguage = (lng: string) => {
+    const segments = pathname.split("/");
+    segments[1] = lng;
+    router.push(segments.join("/"));
+    setLanguageAnchor(null);
+  };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
@@ -45,8 +57,10 @@ export default function Index() {
     const button = target.submitter as HTMLButtonElement;
     const isSms = button.value === "sms" ? "true" : "false";
     setIsSms(isSms);
+
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
+
     try {
       const res = await fetch(`/api/checkSignature`, {
         method: "POST",
@@ -56,9 +70,7 @@ export default function Index() {
           DocumentId: documentId,
           isSms: isSms,
         }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await res.json();
@@ -69,12 +81,12 @@ export default function Index() {
         documentId: documentId,
         userName: values.username,
       });
+
       if (res.ok && !data.error) {
-        if (isSms === "true") {
-          showSnackbar(t("smsSentEnterCode"), "success");
-        } else {
-          showSnackbar(t("emailSentEnterCode"), "success");
-        }
+        showSnackbar(
+          isSms === "true" ? t("smsSentEnterCode") : t("emailSentEnterCode"),
+          "success"
+        );
         setStep(1);
       } else {
         showSnackbar(data.error || t("signatureCheckFailed"), "error");
@@ -91,7 +103,9 @@ export default function Index() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
+
     setOtpCode(Number(values.code));
+
     const res = await fetch("/api/getPagesForSigner", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -122,6 +136,56 @@ export default function Index() {
           <CircularProgress sx={{ color: "#2e7d32" }} size={100} />
         </Backdrop>
       )}
+
+      {/* ---- FIXED HEADER WITH CENTERED CONTENT ---- */}
+      <Box
+        position="fixed"
+        top={0}
+        left={0}
+        width="100%"
+        height="64px"
+        bgcolor="#fff"
+        zIndex={20}
+        display="flex"
+        alignItems="center"
+        justifyContent="center" // <-- Dikkat: içerik ortalanıyor
+      >
+        {/* İçteki sınırlı genişlikli kutu */}
+        <Box
+          width="100%"
+          maxWidth="1400px" // <-- Bu genişliği login sayfasıyla aynı yap
+          px="32px"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {/* Logo */}
+          <img
+            src="/Dikont-Logo.svg"
+            alt="Logo"
+            style={{ width: "120px", height: "auto" }}
+          />
+
+          {/* Dil */}
+          <IconButton onClick={(e) => setLanguageAnchor(e.currentTarget)}>
+            <Typography>{pathname.split("/")[1].toUpperCase()}</Typography>
+          </IconButton>
+
+          <Menu
+            anchorEl={languageAnchor}
+            open={Boolean(languageAnchor)}
+            onClose={() => setLanguageAnchor(null)}
+          >
+            {["tr", "en", "nl"].map((lng) => (
+              <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
+                {lng.toUpperCase()}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      </Box>
+      {/* ---- /HEADER ---- */}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -149,6 +213,7 @@ export default function Index() {
             sx={{ background: "rgba(0, 0, 0, 0.5)" }}
             zIndex={-1}
           />
+
           <Box
             display={"flex"}
             justifyContent={"center"}
@@ -175,50 +240,48 @@ export default function Index() {
                 >
                   {t("signatureVerification")}
                 </Typography>
+
                 <form onSubmit={handleLogin}>
-                  <>
-                    <TextField
+                  <TextField
+                    fullWidth
+                    label={t("username")}
+                    variant="outlined"
+                    name="username"
+                    sx={{ mb: 3 }}
+                  />
+                  <TextField
+                    fullWidth
+                    label={t("email")}
+                    autoCapitalize="none"
+                    variant="outlined"
+                    name="email"
+                    sx={{ mb: 4 }}
+                  />
+
+                  <Box display="flex" justifyContent="space-between" gap="20px">
+                    <Button
                       fullWidth
-                      label={t("username")}
-                      variant="outlined"
-                      name="username"
-                      sx={{ mb: 3 }}
-                    />
-                    <TextField
-                      fullWidth
-                      label={t("email")}
-                      autoCapitalize="none"
-                      variant="outlined"
-                      name="email"
-                      sx={{ mb: 4 }}
-                    />
-                    <Box
-                      display={"flex"}
-                      justifyContent={"space-between"}
-                      gap={"20px"}
+                      variant="contained"
+                      type="submit"
+                      color="success"
+                      value="email"
                     >
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        type="submit"
-                        color="success"
-                        value="email"
-                      >
-                        {t("sendEmail")}
-                      </Button>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        type="submit"
-                        value="sms"
-                      >
-                        {t("sendSms")}
-                      </Button>
-                    </Box>
-                  </>
+                      {t("sendEmail")}
+                    </Button>
+
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      type="submit"
+                      value="sms"
+                    >
+                      {t("sendSms")}
+                    </Button>
+                  </Box>
                 </form>
               </Paper>
             )}
+
             {step === 1 && (
               <Paper
                 sx={{
@@ -230,14 +293,10 @@ export default function Index() {
                   background: "white",
                 }}
               >
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  textAlign="center"
-                  mb="12px"
-                >
+                <Typography variant="h4" textAlign="center" mb="12px">
                   {t("codeVerification")}
                 </Typography>
+
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -246,28 +305,29 @@ export default function Index() {
                 >
                   {isSms === "true" ? t("enterPhoneCode") : t("enterEmailCode")}
                 </Typography>
+
                 <form onSubmit={handleOtpCode}>
-                  <>
-                    <TextField
-                      fullWidth
-                      label={t("verificationCode")}
-                      variant="outlined"
-                      name="code"
-                      sx={{ mb: 4 }}
-                      type="number"
-                      onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        if (e.target.value.length > 6) {
-                          e.target.value = e.target.value.slice(0, 6);
-                        }
-                      }}
-                    />
-                    <Button fullWidth variant="contained" type="submit">
-                      {t("submit")}
-                    </Button>
-                  </>
+                  <TextField
+                    fullWidth
+                    label={t("verificationCode")}
+                    variant="outlined"
+                    name="code"
+                    sx={{ mb: 4 }}
+                    type="number"
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      if (e.target.value.length > 6) {
+                        e.target.value = e.target.value.slice(0, 6);
+                      }
+                    }}
+                  />
+
+                  <Button fullWidth variant="contained" type="submit">
+                    {t("submit")}
+                  </Button>
                 </form>
               </Paper>
             )}
+
             {step === 2 && (
               <CheckSignature
                 otpCode={otpCode}

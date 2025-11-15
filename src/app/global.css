@@ -1,0 +1,85 @@
+/* Dropdown düzgün açılsın */
+.react-tel-input .country-list {
+  top: 58px !important;
+  left: 0 !important;
+  right: auto !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  position: absolute !important;
+  z-index: 99999 !important;
+}
+
+/* Inner input */
+.react-tel-input .form-control {
+  border: none !important;
+  padding-left: 52px !important;
+  background: transparent !important;
+  outline: none !important;
+}
+
+/* Wrapper */
+.react-tel-input {
+  position: relative !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 24px !important;
+  height: 56px !important;
+  display: flex !important;
+  align-items: center !important;
+  background-color: #fff !important;
+}
+
+/* Flag dropdown (solda kalması için) */
+.react-tel-input .flag-dropdown {
+  position: absolute !important;
+  left: 0 !important;
+  right: auto !important;
+
+  width: 48px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  border-top-left-radius: 24px !important;
+  border-bottom-left-radius: 24px !important;
+  z-index: 3 !important;
+}
+
+/* Hover’da arka plan çıkmasın */
+.react-tel-input .flag-dropdown:hover,
+.react-tel-input .flag-dropdown:focus {
+  background: transparent !important;
+}
+
+/* RECIPIENT FORM PHONE INPUT */
+.recipient-phone-container {
+  width: 100% !important;
+  border-radius: 4px !important;
+  height: 56px !important;
+  background: #fafafa !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-left: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.recipient-phone-input {
+  border: none !important;
+  outline: none !important;
+  width: 100% !important;
+  padding-left: 52px !important;
+  height: 54px !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+}
+
+.recipient-phone-button {
+  width: 48px !important;
+  height: 100% !important;
+  background: transparent !important;
+}
+
+.recipient-phone-dropdown {
+  border-radius: 8px !important;
+  z-index: 99999 !important;
+  background: #fafafa !important;
+}

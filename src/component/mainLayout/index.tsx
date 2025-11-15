@@ -214,10 +214,12 @@ export default function RootLayout({
     },
   };
   if (
-    pathname == "/tr/checkSignature" ||
-    pathname == "/en/checkSignature" ||
-    pathname == "/en/confirmationOfDocument" ||
-    pathname == "/tr/confirmationOfDocument"
+    pathname === "/tr/checkSignature" ||
+    pathname === "/en/checkSignature" ||
+    pathname === "/nl/checkSignature" ||
+    pathname === "/en/confirmationOfDocument" ||
+    pathname === "/tr/confirmationOfDocument" ||
+    pathname === "/nl/confirmationOfDocument"
   ) {
     return <Box sx={{ display: "flex" }}>{children}</Box>;
   }
