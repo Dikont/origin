@@ -48,6 +48,26 @@ export default function Index() {
   const headerHeight = 64;
   const footerHeight = 48;
 
+  const inputStyle = {
+    mb: 2,
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "24px",
+      paddingRight: "12px",
+      backgroundColor: "#fff",
+      "& fieldset": {
+        borderRadius: "24px",
+        borderColor: "#d0d0d0",
+      },
+      "&:hover fieldset": {
+        borderColor: "#999",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#2e7d32",
+        borderWidth: "2px",
+      },
+    },
+  };
+
   return (
     <>
       <Box mx={"-24px"} mt="24px">
@@ -81,7 +101,7 @@ export default function Index() {
               <Paper
                 sx={{
                   p: 4,
-                  mx: "20px",
+                  mx: "30px",
                   width: "100%",
                   maxWidth: "600px",
                   display: { xs: "block", lg: "none" },
@@ -100,13 +120,14 @@ export default function Index() {
                     label={t("emailLabel")}
                     variant="outlined"
                     name="email"
-                    sx={{ mb: 2 }}
+                    sx={inputStyle}
                   />
                   <Button
                     fullWidth
                     variant="contained"
                     type="submit"
                     color="success"
+                    sx={{ borderRadius: "24px" }}
                   >
                     {t("continueButton")}
                   </Button>
@@ -115,6 +136,7 @@ export default function Index() {
                 <Box mt={2}>
                   <Button
                     variant="text"
+                    sx={{ borderRadius: "24px" }}
                     onClick={() => {
                       const locale =
                         window.location.pathname.split("/")[1] || "tr";
@@ -139,6 +161,8 @@ export default function Index() {
                 width: "100%",
                 maxWidth: "600px",
                 display: { xs: "none", lg: "block" },
+                borderRadius: "24px",
+                mx: "20px",
               }}
             >
               <Typography variant="h2" fontSize={"24px"} mb={"20px"}>
@@ -151,13 +175,14 @@ export default function Index() {
                   label={t("emailLabel")}
                   variant="outlined"
                   name="email"
-                  sx={{ mb: 2 }}
+                  sx={inputStyle}
                 />
                 <Button
                   fullWidth
                   variant="contained"
                   type="submit"
                   color="success"
+                  sx={{ borderRadius: "24px" }}
                 >
                   {t("continueButton")}
                 </Button>
@@ -166,6 +191,7 @@ export default function Index() {
               <Box mt={2}>
                 <Button
                   variant="text"
+                  sx={{ borderRadius: "24px" }}
                   onClick={() => {
                     const locale =
                       window.location.pathname.split("/")[1] || "tr";

@@ -67,6 +67,26 @@ export default function ChangePasswordPage() {
       setLoading(false);
     }
   };
+
+  const inputStyle = {
+    mb: 2,
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "24px",
+      paddingRight: "12px",
+      backgroundColor: "#fff",
+      "& fieldset": {
+        borderRadius: "24px",
+        borderColor: "#d0d0d0",
+      },
+      "&:hover fieldset": {
+        borderColor: "#999",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#2e7d32", // yeşil focus rengi
+        borderWidth: "2px",
+      },
+    },
+  };
   return (
     <Container sx={{ display: "flex", justifyContent: "center" }}>
       {loading && (
@@ -91,7 +111,7 @@ export default function ChangePasswordPage() {
             variant="outlined"
             name="oldPas"
             type="password"
-            sx={{ mb: 2 }}
+            sx={inputStyle}
           />
           <TextField
             fullWidth
@@ -99,7 +119,7 @@ export default function ChangePasswordPage() {
             type="password"
             variant="outlined"
             name="newPas"
-            sx={{ mb: 2 }}
+            sx={inputStyle}
           />
           <TextField
             fullWidth
@@ -107,9 +127,15 @@ export default function ChangePasswordPage() {
             type="password"
             variant="outlined"
             name="newPasAgain"
-            sx={{ mb: 2 }}
+            sx={inputStyle}
           />
-          <Button fullWidth variant="contained" type="submit" color="success">
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            color="success"
+            sx={{ borderRadius: "24px" }}
+          >
             {t("send")}
           </Button>
         </form>

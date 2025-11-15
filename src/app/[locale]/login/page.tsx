@@ -95,6 +95,26 @@ export default function LoginPage() {
   const headerHeight = 64;
   const footerHeight = 54;
 
+  const inputStyle = {
+    mb: 2,
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "24px",
+      paddingRight: "12px",
+      backgroundColor: "#fff",
+      "& fieldset": {
+        borderRadius: "24px",
+        borderColor: "#d0d0d0",
+      },
+      "&:hover fieldset": {
+        borderColor: "#999",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#2e7d32", // yeşil focus rengi
+        borderWidth: "2px",
+      },
+    },
+  };
+
   return (
     <>
       {loading && (
@@ -156,7 +176,7 @@ export default function LoginPage() {
                       label={t("emailLabel")}
                       variant="outlined"
                       name="email"
-                      sx={{ mb: 2 }}
+                      sx={inputStyle}
                     />
                     <TextField
                       fullWidth
@@ -164,7 +184,7 @@ export default function LoginPage() {
                       type="password"
                       variant="outlined"
                       name="password"
-                      sx={{ mb: 2 }}
+                      sx={inputStyle}
                     />
                     <Box sx={{ display: "flex", justifyContent: "end" }}>
                       <Link
@@ -183,12 +203,15 @@ export default function LoginPage() {
                       variant="contained"
                       type="submit"
                       color="success"
+                      sx={{
+                        borderRadius: "24px",
+                      }}
                     >
                       {t("loginButton")}
                     </Button>
                     <Button
                       fullWidth
-                      sx={{ mt: 2 }}
+                      sx={{ mt: 2, borderRadius: "24px" }}
                       onClick={() => setShowLogin(false)}
                     >
                       {t("toggleToRegister")}
@@ -201,14 +224,14 @@ export default function LoginPage() {
                       label={t("emailLabel")}
                       variant="outlined"
                       name="email"
-                      sx={{ mb: 2 }}
+                      sx={inputStyle}
                     />
                     <TextField
                       fullWidth
                       label={t("name")}
                       variant="outlined"
                       name="Name"
-                      sx={{ mb: 2 }}
+                      sx={inputStyle}
                     />
                     <TextField
                       fullWidth
@@ -224,14 +247,19 @@ export default function LoginPage() {
                         const target = e.target as HTMLInputElement;
                         target.value = target.value.replace(/\D/g, "");
                       }}
-                      sx={{ mb: 2 }}
+                      sx={inputStyle}
                     />
-                    <Button fullWidth variant="contained" type="submit">
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      type="submit"
+                      sx={{ borderRadius: "24px" }}
+                    >
                       {t("registerButton")}
                     </Button>
                     <Button
                       fullWidth
-                      sx={{ mt: 2 }}
+                      sx={{ mt: 2, borderRadius: "24px" }}
                       onClick={() => setShowLogin(true)}
                     >
                       {t("toggleToLogin")}
@@ -253,6 +281,7 @@ export default function LoginPage() {
                 width: "100%",
                 maxWidth: "600px",
                 display: { xs: "none", lg: "block" },
+                borderRadius: "24px",
               }}
             >
               <Typography variant="h5" gutterBottom textAlign="center">
@@ -267,7 +296,7 @@ export default function LoginPage() {
                     label={t("emailLabel")}
                     variant="outlined"
                     name="email"
-                    sx={{ mb: 2 }}
+                    sx={inputStyle}
                   />
                   <TextField
                     fullWidth
@@ -275,7 +304,7 @@ export default function LoginPage() {
                     type="password"
                     variant="outlined"
                     name="password"
-                    sx={{ mb: 2 }}
+                    sx={inputStyle}
                   />
                   <Box sx={{ display: "flex", justifyContent: "end" }}>
                     <Link
@@ -294,12 +323,13 @@ export default function LoginPage() {
                     variant="contained"
                     type="submit"
                     color="success"
+                    sx={{ borderRadius: "24px" }}
                   >
                     {t("loginButton")}
                   </Button>
                   <Button
                     fullWidth
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, borderRadius: "24px" }}
                     onClick={() => setShowLogin(false)}
                   >
                     {t("toggleToRegister")}
@@ -312,14 +342,14 @@ export default function LoginPage() {
                     label={t("emailLabel")}
                     variant="outlined"
                     name="email"
-                    sx={{ mb: 2 }}
+                    sx={inputStyle}
                   />
                   <TextField
                     fullWidth
                     label={t("name")}
                     variant="outlined"
                     name="Name"
-                    sx={{ mb: 2 }}
+                    sx={inputStyle}
                   />
                   <TextField
                     fullWidth
@@ -335,19 +365,20 @@ export default function LoginPage() {
                       const target = e.target as HTMLInputElement;
                       target.value = target.value.replace(/\D/g, ""); // rakam dışı karakteri sil
                     }}
-                    sx={{ mb: 2 }}
+                    sx={inputStyle}
                   />
                   <Button
                     fullWidth
                     variant="contained"
                     type="submit"
                     color="success"
+                    sx={{ borderRadius: "24px" }}
                   >
                     {t("registerButton")}
                   </Button>
                   <Button
                     fullWidth
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, borderRadius: "24px" }}
                     onClick={() => setShowLogin(true)}
                   >
                     {t("toggleToLogin")}
