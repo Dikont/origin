@@ -150,13 +150,24 @@ export default function RootLayout({
   const pathname = usePathname();
 
   const currentLocale = pathname.split("/")[1];
-  const newLocale = currentLocale == "tr" ? "en" : "tr";
-  const restOfPath = pathname.split("/").slice(2).join("/");
 
-  const toggleLanguage = () => {
-    const newPath = `/${newLocale}/${restOfPath}`;
-    router.push(newPath);
+  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
+    null
+  );
+
+  const locales = ["tr", "en", "nl"];
+
+  const openLanguageMenu = (e: React.MouseEvent<HTMLElement>) => {
+    setLanguageAnchor(e.currentTarget);
   };
+
+  const changeLanguage = (lng: string) => {
+    const segments = pathname.split("/");
+    segments[1] = lng;
+    router.push(segments.join("/"));
+    setLanguageAnchor(null);
+  };
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -436,11 +447,21 @@ export default function RootLayout({
                     gap: 2,
                   }}
                 >
-                  <IconButton onClick={toggleLanguage}>
-                    <Typography>
-                      {currentLocale === "tr" ? "TR" : "EN"}
-                    </Typography>
+                  <IconButton onClick={openLanguageMenu}>
+                    <Typography>{currentLocale.toUpperCase()}</Typography>
                   </IconButton>
+
+                  <Menu
+                    anchorEl={languageAnchor}
+                    open={Boolean(languageAnchor)}
+                    onClose={() => setLanguageAnchor(null)}
+                  >
+                    {locales.map((lng) => (
+                      <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
+                        {lng.toUpperCase()}
+                      </MenuItem>
+                    ))}
+                  </Menu>
                   <IconButton
                     onClick={handleOpenUserMenu}
                     sx={{
@@ -677,11 +698,21 @@ export default function RootLayout({
                 style={{ objectFit: "cover" }}
               />
               <Box>
-                <IconButton onClick={toggleLanguage}>
-                  <Typography>
-                    {currentLocale === "tr" ? "TR" : "EN"}
-                  </Typography>
+                <IconButton onClick={openLanguageMenu}>
+                  <Typography>{currentLocale.toUpperCase()}</Typography>
                 </IconButton>
+
+                <Menu
+                  anchorEl={languageAnchor}
+                  open={Boolean(languageAnchor)}
+                  onClose={() => setLanguageAnchor(null)}
+                >
+                  {locales.map((lng) => (
+                    <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
+                      {lng.toUpperCase()}
+                    </MenuItem>
+                  ))}
+                </Menu>
               </Box>
             </Box>
             {children}
