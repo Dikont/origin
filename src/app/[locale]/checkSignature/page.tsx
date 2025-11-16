@@ -46,7 +46,11 @@ export default function Index() {
   const changeLanguage = (lng: string) => {
     const segments = pathname.split("/");
     segments[1] = lng;
-    router.push(segments.join("/"));
+
+    const newPath = segments.join("/");
+    //dil değiştirdiğinde query parametrelerini koru
+    router.push(`${newPath}?${searchParams.toString()}`);
+
     setLanguageAnchor(null);
   };
 
