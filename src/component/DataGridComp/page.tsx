@@ -84,7 +84,17 @@ export default function DataGridComp({ user, userRole }: any) {
       flex: 1,
       align: "center",
       headerAlign: "center",
+      sortComparator: (_v1, _v2, param1, param2) => {
+        const row1 = param1.api.getRow(param1.id);
+        const row2 = param2.api.getRow(param2.id);
+
+        const d1 = new Date(row1.createdDateRaw).getTime();
+        const d2 = new Date(row2.createdDateRaw).getTime();
+
+        return d1 - d2;
+      },
     },
+
     {
       field: "id",
       headerName: t("colActions"),
@@ -215,6 +225,11 @@ export default function DataGridComp({ user, userRole }: any) {
       item.documentGroupDesc.length > 0
         ? item.documentGroupDesc
         : t("notProvided"),
+
+    // Sıralama için RAW ISO tarih
+    createdDateRaw: item.firstSentDate,
+
+    // Görüntüleme için TR format
     createdDate: formatTR(item.firstSentDate),
     signatureStatus: item.signCompletionRate ?? 0,
   }));
