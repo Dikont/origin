@@ -29,6 +29,7 @@ export const metadata = {
     languages: {
       tr: "/tr/dashboard",
       en: "/en/dashboard",
+      nl: "/nl/dashboard",
     },
   },
 };

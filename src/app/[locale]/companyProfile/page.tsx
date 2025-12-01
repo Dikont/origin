@@ -31,6 +31,7 @@ export const metadata = {
     languages: {
       "tr-TR": "https://www.dikont.com/tr/companyProfile",
       "en-US": "https://www.dikont.com/en/companyProfile",
+      "nl-NL": "https://www.dikont.com/nl/companyProfile",
     },
   },
 };

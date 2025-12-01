@@ -22,6 +22,7 @@ export const metadata = {
     languages: {
       tr: "/tr/followContracts",
       en: "/en/followContracts",
+      nl: "/nl/followContracts",
     },
   },
 };

@@ -27,6 +27,7 @@ export const metadata = {
     languages: {
       "tr-TR": "https://www.dikont.com/tr/templates",
       "en-US": "https://www.dikont.com/en/templates",
+      "nl-NL": "https://www.dikont.com/nl/templates",
     },
   },
   robots: {

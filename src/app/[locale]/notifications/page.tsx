@@ -33,6 +33,7 @@ export const metadata = {
     languages: {
       "tr-TR": "https://www.dikont.com/tr/notifications",
       "en-US": "https://www.dikont.com/en/notifications",
+      "nl-NL": "https://www.dikont.com/nl/notifications",
     },
   },
   robots: {

@@ -23,6 +23,7 @@ export const metadata = {
     languages: {
       "tr-TR": "https://www.dikont.com/tr/faq",
       "en-US": "https://www.dikont.com/en/faq",
+      "nl-NL": "https://www.dikont.com/nl/faq",
     },
   },
 };
