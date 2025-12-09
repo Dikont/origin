@@ -163,7 +163,6 @@ export default function RecipientForm({
                       const input = document.querySelector(
                         `input[name="phone-${id}"]`
                       ) as HTMLInputElement;
-                      console.log(value);
                       if (input) input.value = value;
                     }}
                     inputProps={{ name: `phone-${id}` }}

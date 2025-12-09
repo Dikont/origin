@@ -20,65 +20,78 @@ export type MenuItem = {
 
 export function getMenuItems(
   t: (k: string) => string,
-  userRole: string | any
+  userRole: string | any,
+  locale: string
 ): MenuItem[] {
+  const L = (url: string) => `/${locale}${url}`;
+
   const items: MenuItem[] = [
     {
       icon: <DashboardIcon />,
       text: t("home"),
-      url: "/dashboard",
+      url: L("/dashboard"),
       type: "item",
     },
     { type: "subheader", text: t("contracts") },
     {
       icon: <ArticleIcon />,
       text: t("createContract"),
-      url: "/createContract",
+      url: L("/createContract"),
       type: "item",
     },
     {
       icon: <AssignmentTurnedInIcon />,
       text: t("followContracts"),
-      url: "/followContracts",
+      url: L("/followContracts"),
       type: "item",
     },
-    { icon: <SaveIcon />, text: t("drafts"), url: "/templates", type: "item" },
+    {
+      icon: <SaveIcon />,
+      text: t("drafts"),
+      url: L("/templates"),
+      type: "item",
+    },
     {
       icon: <PsychologyIcon />,
       text: t("aiSupport"),
-      url: "/aiSupport",
+      url: L("/aiSupport"),
       type: "item",
     },
     {
       icon: <InsightsIcon />,
       text: t("reports"),
-      url: "/reports",
+      url: L("/reports"),
       type: "item",
     },
     { type: "subheader", text: t("management") },
     {
       icon: <ApartmentIcon />,
       text: t("companyProfile"),
-      url: "/companyProfile",
+      url: L("/companyProfile"),
       type: "item",
     },
-    { icon: <QuizIcon />, text: t("faq"), url: "/faq", type: "item" },
+    {
+      icon: <QuizIcon />,
+      text: t("faq"),
+      url: L("/faq"),
+      type: "item",
+    },
     {
       icon: <NotificationsActiveIcon />,
       text: t("notifications"),
-      url: "/notifications",
+      url: L("/notifications"),
       type: "item",
     },
     {
       icon: <InfoOutlinedIcon />,
       text: t("about"),
-      url: "/about",
+      url: L("/about"),
       type: "item",
     },
     {
       icon: <LockResetIcon />,
       text: t("changePassword"),
-      url: "/changePassword",
+      url: L("/changePassword"),
       type: "item",
     },
   ];
@@ -87,7 +100,7 @@ export function getMenuItems(
     items.unshift({
       icon: <AdminPanelSettingsIcon />,
       text: "Admin Panel",
-      url: "/admin",
+      url: L("/admin"),
       type: "item",
     });
   }

@@ -13,7 +13,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckSignature from "@/component/checkSignature";
@@ -21,6 +21,8 @@ import { useSnackbar } from "@/component/SnackbarProvider";
 import { useDispatch } from "react-redux";
 import { setSignerData } from "@/store/slices/signerSlice";
 import { useTranslations } from "next-intl";
+
+const API = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 export default function Index() {
   const t = useTranslations("checkSignature");
@@ -31,7 +33,7 @@ export default function Index() {
   const router = useRouter();
 
   const documentId = searchParams.get("documentId");
-  const docGroupId = searchParams.get("docGroupId");
+  const docGroupId = searchParams.get("docGroupId"); // TODO: Bunu kullancam
 
   const [signerInformation, setSignerInformation] = useState({}) as any;
   const [otpCode, setOtpCode] = useState(null) as any;
@@ -42,6 +44,10 @@ export default function Index() {
   const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
     null
   );
+  // Statsu kotrolü ile sözleşme reddedildi mi reddedimedi mi (0 ise Reddedildi)
+  const [contractStatus, setContractStatus] = useState<null | number>(null);
+  const [rejectedBy, setRejectedBy] = useState<string | null>(null);
+  const [documentName, setDocumentName] = useState<string | null>(null);
 
   const changeLanguage = (lng: string) => {
     const segments = pathname.split("/");
@@ -53,6 +59,28 @@ export default function Index() {
 
     setLanguageAnchor(null);
   };
+
+  // Sözleşme status kontrolü 0 ise reddedilmiş oluyor
+  useEffect(() => {
+    if (!docGroupId) return;
+
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(
+          `${API}/DocumentService/Document/GetDocumentGroupStatus?docGroupId=${docGroupId}`
+        );
+
+        const data = await res.json();
+        setRejectedBy(data.creatorName);
+        setDocumentName(data.documentGroupName);
+        setContractStatus(data.status);
+      } catch (error) {
+        console.error("fetchStatus:", error);
+      }
+    };
+
+    fetchStatus();
+  }, [docGroupId]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
@@ -132,6 +160,14 @@ export default function Index() {
       showSnackbar(data.error || t("signatureCheckFailed"), "error");
     }
   };
+
+  if (contractStatus === null) {
+    return (
+      <Backdrop open>
+        <CircularProgress />
+      </Backdrop>
+    );
+  }
 
   return (
     <>
@@ -225,66 +261,97 @@ export default function Index() {
             height={"100%"}
             zIndex={2}
           >
-            {step === 0 && (
-              <Paper
-                sx={{
-                  p: 4,
-                  mx: "20px",
-                  borderRadius: 4,
-                  width: "100%",
-                  maxWidth: "600px",
-                  background: "white",
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  textAlign="center"
-                  mb="28px"
+            {step === 0 &&
+              (contractStatus === 0 ? (
+                // REDDEDİLMİŞ EKRANI
+                <Paper
+                  sx={{
+                    p: 4,
+                    mx: "20px",
+                    borderRadius: 4,
+                    width: "100%",
+                    maxWidth: "600px",
+                    background: "white",
+                    textAlign: "center",
+                  }}
                 >
-                  {t("signatureVerification")}
-                </Typography>
+                  <Typography variant="h4" color="error" mb={2}>
+                    {t("reject_contract")}
+                  </Typography>
 
-                <form onSubmit={handleLogin}>
-                  <TextField
-                    fullWidth
-                    label={t("username")}
-                    variant="outlined"
-                    name="username"
-                    sx={{ mb: 3 }}
-                  />
-                  <TextField
-                    fullWidth
-                    label={t("email")}
-                    autoCapitalize="none"
-                    variant="outlined"
-                    name="email"
-                    sx={{ mb: 4 }}
-                  />
+                  <Typography variant="body1" color="text.secondary">
+                    {t("reject_contract_desc", {
+                      docName: documentName ?? "---",
+                      rejectedBy: rejectedBy ?? "---",
+                    })}
+                  </Typography>
+                </Paper>
+              ) : (
+                // NORMAL FORM (status 1)
+                <Paper
+                  sx={{
+                    p: 4,
+                    mx: "20px",
+                    borderRadius: 4,
+                    width: "100%",
+                    maxWidth: "600px",
+                    background: "white",
+                  }}
+                >
+                  <Typography
+                    variant="h4"
+                    gutterBottom
+                    textAlign="center"
+                    mb="28px"
+                  >
+                    {t("signatureVerification")}
+                  </Typography>
 
-                  <Box display="flex" justifyContent="space-between" gap="20px">
-                    <Button
+                  <form onSubmit={handleLogin}>
+                    <TextField
                       fullWidth
-                      variant="contained"
-                      type="submit"
-                      color="success"
-                      value="email"
-                    >
-                      {t("sendEmail")}
-                    </Button>
+                      label={t("username")}
+                      variant="outlined"
+                      name="username"
+                      sx={{ mb: 3 }}
+                    />
 
-                    <Button
+                    <TextField
                       fullWidth
-                      variant="contained"
-                      type="submit"
-                      value="sms"
+                      label={t("email")}
+                      autoCapitalize="none"
+                      variant="outlined"
+                      name="email"
+                      sx={{ mb: 4 }}
+                    />
+
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      gap="20px"
                     >
-                      {t("sendSms")}
-                    </Button>
-                  </Box>
-                </form>
-              </Paper>
-            )}
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        type="submit"
+                        color="success"
+                        value="email"
+                      >
+                        {t("sendEmail")}
+                      </Button>
+
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        type="submit"
+                        value="sms"
+                      >
+                        {t("sendSms")}
+                      </Button>
+                    </Box>
+                  </form>
+                </Paper>
+              ))}
 
             {step === 1 && (
               <Paper

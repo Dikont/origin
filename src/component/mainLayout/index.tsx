@@ -42,7 +42,7 @@ import { toggleMode } from "@/store/slices/themeSlice";
 import MenuIconHamburger from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 const drawerWidth = 260;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -138,7 +138,8 @@ export default function RootLayout({
   user?: any;
 }) {
   const t = useTranslations("menu");
-  const menuItems = getMenuItems(t, userRole);
+  const locale = useLocale();
+  const menuItems = getMenuItems(t, userRole, locale);
   const theme = useTheme();
   const [open, setOpen] = useState<boolean>(true);
 
@@ -162,9 +163,12 @@ export default function RootLayout({
   };
 
   const changeLanguage = (lng: string) => {
+    // Dil değiştirmede parametreleri koruma
+    const search = window.location.search;
     const segments = pathname.split("/");
     segments[1] = lng;
-    router.push(segments.join("/"));
+
+    router.push(segments.join("/") + search);
     setLanguageAnchor(null);
   };
 

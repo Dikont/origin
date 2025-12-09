@@ -8,11 +8,12 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import { CustomCardQuickAccess } from "@/ui/Card/CustomCard";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function QuickAccess() {
   const router = useRouter();
   const t = useTranslations("dashboard");
+  const locale = useLocale();
 
   const cardItems = [
     {
@@ -61,7 +62,9 @@ export default function QuickAccess() {
           const Icon = item.icon;
           return (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-              <CustomCardQuickAccess onClick={() => router.push(item.href)}>
+              <CustomCardQuickAccess
+                onClick={() => router.push(`/${locale}${item.href}`)}
+              >
                 <CardContent
                   sx={{
                     display: "flex",

@@ -12,8 +12,9 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { getTranslations } from "next-intl/server";
 import HiddenDiv from "./hiddenDiv";
 import { DownloadPdfButton } from "./downloadPdfButton";
@@ -97,11 +98,15 @@ function extractSentAt(
 export const dynamic = "force-dynamic";
 export default async function Page({ params, searchParams }: any) {
   const t = await getTranslations("followContracts");
+  const sp = await searchParams;
+  const p = await params;
 
-  const { id } = await params;
+  const rejectStatus = Number(sp.rejectStatus);
+  const signatureStatus = Number(sp.signatureStatus);
 
-  const statusRaw = await searchParams;
-  const status = statusRaw.status;
+  const isRejected = rejectStatus === 0;
+
+  const id = p.id;
 
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value ?? ({ value: "" } as any);
@@ -135,6 +140,15 @@ export default async function Page({ params, searchParams }: any) {
   const createdAt = fmt(docMeta?.createdAt);
   const updatedAt = fmt(docMeta?.updatedAt);
 
+  // PDF için tarih
+  const pdfDate = new Date().toLocaleString("tr-TR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <Box sx={{ p: { xs: 1.5, md: 3 } }}>
       {/* Geri */}
@@ -152,7 +166,7 @@ export default async function Page({ params, searchParams }: any) {
         </Button>
         <Box display={"flex"} gap={"20px"}>
           <DownloadPdfButton />
-          {Number(status) === 100 && <DownloadAllPdfButton />}
+          {Number(signatureStatus) === 100 && <DownloadAllPdfButton />}
         </Box>
       </Box>
 
@@ -222,10 +236,6 @@ export default async function Page({ params, searchParams }: any) {
               s?.updatedAt,
               docMeta?.updatedAt
             );
-            const emailFromMeta = extractEmail(
-              metaObj,
-              s?.signerMail && s.signerMail !== "-" ? s.signerMail : null
-            );
 
             const ip =
               metaObj?.ip || metaObj?.ipAddress || metaObj?.clientIp || null;
@@ -242,28 +252,124 @@ export default async function Page({ params, searchParams }: any) {
 
             const isDone = !!s?.isSigned;
 
-            const status = isDone ? (
-              <Chip
-                label={t("status.signed")}
-                color="success"
-                size="small"
-                icon={<CheckCircleRoundedIcon fontSize="small" />}
-                variant="filled"
-              />
-            ) : (
-              <Chip
-                label={t("status.pending")}
-                size="small"
-                icon={<ScheduleRoundedIcon fontSize="small" />}
-                variant="filled"
-                sx={{
-                  bgcolor: UI.warningBg,
-                  border: `1px solid ${UI.warningBorder}`,
-                  color: "#8a5800",
-                  fontWeight: 700,
-                }}
-              />
-            );
+            let statusChip;
+
+            if (isRejected) {
+              statusChip = (
+                <Chip
+                  size="small"
+                  label={
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyItems: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <ErrorOutlineIcon
+                        sx={{ color: "#b91c1c", fontSize: 18 }}
+                      />
+                      {t("status.rejected")}
+                    </Box>
+                  }
+                  sx={{
+                    bgcolor: "#fee2e2",
+                    border: "1px solid #dc2626",
+                    color: "#b91c1c",
+                    fontWeight: 700,
+
+                    height: 28,
+                    "& .MuiChip-label": {
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 1,
+                    },
+                  }}
+                />
+              );
+            } else if (isDone) {
+              statusChip = (
+                <Chip
+                  size="small"
+                  label={
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <CheckCircleOutlineIcon
+                        sx={{ color: "#166534", fontSize: 18 }}
+                      />
+                      {t("status.signed")}
+                    </Box>
+                  }
+                  sx={{
+                    bgcolor: "#e8f5e9",
+                    border: "1px solid #2e7d32",
+                    color: "#1b5e20",
+                    fontWeight: 700,
+                    height: 28,
+                    "& .MuiChip-label": {
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 1,
+                    },
+                  }}
+                />
+              );
+            } else {
+              statusChip = (
+                <Chip
+                  size="small"
+                  label={
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1,
+                      }}
+                    >
+                      <ScheduleRoundedIcon
+                        sx={{ color: "#a16207", fontSize: 18 }}
+                      />
+                      {t("status.pending")}
+                    </Box>
+                  }
+                  sx={{
+                    bgcolor: "#fff7e6",
+                    border: "1px solid #f59e0b",
+                    color: "#8a5800",
+                    fontWeight: 700,
+                    height: 28,
+                    "& .MuiChip-label": {
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 1,
+                    },
+                  }}
+                />
+              );
+            }
+            // --- CARD BACKGROUND / BORDER ---
+            const bgColor = isRejected
+              ? "#fee2e2"
+              : isDone
+              ? UI.successBg
+              : UI.warningBg;
+
+            const borderColor = isRejected
+              ? "#dc2626"
+              : isDone
+              ? UI.successBorder
+              : UI.warningBorder;
 
             return (
               <Paper
@@ -272,10 +378,8 @@ export default async function Page({ params, searchParams }: any) {
                 sx={{
                   p: 2,
                   borderRadius: 2,
-                  borderLeft: `4px solid ${
-                    isDone ? UI.successBorder : UI.warningBorder
-                  }`,
-                  background: isDone ? UI.successBg : UI.warningBg,
+                  borderLeft: `4px solid ${borderColor}`,
+                  background: bgColor,
                 }}
               >
                 <Grid container spacing={2} alignItems="center">
@@ -295,7 +399,7 @@ export default async function Page({ params, searchParams }: any) {
                           ? s.signerName
                           : "—"}
                       </Typography>
-                      {status}
+                      {statusChip}
                     </Stack>
 
                     <Grid container spacing={1.2}>
@@ -388,6 +492,34 @@ export default async function Page({ params, searchParams }: any) {
             );
           })}
         </Stack>
+        {/* Reddedilme Nedeni */}
+        {isRejected && data.rejectionReason && (
+          <Box sx={{ mb: 3, mt: 2 }}>
+            <Paper
+              elevation={1}
+              sx={{
+                p: { xs: 2, md: 3 },
+                borderLeft: "4px solid #dc2626",
+                background: "#fee2e2",
+              }}
+            >
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{ color: "#b91c1c", mb: 1 }}
+              >
+                {t("reason_rejected")}
+              </Typography>
+
+              <Typography
+                variant="body2"
+                sx={{ color: "#7f1d1d", whiteSpace: "pre-line" }}
+              >
+                {data.rejectionReason}
+              </Typography>
+            </Paper>
+          </Box>
+        )}
       </Box>
 
       {/* İçerik (kapak görsel) */}
@@ -427,6 +559,9 @@ export default async function Page({ params, searchParams }: any) {
         contractNo={contractNo}
         docMeta={docMeta}
         onlySigners={onlySigners}
+        isRejected={isRejected}
+        rejectionReason={data.rejectionReason}
+        pdfDate={pdfDate}
       />
     </Box>
   );

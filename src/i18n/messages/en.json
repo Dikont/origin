@@ -319,7 +319,8 @@
     "status": {
       "pending": "Pending",
       "inProgress": "In Progress",
-      "completed": "Completed"
+      "completed": "Completed",
+      "rejected": "Rejected"
     },
     "title": "Welcome!!!",
     "subtitle": "{firstName} {lastName}",
@@ -380,6 +381,7 @@
     "colTemplateName": "Template Name",
     "colSignatureStatus": "Signature Status",
     "colCreatedDate": "Created Date",
+    "situation": "Status",
     "colActions": "Actions",
     "notProvided": "Not Provided",
     "deleteConfirmTitle": "Delete?",
@@ -415,11 +417,23 @@
     "deviceInfo": "Device Info",
     "status": {
       "signed": "Signed",
-      "pending": "Pending"
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "table_status": {
+      "waiting": "Waiting",
+      "completed": "Completed",
+      "in_progress": "In Progress",
+      "rejected": "Rejected"
     },
     "contentTitle": "Content",
     "coverAlt": "Document Cover Page",
-    "coverMissing": "Cover image not found."
+    "coverMissing": "Cover image not found.",
+    "reason_rejected": "Reason for Rejection",
+    "contract_report_title": "Contract Tracking Report",
+    "technical_detail_title": "Technical Details",
+    "pdf_generated_at": "This report was generated on",
+    "pdf_generated_end": ""
   },
   "createContract": {
     "uploadTitle": "Upload Document",
@@ -514,6 +528,8 @@
     "save_button": "SAVE",
     "clear_button": "CLEAR",
     "send_button": "SEND",
+    "reject_button": "REJECT",
+    "cancel_button": "CANCEL",
     "error_signature_empty": "Signature area is empty. Please draw your signature.",
     "info_signature_activated": "Signature field activated. Please draw your signature.",
     "warning_click_signature_first": "Please click on a signature field first.",
@@ -528,6 +544,13 @@
     "page_label_prefix": "Page",
     "pagination_back": "Back",
     "pagination_next": "Next",
-    "text_area_placeholder": "Enter text"
+    "text_area_placeholder": "Enter text",
+    "reject_contract": "This Contract Has Been Rejected !",
+    "reject_contract_desc": "The signing process for {docName} has been closed because it was rejected by {rejectedBy}.",
+    "reject_dialog_title": "Reject Contract",
+    "reject_dialog_placeholder": "Reason for rejection...",
+    "reject_error": "Rejection process failed.",
+    "server_error": "A server error occurred.",
+    "rejected_success": "The contract has been successfully rejected."
   }
 }

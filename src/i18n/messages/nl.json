@@ -319,7 +319,8 @@
     "status": {
       "pending": "In afwachting",
       "inProgress": "Bezig",
-      "completed": "Voltooid"
+      "completed": "Voltooid",
+      "rejected": "Afgewezen"
     },
     "title": "Welkom!!!",
     "subtitle": "{firstName} {lastName}",
@@ -346,7 +347,7 @@
     "recentContractsTitle": "Recente contracten",
     "colContractNo": "Contractnr.",
     "colContractName": "Contractnaam",
-    "colStatus": "Status",
+    "colStatus": "Situatie",
     "colFirstSentDate": "Eerste verzenddatum",
     "colLastSignDate": "Laatste ondertekeningsdatum"
   },
@@ -380,6 +381,7 @@
     "colTemplateName": "Sjabloonnaam",
     "colSignatureStatus": "Handtekeningstatus",
     "colCreatedDate": "Aanmaakdatum",
+    "situation": "Situatie",
     "colActions": "Acties",
     "notProvided": "Niet opgegeven",
     "deleteConfirmTitle": "Verwijderen?",
@@ -415,11 +417,23 @@
     "deviceInfo": "Apparaatinformatie",
     "status": {
       "signed": "Getekend",
-      "pending": "In afwachting"
+      "pending": "In afwachting",
+      "rejected": "Afgewezen"
+    },
+    "table_status": {
+      "waiting": "In afwachting",
+      "completed": "Voltooid",
+      "in_progress": "Bezig",
+      "rejected": "Afgewezen"
     },
     "contentTitle": "Inhoud",
     "coverAlt": "Documentomslagpagina",
-    "coverMissing": "Omslagafbeelding niet gevonden."
+    "coverMissing": "Omslagafbeelding niet gevonden.",
+    "reason_rejected": "Reden voor Afwijzing",
+    "contract_report_title": "Contract Opvolgrapport",
+    "technical_detail_title": "Technische details",
+    "pdf_generated_at": "Dit rapport is gegenereerd op",
+    "pdf_generated_end": ""
   },
   "createContract": {
     "uploadTitle": "Document uploaden",
@@ -514,6 +528,8 @@
     "save_button": "OPSLAAN",
     "clear_button": "WISSEN",
     "send_button": "VERZENDEN",
+    "reject_button": "AFWIJZEN",
+    "cancel_button": "ANNULEREN",
     "error_signature_empty": "Handtekeningveld is leeg. Teken je handtekening.",
     "info_signature_activated": "Handtekeningveld geactiveerd. Teken je handtekening.",
     "warning_click_signature_first": "Klik eerst op een handtekeningveld.",
@@ -528,6 +544,13 @@
     "page_label_prefix": "Pagina",
     "pagination_back": "Terug",
     "pagination_next": "Volgende",
-    "text_area_placeholder": "Voer tekst in"
+    "text_area_placeholder": "Voer tekst in",
+    "reject_contract": "Deze Overeenkomst is Afgewezen!",
+    "reject_contract_desc": "Het ondertekeningsproces voor {docName} is afgesloten omdat het werd afgewezen door {rejectedBy}.",
+    "reject_dialog_title": "Reject Contract",
+    "reject_dialog_placeholder": "Reason for rejection...",
+    "reject_error": "Het weigeren is mislukt.",
+    "server_error": "Er is een serverfout opgetreden.",
+    "rejected_success": "Het contract is succesvol geweigerd."
   }
 }

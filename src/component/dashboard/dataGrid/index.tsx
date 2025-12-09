@@ -7,6 +7,8 @@ import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { useTranslations, useLocale } from "next-intl";
 import CssDataGridResponsive from "@/component/cssDataGridResponsive";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
+
 type Signer = { isSigned?: boolean };
 
 type ApiItem = {
@@ -21,27 +23,24 @@ type ApiItem = {
   lastSignDate: string | null;
   groupCreator: string;
   signerDetails?: Signer[];
+  status: number;
 };
 
 // Kanonik durum anahtarları (i18n label bu anahtarlarla eşleşecek)
-type StatusKey = "pending" | "inProgress" | "completed";
+type StatusKey = "pending" | "inProgress" | "completed" | "rejected";
 
 const STATUS_META: Record<
   StatusKey,
-  { color: "warning" | "info" | "success"; Icon: any }
+  { color: "warning" | "info" | "success" | "error"; Icon: any }
 > = {
   pending: { color: "warning", Icon: HourglassEmptyRoundedIcon },
   inProgress: { color: "info", Icon: AutorenewRoundedIcon },
   completed: { color: "success", Icon: CheckCircleRoundedIcon },
+  rejected: { color: "error", Icon: DoNotDisturbOnIcon },
 };
 
 function getStatus(i: ApiItem): StatusKey {
-  if (Array.isArray(i.signerDetails)) {
-    if (i.signerDetails.length === 0) return "pending";
-    return i.signerDetails.every((s) => s?.isSigned === true)
-      ? "completed"
-      : "inProgress";
-  }
+  if (i.status === 0) return "rejected";
   if (i.signCompletionRate === 100) return "completed";
   if ((i.signedCount ?? 0) > 0) return "inProgress";
   return "pending";

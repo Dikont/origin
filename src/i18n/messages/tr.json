@@ -315,7 +315,8 @@
     "status": {
       "pending": "Beklemede",
       "inProgress": "Devam Ediyor",
-      "completed": "Tamamlandı"
+      "completed": "Tamamlandı",
+      "rejected": "Reddedildi"
     },
     "title": "Hoş Geldiniz !!!",
     "subtitle": "{firstName} {lastName}",
@@ -376,6 +377,7 @@
     "colTemplateName": "Şablon Adı",
     "colSignatureStatus": "İmza Durumu",
     "colCreatedDate": "Oluşturulma Tarihi",
+    "situation": "Durum",
     "colActions": "İşlemler",
     "notProvided": "Girilmedi",
     "deleteConfirmTitle": "Silinsin mi?",
@@ -411,11 +413,23 @@
     "deviceInfo": "Cihaz Bilgisi",
     "status": {
       "signed": "İmzaladı",
-      "pending": "Bekliyor"
+      "pending": "Bekliyor",
+      "rejected": "Reddedildi"
+    },
+    "table_status": {
+      "waiting": "Bekleniyor",
+      "completed": "Tamamlandı",
+      "in_progress": "Devam Ediyor",
+      "rejected": "Reddedildi"
     },
     "contentTitle": "İçerik",
     "coverAlt": "Belge Kapak Sayfası",
-    "coverMissing": "Kapak görseli bulunamadı."
+    "coverMissing": "Kapak görseli bulunamadı.",
+    "reason_rejected": "Reddedilme Sebebi",
+    "contract_report_title": "Sözleşme Takip Raporu",
+    "technical_detail_title": "Teknik Detaylar",
+    "pdf_generated_at": "Bu rapor",
+    "pdf_generated_end": "tarihinde oluşturulmuştur."
   },
   "createContract": {
     "uploadTitle": "Doküman Yükleme",
@@ -510,6 +524,8 @@
     "save_button": "KAYDET",
     "clear_button": "TEMİZLE",
     "send_button": "GÖNDER",
+    "reject_button": "REDDET",
+    "cancel_button": "İPTAL",
     "error_signature_empty": "İmza alanı boş. Lütfen imzanızı çizin.",
     "info_signature_activated": "İmza alanı aktif edildi. Lütfen imzanızı çizin.",
     "warning_click_signature_first": "Lütfen önce bir imza alanına tıklayın.",
@@ -524,6 +540,13 @@
     "page_label_prefix": "Sayfa",
     "pagination_back": "Geri",
     "pagination_next": "İleri",
-    "text_area_placeholder": "Metin girin"
+    "text_area_placeholder": "Metin girin",
+    "reject_contract": "Bu Sözleşme Reddedilmiştir !",
+    "reject_contract_desc": "Bu {docName} belgesi, {rejectedBy} tarafından reddedildiği için imzalama işlemine kapatılmıştır.",
+    "reject_dialog_title": "Sözleşmeyi Reddet",
+    "reject_dialog_placeholder": "Reddetme sebebi...",
+    "reject_error": "Reddetme işlemi başarısız.",
+    "server_error": "Sunucu hatası oluştu.",
+    "rejected_success": "Sözleşme başarıyla reddedildi."
   }
 }

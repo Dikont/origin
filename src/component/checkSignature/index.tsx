@@ -122,6 +122,7 @@ function SignaturePad({
   onClearRef,
   clear,
   handleSend,
+  rejectSend, // Reddetme fonksiyonu
   onEmpty,
   disabled = false, // YENİ PROP
 }: {
@@ -129,6 +130,7 @@ function SignaturePad({
   onClearRef?: (fn: () => void) => void;
   clear: () => void;
   handleSend: () => void;
+  rejectSend: () => void; // Reddetme fonksiyonu
   onEmpty?: (msg: string) => void;
   disabled?: boolean; // YENİ PROP
 }) {
@@ -274,10 +276,19 @@ function SignaturePad({
           <Button
             variant="contained"
             color="success"
+            sx={{ mb: "20px" }}
             fullWidth
             onClick={handleSend}
           >
             {t("send_button")}
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            fullWidth
+            onClick={rejectSend}
+          >
+            {t("reject_button")}
           </Button>
         </Box>
       </Box>
@@ -328,6 +339,10 @@ export default function PdfSigner({
 
   const [currentPage, setCurrentPage] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Reddetme Dialog state
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   const hitRectsRef = useRef<
     Array<{
@@ -752,6 +767,42 @@ export default function PdfSigner({
     }
   };
 
+  /* ----- Handle reject ----- */
+  const handleReject = async () => {
+    if (!rejectReason.trim()) {
+      showSnackbar("Lütfen reddetme sebebi yazınız.", "warning");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/rejectGroup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          docGroupId: signerInformation?.documentGroupId,
+          reason: rejectReason.trim(),
+          extra: {
+            signerMail: signerInformation?.signerMail,
+            signerName: signerInformation?.userName,
+            source: "signature-screen",
+          },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showSnackbar(data.error || t("reject_error"), "error");
+        return;
+      }
+
+      showSnackbar(t("rejected_success"), "success");
+      setTimeout(() => router.push("/dashboard"), 1500);
+    } catch {
+      showSnackbar(t("server_error"), "error");
+    }
+  };
+
   /* ----- UI ----- */
   if (!pages.length) {
     return (
@@ -762,159 +813,221 @@ export default function PdfSigner({
   }
 
   return (
-    <Dialog open fullWidth onClose={() => {}} maxWidth="md">
-      <Box sx={{ p: { xs: "20px", md: "50px" } }} className="scrollbar">
-        {/* PAGE CANVAS */}
-        <Box sx={{ width: "100%", mb: 1.5, position: "relative" }}>
-          <canvas
-            ref={canvasRef}
-            onClick={onCanvasClick}
+    <>
+      {/* REDDET MODALI */}
+      <Dialog
+        open={rejectOpen}
+        onClose={() => setRejectOpen(false)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: 3, // Modal köşeleri daha yumuşak
+            p: 0,
+          },
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h6" mb={2} fontWeight={600}>
+            {t("reject_dialog_title")}
+          </Typography>
+
+          <textarea
             style={{
               width: "100%",
-              height: "auto",
-              display: "block",
-              borderRadius: 8,
-              boxShadow: "rgba(0,0,0,.25) 0 2px 8px",
-              cursor: "pointer",
+              minHeight: "140px",
+              padding: "12px 14px",
+              borderRadius: "10px", // 🔥 istediğin 10px border radius burada
+              border: "1.5px solid #cfcfcf",
+              outline: "none",
+              fontSize: "15px",
+              lineHeight: "1.4",
+              resize: "vertical",
+              boxSizing: "border-box",
             }}
+            placeholder={t("reject_dialog_placeholder")}
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
           />
 
-          {/* Overlay Text Inputs - Sadece kullanıcının kendi alanları */}
-          {editableRects
-            .filter((r) => r.tab.documentId === pages[currentPage]?.id)
-            .map(
-              ({
-                tab,
-                leftPct,
-                topPct,
-                widthPct,
-                heightPct,
-                kind,
-                displayValue,
-              }) => {
-                // Taşma kontrolü - maksimum genişlik hesapla
-                const maxWidthPct = 100 - leftPct - 2; // 2% margin bırak
-                const currentText = inputsByTab[tab.tabId] ?? "";
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            gap={2}
+            mt={3}
+            alignItems="center"
+          >
+            <Button variant="text" onClick={() => setRejectOpen(false)}>
+              {t("cancel_button")}
+            </Button>
 
-                // Text uzunluğuna göre genişlik hesapla (sadece text alanları için)
-                let dynamicWidth = widthPct;
-                if (kind === "text" && currentText.length > 0) {
-                  // Her karakter için yaklaşık 0.6em genişlik
-                  const estimatedWidth = Math.max(
-                    widthPct,
-                    currentText.length * 0.8 + 5
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleReject}
+              sx={{ minWidth: "90px", fontWeight: 600 }}
+            >
+              {t("send_button")}
+            </Button>
+          </Box>
+        </Box>
+      </Dialog>
+
+      <Dialog open fullWidth onClose={() => {}} maxWidth="md">
+        <Box sx={{ p: { xs: "20px", md: "50px" } }} className="scrollbar">
+          {/* PAGE CANVAS */}
+          <Box sx={{ width: "100%", mb: 1.5, position: "relative" }}>
+            <canvas
+              ref={canvasRef}
+              onClick={onCanvasClick}
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                borderRadius: 8,
+                boxShadow: "rgba(0,0,0,.25) 0 2px 8px",
+                cursor: "pointer",
+              }}
+            />
+
+            {/* Overlay Text Inputs - Sadece kullanıcının kendi alanları */}
+            {editableRects
+              .filter((r) => r.tab.documentId === pages[currentPage]?.id)
+              .map(
+                ({
+                  tab,
+                  leftPct,
+                  topPct,
+                  widthPct,
+                  heightPct,
+                  kind,
+                  displayValue,
+                }) => {
+                  // Taşma kontrolü - maksimum genişlik hesapla
+                  const maxWidthPct = 100 - leftPct - 2; // 2% margin bırak
+                  const currentText = inputsByTab[tab.tabId] ?? "";
+
+                  // Text uzunluğuna göre genişlik hesapla (sadece text alanları için)
+                  let dynamicWidth = widthPct;
+                  if (kind === "text" && currentText.length > 0) {
+                    // Her karakter için yaklaşık 0.6em genişlik
+                    const estimatedWidth = Math.max(
+                      widthPct,
+                      currentText.length * 0.8 + 5
+                    );
+                    dynamicWidth = Math.min(estimatedWidth, maxWidthPct);
+                  }
+
+                  return (
+                    <Box
+                      key={tab.tabId}
+                      sx={{
+                        position: "absolute",
+                        left: `${leftPct}%`,
+                        top: `${topPct}%`,
+                        width: `${dynamicWidth}%`, // Dinamik genişlik
+                        height: `${heightPct}%`,
+                        zIndex: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        pointerEvents: kind === "display" ? "none" : "auto",
+                        transition: "width 0.2s ease", // Yumuşak geçiş
+                      }}
+                    >
+                      {kind === "display" ? (
+                        // Düzenlenemez alan - sadece text göster
+                        <Box
+                          border={"none"}
+                          sx={{
+                            width: "100%",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {displayValue}
+                        </Box>
+                      ) : (
+                        // Düzenlenebilir alan - input göster
+                        <input
+                          data-tab-id={tab.tabId}
+                          type={kind === "date" ? "date" : "text"}
+                          value={currentText}
+                          onChange={(e) =>
+                            setInputsByTab((prev) => ({
+                              ...prev,
+                              [tab.tabId]: e.target.value,
+                            }))
+                          }
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            borderRadius: 6,
+                            border: "1px solid rgba(0,0,0,0.3)",
+                            padding: "6px 10px",
+                            fontSize: "14px",
+                            outline: "none",
+                            background: "rgba(255,255,255,0.96)",
+                            boxSizing: "border-box",
+                            whiteSpace: "nowrap", // Tek satırda tut
+                            overflow: "hidden", // Taşma durumunda gizle
+                          }}
+                          placeholder={
+                            tab.label ||
+                            (kind === "date"
+                              ? "yyyy-mm-dd"
+                              : t("text_area_placeholder"))
+                          }
+                        />
+                      )}
+                    </Box>
                   );
-                  dynamicWidth = Math.min(estimatedWidth, maxWidthPct);
                 }
+              )}
+          </Box>
 
-                return (
-                  <Box
-                    key={tab.tabId}
-                    sx={{
-                      position: "absolute",
-                      left: `${leftPct}%`,
-                      top: `${topPct}%`,
-                      width: `${dynamicWidth}%`, // Dinamik genişlik
-                      height: `${heightPct}%`,
-                      zIndex: 2,
-                      display: "flex",
-                      alignItems: "center",
-                      pointerEvents: kind === "display" ? "none" : "auto",
-                      transition: "width 0.2s ease", // Yumuşak geçiş
-                    }}
-                  >
-                    {kind === "display" ? (
-                      // Düzenlenemez alan - sadece text göster
-                      <Box
-                        border={"none"}
-                        sx={{
-                          width: "100%",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {displayValue}
-                      </Box>
-                    ) : (
-                      // Düzenlenebilir alan - input göster
-                      <input
-                        data-tab-id={tab.tabId}
-                        type={kind === "date" ? "date" : "text"}
-                        value={currentText}
-                        onChange={(e) =>
-                          setInputsByTab((prev) => ({
-                            ...prev,
-                            [tab.tabId]: e.target.value,
-                          }))
-                        }
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: 6,
-                          border: "1px solid rgba(0,0,0,0.3)",
-                          padding: "6px 10px",
-                          fontSize: "14px",
-                          outline: "none",
-                          background: "rgba(255,255,255,0.96)",
-                          boxSizing: "border-box",
-                          whiteSpace: "nowrap", // Tek satırda tut
-                          overflow: "hidden", // Taşma durumunda gizle
-                        }}
-                        placeholder={
-                          tab.label ||
-                          (kind === "date"
-                            ? "yyyy-mm-dd"
-                            : t("text_area_placeholder"))
-                        }
-                      />
-                    )}
-                  </Box>
-                );
-              }
-            )}
-        </Box>
-
-        {/* PAGINATION */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            justifyContent: "center",
-            mb: 2,
-          }}
-        >
-          <Button
-            variant="text"
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage((p) => p - 1)}
+          {/* PAGINATION */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              justifyContent: "center",
+              mb: 2,
+            }}
           >
-            {t("pagination_back")}
-          </Button>
-          <Typography>
-            {t("page_label_prefix")} {currentPage + 1} / {pages.length}
-          </Typography>
-          <Button
-            variant="text"
-            disabled={currentPage === pages.length - 1}
-            onClick={() => setCurrentPage((p) => p + 1)}
-          >
-            {t("pagination_next")}
-          </Button>
-        </Box>
+            <Button
+              variant="text"
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage((p) => p - 1)}
+            >
+              {t("pagination_back")}
+            </Button>
+            <Typography>
+              {t("page_label_prefix")} {currentPage + 1} / {pages.length}
+            </Typography>
+            <Button
+              variant="text"
+              disabled={currentPage === pages.length - 1}
+              onClick={() => setCurrentPage((p) => p + 1)}
+            >
+              {t("pagination_next")}
+            </Button>
+          </Box>
 
-        {/* SIGNATURE PAD (your updated one) */}
-        <SignaturePad
-          onSave={saveSignatureFromPad}
-          onClearRef={(fn) => (padClearRef.current = fn)}
-          clear={() => padClearRef.current?.()}
-          handleSend={handleSend}
-          onEmpty={(msg) => showSnackbar(msg, "warning")}
-          disabled={!signaturePadEnabled} // YENİ PROP
-        />
-      </Box>
-    </Dialog>
+          {/* SIGNATURE PAD (your updated one) */}
+          <SignaturePad
+            onSave={saveSignatureFromPad}
+            onClearRef={(fn) => (padClearRef.current = fn)}
+            clear={() => padClearRef.current?.()}
+            handleSend={handleSend}
+            rejectSend={() => setRejectOpen(true)}
+            onEmpty={(msg) => showSnackbar(msg, "warning")}
+            disabled={!signaturePadEnabled} // YENİ PROP
+          />
+        </Box>
+      </Dialog>
+    </>
   );
 }
 

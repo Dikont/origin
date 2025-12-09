@@ -21,6 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
+import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import EmailIcon from "@mui/icons-material/Email";
@@ -94,6 +95,67 @@ export default function DataGridComp({ user, userRole }: any) {
         return d1 - d2;
       },
     },
+    {
+      field: "sortValue",
+      headerName: t("situation"),
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      sortable: true,
+
+      sortComparator: (v1, v2) => v1 - v2,
+
+      renderCell: (params: any) => {
+        const status = params.row.status;
+        const rate = params.row.signatureStatus;
+
+        if (status === 0) {
+          return (
+            <Chip
+              icon={<DoNotDisturbOnIcon fontSize="small" />}
+              label={t("table_status.rejected")}
+              color="error"
+              variant="filled"
+              sx={{ fontWeight: 600 }}
+            />
+          );
+        }
+
+        if (rate === 100) {
+          return (
+            <Chip
+              icon={<CheckCircleIcon fontSize="small" />}
+              label={t("table_status.completed")}
+              color="success"
+              variant="filled"
+              sx={{ fontWeight: 600 }}
+            />
+          );
+        }
+
+        if (rate === 0) {
+          return (
+            <Chip
+              icon={<HourglassEmptyRoundedIcon fontSize="small" />}
+              label={t("table_status.waiting")}
+              color="warning"
+              variant="filled"
+              sx={{ fontWeight: 600 }}
+            />
+          );
+        }
+
+        return (
+          <Chip
+            icon={<AutorenewIcon fontSize="small" />}
+            label={t("table_status.in_progress")}
+            color="info"
+            variant="filled"
+            sx={{ fontWeight: 600 }}
+          />
+        );
+      },
+    },
 
     {
       field: "id",
@@ -101,47 +163,64 @@ export default function DataGridComp({ user, userRole }: any) {
       flex: 1,
       align: "right",
       headerAlign: "center",
-      renderCell: (params: any) => (
-        <Box>
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              openPreview(params.row);
-            }}
-          >
-            <VisibilityIcon sx={{ fontSize: 24, color: "#0629c5ff" }} />
-          </IconButton>
+      renderCell: (params: any) => {
+        const status = params.row.status;
+        const rate = params.row.signatureStatus;
 
-          {params.row.signatureStatus != 100 && (
+        const isRejected = status === 0;
+        const isCompleted = rate === 100;
+
+        return (
+          <Box>
+            {/* Preview HER DURUMDA VAR */}
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                handelSendMail(Number(params.row.documentGroupId));
+                openPreview(params.row);
               }}
             >
-              <EmailIcon sx={{ fontSize: 24, color: "#4666f7ff" }} />
+              <VisibilityIcon sx={{ fontSize: 24, color: "#0629c5ff" }} />
             </IconButton>
-          )}
-          {params.row.signatureStatus == 0 && (
+
+            {/* TAMAMLANMIŞ veya REDDEDİLMİŞ ise sadece Preview + Silme */}
+            {!(isRejected || isCompleted) && (
+              <>
+                {/* Mail Gönderme butonu sadece AKTİF / TAMAMLANMAMIŞ durumlarda */}
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handelSendMail(Number(params.row.documentGroupId));
+                  }}
+                >
+                  <EmailIcon sx={{ fontSize: 24, color: "#4666f7ff" }} />
+                </IconButton>
+
+                {/* Edit sadece RED olmadığında ve hiç imza yokken (0%) */}
+                {rate === 0 && (
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRouteCreateDoc(Number(params.row.documentGroupId));
+                    }}
+                  >
+                    <EditSquareIcon sx={{ fontSize: 24, color: "#117e23ff" }} />
+                  </IconButton>
+                )}
+              </>
+            )}
+
+            {/* Silme HER DURUMDA VAR */}
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                handleRouteCreateDoc(Number(params.row.documentGroupId));
+                askDelete(Number(params.row.documentGroupId));
               }}
             >
-              <EditSquareIcon sx={{ fontSize: 24, color: "#117e23ff" }} />
+              <DeleteIcon sx={{ fontSize: 24, color: "#972e2eff" }} />
             </IconButton>
-          )}
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              askDelete(Number(params.row.documentGroupId));
-            }}
-          >
-            <DeleteIcon sx={{ fontSize: 24, color: "#972e2eff" }} />
-          </IconButton>
-        </Box>
-      ),
+          </Box>
+        );
+      },
     },
   ];
 
@@ -216,23 +295,42 @@ export default function DataGridComp({ user, userRole }: any) {
       : "-";
 
   const safeData = Array.isArray(data) ? data : [];
-  const rows = safeData.map((item: any) => ({
-    id: String(item.documentGroupId),
-    documentGroupId: item.documentGroupId,
-    documentS3Path: item.documentS3Path,
-    sozlesme_name: item.documentGroupName,
-    template_name:
-      item.documentGroupDesc.length > 0
-        ? item.documentGroupDesc
-        : t("notProvided"),
+  const rows = safeData.map((item: any) => {
+    const rate = item.signCompletionRate ?? 0;
+    const status = item.status;
 
-    // Sıralama için RAW ISO tarih
-    createdDateRaw: item.firstSentDate,
+    // --- Durum sıralama mantığı ---
+    // 0 → Reddedildi
+    // 1 → Bekliyor
+    // 2 → Devam Ediyor
+    // 3 → Tamamlandı
+    let sortValue = 0;
 
-    // Görüntüleme için TR format
-    createdDate: formatTR(item.firstSentDate),
-    signatureStatus: item.signCompletionRate ?? 0,
-  }));
+    if (status === 0) sortValue = 0; // REDDEDİLDİ
+    else if (rate === 100) sortValue = 3; // TAMAMLANDI
+    else if (rate === 0) sortValue = 1; // BEKLİYOR
+    else sortValue = 2; // DEVAM EDİYOR
+
+    return {
+      id: String(item.documentGroupId),
+      documentGroupId: item.documentGroupId,
+      documentS3Path: item.documentS3Path,
+      sozlesme_name: item.documentGroupName,
+      template_name:
+        item.documentGroupDesc.length > 0
+          ? item.documentGroupDesc
+          : t("notProvided"),
+
+      createdDateRaw: item.firstSentDate,
+      createdDate: formatTR(item.firstSentDate),
+
+      signatureStatus: rate,
+      status: status,
+
+      // 🔥 SIRALAMA için gereken numeric değer
+      sortValue,
+    };
+  });
 
   useEffect(() => {
     (async () => {
@@ -346,7 +444,14 @@ export default function DataGridComp({ user, userRole }: any) {
 
   const goDetail = (params: any) => {
     const status = params.row.signatureStatus;
-    router.push({ pathname: `/followContracts/${params.id}?status=${status}` });
+    const rejectStatus = params.row.status;
+    router.push({
+      pathname: `/followContracts/${params.id}`,
+      query: {
+        signatureStatus: status,
+        rejectStatus: rejectStatus,
+      },
+    });
   };
 
   return (
@@ -370,6 +475,9 @@ export default function DataGridComp({ user, userRole }: any) {
             disableRowSelectionOnClick
             isRowSelectable={() => false}
             hideFooterSelectedRowCount
+            initialState={{
+              pagination: { paginationModel: { pageSize: 10, page: 0 } },
+            }}
             pageSizeOptions={[5, 10, 25]}
             rows={rows}
             columns={columns}

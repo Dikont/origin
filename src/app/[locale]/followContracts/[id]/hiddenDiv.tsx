@@ -5,11 +5,17 @@ export default function HiddenDiv({
   contractNo,
   docMeta,
   onlySigners,
+  isRejected,
+  rejectionReason,
+  pdfDate,
 }: {
   t: (k: string) => string;
   contractNo: string | number;
   docMeta: any;
   onlySigners: any[];
+  isRejected: boolean;
+  rejectionReason?: string;
+  pdfDate: string;
 }) {
   const fmt = (dt?: string | null) => {
     if (!dt) return "-";
@@ -120,7 +126,7 @@ export default function HiddenDiv({
             textTransform: "uppercase",
           }}
         >
-          Sözleşme Takip Raporu
+          {t("contract_report_title")}
         </h1>
       </div>
 
@@ -220,6 +226,12 @@ export default function HiddenDiv({
               [ua, platform, language, tz].filter(Boolean).join(" | ") || "—";
             const isDone = !!s?.isSigned;
 
+            const statusLabel = isRejected
+              ? "✗ " + t("status.rejected")
+              : isDone
+              ? "✓ " + t("status.signed")
+              : "○ " + t("status.pending");
+
             return (
               <div
                 key={idx}
@@ -260,9 +272,7 @@ export default function HiddenDiv({
                       textTransform: "uppercase",
                     }}
                   >
-                    {isDone
-                      ? "✓ " + t("status.signed")
-                      : "○ " + t("status.pending")}
+                    {statusLabel}
                   </div>
                 </div>
 
@@ -320,7 +330,7 @@ export default function HiddenDiv({
                       textTransform: "uppercase",
                     }}
                   >
-                    Teknik Detaylar
+                    {t("technical_detail_title")}
                   </div>
                   <div
                     style={{
@@ -368,6 +378,30 @@ export default function HiddenDiv({
           })
         )}
       </div>
+      {isRejected && (
+        <div
+          style={{
+            border: "2px solid",
+            padding: "15px",
+            marginBottom: "20px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+          }}
+        >
+          {t("reason_rejected")}
+          <br />
+          <span
+            style={{
+              fontSize: "12px",
+              fontWeight: "normal",
+              textTransform: "none",
+            }}
+          >
+            {rejectionReason}
+          </span>
+        </div>
+      )}
 
       {/* Footer */}
       <div
@@ -380,15 +414,7 @@ export default function HiddenDiv({
           color: "#666",
         }}
       >
-        Bu rapor{" "}
-        {new Date().toLocaleString("tr-TR", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}{" "}
-        tarihinde oluşturulmuştur.
+        {t("pdf_generated_at")} {pdfDate} {t("pdf_generated_end")}
       </div>
     </div>
   );
