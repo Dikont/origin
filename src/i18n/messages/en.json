@@ -322,7 +322,7 @@
       "completed": "Completed",
       "rejected": "Rejected"
     },
-    "title": "Welcome!!!",
+    "title": "Welcome",
     "subtitle": "{firstName} {lastName}",
     "text": "Track your contract management and signing processes here.",
     "totalContracts": "Total Contract Pages",

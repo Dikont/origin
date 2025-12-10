@@ -4,103 +4,81 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useTranslations } from "next-intl";
 import { Button } from "@mui/material";
+
 export function DownloadPdfButton() {
   const t = useTranslations("menu");
+
   const handleDownloadPdf = useCallback(async () => {
-    const el = document.getElementById("pdf-sheet");
-    if (!el) {
+    // 1. Ana wrapper'ı bul
+    const wrapper = document.getElementById("pdf-wrapper");
+    // 2. İçindeki sayfaları class ile bul
+    const pages = document.getElementsByClassName("pdf-page-sheet");
+
+    if (!wrapper || pages.length === 0) {
+      console.error("PDF içeriği bulunamadı");
       return;
     }
 
-    // Element'i geçici olarak görünür yap
+    // Element'i geçici olarak görünür ve üstte yap
     const originalStyles = {
-      opacity: el.style.opacity,
-      position: el.style.position,
-      left: el.style.left,
-      top: el.style.top,
+      opacity: wrapper.style.opacity,
+      position: wrapper.style.position,
+      left: wrapper.style.left,
+      top: wrapper.style.top,
     };
 
-    // Geçici olarak tamamen görünür yap
-    el.style.opacity = "1";
-    el.style.position = "fixed";
-    el.style.left = "-99999px";
-    el.style.top = "0";
-    el.style.zIndex = "9999";
+    // Görünür hale getir (ekran dışı ama render edilebilir)
+    wrapper.style.opacity = "1";
+    wrapper.style.position = "fixed";
+    wrapper.style.left = "0"; // Ekran içinde olması gerekebilir bazen ama z-index ile alta atalım
+    wrapper.style.top = "0";
+    wrapper.style.zIndex = "-9999"; // Kullanıcı görmesin
 
-    // Bir frame bekle (DOM'un render olması için)
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // DOM'un render olması için kısa bir bekleme
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     try {
-      // Canvas'a çevir
-      const canvas = await html2canvas(el, {
-        scale: 1, // Önce 1 ile dene
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: true, // Debug için aç
-        width: el.scrollWidth,
-        height: el.scrollHeight,
-      });
-
-      // Canvas'ı kontrol et - boş mu?
-      const ctx = canvas.getContext("2d");
-      //@ts-ignore
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const hasContent = imageData.data.some((pixel, index) => {
-        // Alpha channel'ı kontrol etme, sadece RGB
-        if (index % 4 === 3) return false;
-        return pixel !== 255; // Beyaz olmayan pixel var mı?
-      });
-
-      if (!hasContent) {
-        alert("PDF içeriği boş görünüyor. Lütfen konsolu kontrol edin.");
-        return;
-      }
-
-      // Canvas'ı resim olarak al
-      const imgData = canvas.toDataURL("image/png");
-
-      // A4 boyutlu PDF hazırla
+      // PDF nesnesi oluştur
       const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
-      const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      // Her sayfayı (chunk) ayrı ayrı canvas'a çevir
+      for (let i = 0; i < pages.length; i++) {
+        const pageEl = pages[i] as HTMLElement;
 
-      // Gerçek içeriği kontrol et (boş alanları çıkar)
-      const actualContentHeight = Math.min(imgHeight, pageHeight * 1.1); // %10 tolerans
+        const canvas = await html2canvas(pageEl, {
+          scale: 2, // Kalite için 2x scale
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          width: 794, // Sabit A4 pixel genişliği
+          height: 1123, // Sabit A4 pixel yüksekliği
+        });
 
-      if (actualContentHeight <= pageHeight) {
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, actualContentHeight);
-      } else {
-        let heightLeft = imgHeight;
-        let position = 0;
+        const imgData = canvas.toDataURL("image/png");
 
-        // İlk sayfa
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        // Ek sayfalar (sadece gerekirse)
-        while (heightLeft > 20) {
-          // 20mm'den fazla kalan varsa yeni sayfa
-          position = heightLeft - imgHeight;
+        // İlk sayfa zaten var, sonrakilerde addPage yap
+        if (i > 0) {
           pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
         }
+
+        // Resmi tam sayfa olarak ekle
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       }
 
       // PDF'i indir
       pdf.save(`sozlesme-${new Date().getTime()}.pdf`);
     } catch (error) {
+      console.error("PDF oluşturma hatası:", error);
     } finally {
       // Orijinal stilleri geri yükle
-      el.style.opacity = originalStyles.opacity;
-      el.style.position = originalStyles.position;
-      el.style.left = originalStyles.left;
-      el.style.top = originalStyles.top;
-      el.style.zIndex = "";
+      wrapper.style.opacity = originalStyles.opacity;
+      wrapper.style.position = originalStyles.position;
+      wrapper.style.left = originalStyles.left;
+      wrapper.style.top = originalStyles.top;
+      wrapper.style.zIndex = "";
     }
   }, []);
 

@@ -774,19 +774,21 @@ export default function PdfSigner({
       return;
     }
 
+    // 1. ADIM: Metadata bilgisini çekiyoruz
+    const metadataInfo = await getMetadataInfo();
+
+    const payload = {
+      docGroupId: signerInformation?.documentGroupId,
+      reason: rejectReason.trim(),
+      metadataInfo: metadataInfo,
+      signerEmail: signerInformation?.signerMail,
+    };
+
     try {
       const res = await fetch("/api/rejectGroup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          docGroupId: signerInformation?.documentGroupId,
-          reason: rejectReason.trim(),
-          extra: {
-            signerMail: signerInformation?.signerMail,
-            signerName: signerInformation?.userName,
-            source: "signature-screen",
-          },
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();

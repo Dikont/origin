@@ -5,7 +5,6 @@ export default function HiddenDiv({
   contractNo,
   docMeta,
   onlySigners,
-  isRejected,
   rejectionReason,
   pdfDate,
 }: {
@@ -13,10 +12,10 @@ export default function HiddenDiv({
   contractNo: string | number;
   docMeta: any;
   onlySigners: any[];
-  isRejected: boolean;
   rejectionReason?: string;
   pdfDate: string;
 }) {
+  // --- Yardımcı Fonksiyonlar (Aynı kaldı) ---
   const fmt = (dt?: string | null) => {
     if (!dt) return "-";
     const d = new Date(dt);
@@ -82,340 +81,410 @@ export default function HiddenDiv({
   ) =>
     meta?.sentAt || meta?.lastReminderAt || signerUpdated || docUpdated || null;
 
+  // --- SAYFALAMA MANTIĞI ---
+  const CHUNK_SIZE = 2; // Sayfa başına max imza sayısı
+  const signerChunks: any[][] = [];
+
+  if (onlySigners.length === 0) {
+    signerChunks.push([]); // Hiç imza yoksa boş bir sayfa oluştur
+  } else {
+    for (let i = 0; i < onlySigners.length; i += CHUNK_SIZE) {
+      signerChunks.push(onlySigners.slice(i, i + CHUNK_SIZE));
+    }
+  }
+
+  // Wrapper Stilleri (Görünmez tutucu)
+  const wrapperStyle: React.CSSProperties = {
+    opacity: 0,
+    pointerEvents: "none",
+    position: "absolute",
+    left: "-9999px",
+    top: 0,
+    width: "auto", // Genişlik içeriğe göre
+    height: "auto",
+  };
+
+  // A4 Sayfa Stilleri (Her bir sayfa için)
+  const pageStyle: React.CSSProperties = {
+    width: "794px", // A4 width (210mm @ 96dpi)
+    height: "1123px", // A4 height (297mm @ 96dpi) - SABİT YÜKSEKLİK
+    position: "relative",
+    backgroundColor: "#fff",
+    backgroundImage: "url('/pdf-arkaplan.jpeg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    padding: "40px",
+    boxSizing: "border-box",
+    fontFamily: "Times New Roman, serif",
+    color: "#000",
+    fontSize: "14px",
+    lineHeight: "1.4",
+    marginBottom: "20px", // html2canvas alırken karışmasın diye görsel boşluk
+  };
+
   return (
-    <div
-      id="pdf-sheet"
-      style={{
-        opacity: 0,
-        pointerEvents: "none",
-        position: "absolute",
-        left: "-9999px",
-        top: 0,
-        width: "794px", // A4 width in pixels (210mm)
-        height: "auto", // Auto height - gerçek içerik yüksekliği
-        maxHeight: "1123px", // A4 maximum height
-        backgroundColor: "#fff",
-        backgroundImage: "url('/pdf-arkaplan.jpeg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+    <div id="pdf-wrapper" style={wrapperStyle}>
+      {signerChunks.map((chunk, pageIndex) => {
+        const isFirstPage = pageIndex === 0;
+        const isLastPage = pageIndex === signerChunks.length - 1;
 
-        padding: "40px",
-        paddingBottom: "20px", // Alt padding azalt
-        boxSizing: "border-box",
-        fontFamily: "Times New Roman, serif",
-        color: "#000",
-        fontSize: "14px",
-        lineHeight: "1.4",
-      }}
-    >
-      {/* Başlık */}
-      <div
-        style={{
-          textAlign: "center",
-          paddingBottom: "20px",
-          borderBottom: "2px solid #000",
-          marginBottom: "20px",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            margin: "0 0 10px 0",
-            textTransform: "uppercase",
-          }}
-        >
-          {t("contract_report_title")}
-        </h1>
-      </div>
-
-      {/* Üst Özet */}
-      <div
-        style={{
-          backgroundColor: "rgba(255, 255, 255, 0.6)", // Daha şeffaf
-          border: "1px solid #000",
-          borderRadius: "0", // Keskin köşeler
-          padding: "20px",
-          marginBottom: "20px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "15px",
-          backdropFilter: "blur(1px)", // Hafif blur efekti
-        }}
-      >
-        <div>
-          <strong style={{ textTransform: "uppercase", fontSize: "12px" }}>
-            {t("contractNo")}:
-          </strong>
-          <br />
-          {contractNo}
-        </div>
-        {docMeta?.documentHash && (
-          <div>
-            <strong style={{ textTransform: "uppercase", fontSize: "12px" }}>
-              {t("hash")}:
-            </strong>
-            <br />
-            <div style={{ fontSize: "11px", wordBreak: "break-all" }}>
-              {docMeta.documentHash}
-            </div>
-          </div>
-        )}
-        <div>
-          <strong style={{ textTransform: "uppercase", fontSize: "12px" }}>
-            {t("createdAt")}:
-          </strong>
-          <br />
-          {fmt(docMeta?.createdAt)}
-        </div>
-        <div>
-          <strong style={{ textTransform: "uppercase", fontSize: "12px" }}>
-            {t("updatedAt")}:
-          </strong>
-          <br />
-          {fmt(docMeta?.updatedAt)}
-        </div>
-      </div>
-
-      {/* İmzalayanlar başlık */}
-      <div
-        style={{
-          borderBottom: "1px solid #333",
-          paddingBottom: "10px",
-          marginBottom: "20px",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "18px",
-            fontWeight: "bold",
-            margin: 0,
-            textTransform: "uppercase",
-          }}
-        >
-          {t("signersTitle")}
-        </h2>
-      </div>
-
-      {/* İmzalayanlar listesi */}
-      <div>
-        {onlySigners.length === 0 ? (
-          <p style={{ fontStyle: "italic", color: "#666" }}>{t("noSigners")}</p>
-        ) : (
-          onlySigners.map((s: any, idx: number) => {
-            const metaObj = parseMeta(s?.userMetadataInfos);
-            const sentAt = extractSentAt(
-              metaObj,
-              s?.updatedAt,
-              docMeta?.updatedAt
-            );
-            const email = extractEmail(
-              metaObj,
-              s?.signerMail && s.signerMail !== "-" ? s.signerMail : null
-            );
-            const phone =
-              s?.phoneNumber && s.phoneNumber !== "-" ? s.phoneNumber : "—";
-            const ip =
-              metaObj?.ip || metaObj?.ipAddress || metaObj?.clientIp || "—";
-            const ua = metaObj?.userAgent || metaObj?.ua || null;
-            const platform = metaObj?.platform || null;
-            const language = metaObj?.language || null;
-            const tz = metaObj?.timezone || null;
-            const device =
-              [ua, platform, language, tz].filter(Boolean).join(" | ") || "—";
-            const isDone = !!s?.isSigned;
-
-            const statusLabel = isRejected
-              ? "✗ " + t("status.rejected")
-              : isDone
-              ? "✓ " + t("status.signed")
-              : "○ " + t("status.pending");
-
-            return (
-              <div
-                key={idx}
-                style={{
-                  border: "1px solid #000",
-                  borderRadius: "0", // Keskin köşeler
-                  padding: "15px",
-                  marginBottom: "15px",
-                  backgroundColor: "rgba(255, 255, 255, 0.7)", // Daha şeffaf
-                  pageBreakInside: "avoid", // Sayfa kırılmasını engelle
-                  backdropFilter: "blur(1px)", // Hafif blur efekti
-                }}
-              >
-                {/* Başlık ve durum */}
+        return (
+          <div key={pageIndex} className="pdf-page-sheet" style={pageStyle}>
+            {/* --- İLK SAYFA: Başlık ve Özet --- */}
+            {isFirstPage && (
+              <>
+                {/* Başlık */}
                 <div
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "15px",
-                    paddingBottom: "10px",
-                    borderBottom: "1px solid #eee",
+                    textAlign: "center",
+                    paddingBottom: "20px",
+                    borderBottom: "2px solid #000",
+                    marginBottom: "20px",
                   }}
                 >
-                  <div>
-                    <strong>{t("fieldName")}:</strong>{" "}
-                    {s?.signerName && s.signerName !== "-" ? s.signerName : "—"}
-                  </div>
-                  <div
+                  <h1
                     style={{
-                      padding: "3px 8px",
-                      borderRadius: "0", // Keskin köşeler
-                      fontSize: "11px",
+                      fontSize: "24px",
                       fontWeight: "bold",
-                      backgroundColor: "rgba(255, 255, 255, 0.9)", // Sadece beyaz arka plan
-                      color: "#000",
-                      border: "1px solid #000",
+                      margin: "0 0 10px 0",
                       textTransform: "uppercase",
                     }}
                   >
-                    {statusLabel}
-                  </div>
+                    {t("contract_report_title")}
+                  </h1>
                 </div>
 
-                {/* Bilgi grid */}
+                {/* Üst Özet */}
                 <div
                   style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.6)",
+                    border: "1px solid #000",
+                    borderRadius: "0",
+                    padding: "20px",
+                    marginBottom: "20px",
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
-                    gap: "10px",
-                    marginBottom: "15px",
+                    gap: "15px",
+                    backdropFilter: "blur(1px)",
                   }}
                 >
                   <div>
-                    <strong style={{ fontSize: "11px" }}>{t("email")}:</strong>
+                    <strong
+                      style={{ textTransform: "uppercase", fontSize: "12px" }}
+                    >
+                      {t("contractNo")}:
+                    </strong>
                     <br />
-                    {email || "—"}
+                    {contractNo}
                   </div>
+                  {docMeta?.documentHash && (
+                    <div>
+                      <strong
+                        style={{ textTransform: "uppercase", fontSize: "12px" }}
+                      >
+                        {t("hash")}:
+                      </strong>
+                      <br />
+                      <div style={{ fontSize: "11px", wordBreak: "break-all" }}>
+                        {docMeta.documentHash}
+                      </div>
+                    </div>
+                  )}
                   <div>
-                    <strong style={{ fontSize: "11px" }}>{t("phone")}:</strong>
-                    <br />
-                    {phone}
-                  </div>
-                  <div>
-                    <strong style={{ fontSize: "11px" }}>
+                    <strong
+                      style={{ textTransform: "uppercase", fontSize: "12px" }}
+                    >
                       {t("createdAt")}:
                     </strong>
                     <br />
-                    {fmt(s?.createdAt)}
+                    {fmt(docMeta?.createdAt)}
                   </div>
                   <div>
-                    <strong style={{ fontSize: "11px" }}>
+                    <strong
+                      style={{ textTransform: "uppercase", fontSize: "12px" }}
+                    >
                       {t("updatedAt")}:
                     </strong>
                     <br />
-                    {fmt(s?.updatedAt)}
+                    {fmt(docMeta?.updatedAt)}
                   </div>
                 </div>
 
-                {/* Teknik detaylar */}
+                {/* İmzalayanlar başlık */}
                 <div
                   style={{
-                    backgroundColor: "rgba(248, 249, 250, 0.6)", // Daha şeffaf gri
-                    padding: "10px",
-                    borderRadius: "0", // Keskin köşeler
-                    border: "1px solid #000",
-                    fontSize: "12px",
-                    backdropFilter: "blur(1px)", // Hafif blur efekti
+                    borderBottom: "1px solid #333",
+                    paddingBottom: "10px",
+                    marginBottom: "20px",
                   }}
                 >
-                  <div
+                  <h2
                     style={{
+                      fontSize: "18px",
                       fontWeight: "bold",
-                      marginBottom: "10px",
-                      fontSize: "11px",
+                      margin: 0,
                       textTransform: "uppercase",
                     }}
                   >
-                    {t("technical_detail_title")}
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "8px",
-                    }}
-                  >
-                    <div>
-                      <strong style={{ fontSize: "10px" }}>
-                        {t("sentAt")}:
-                      </strong>
-                      <br />
-                      {fmt(sentAt)}
-                    </div>
-                    <div>
-                      <strong style={{ fontSize: "10px" }}>
-                        {t("trTimestamp")}:
-                      </strong>
-                      <br />
-                      {fmtTR(sentAt)}
-                    </div>
-                    <div>
-                      <strong style={{ fontSize: "10px" }}>
-                        {t("ipAddress")}:
-                      </strong>
-                      <br />
-                      {ip}
-                    </div>
-                    <div>
-                      <strong style={{ fontSize: "10px" }}>
-                        {t("deviceInfo")}:
-                      </strong>
-                      <br />
+                    {t("signersTitle")}
+                  </h2>
+                </div>
+              </>
+            )}
+
+            {/* --- İÇERİK: İmzalar (Her sayfada en fazla 2 tane) --- */}
+            <div>
+              {chunk.length === 0 && isFirstPage ? (
+                <p style={{ fontStyle: "italic", color: "#666" }}>
+                  {t("noSigners")}
+                </p>
+              ) : (
+                chunk.map((s: any, idx: number) => {
+                  const metaObj = parseMeta(s?.userMetadataInfos);
+                  const sentAt = extractSentAt(
+                    metaObj,
+                    s?.updatedAt,
+                    docMeta?.updatedAt
+                  );
+                  const email = extractEmail(
+                    metaObj,
+                    s?.signerMail && s.signerMail !== "-" ? s.signerMail : null
+                  );
+                  const phone =
+                    s?.phoneNumber && s.phoneNumber !== "-"
+                      ? s.phoneNumber
+                      : "—";
+                  const ip =
+                    metaObj?.ip ||
+                    metaObj?.ipAddress ||
+                    metaObj?.clientIp ||
+                    "—";
+                  const ua = metaObj?.userAgent || metaObj?.ua || null;
+                  const platform = metaObj?.platform || null;
+                  const language = metaObj?.language || null;
+                  const tz = metaObj?.timezone || null;
+                  const device =
+                    [ua, platform, language, tz].filter(Boolean).join(" | ") ||
+                    "—";
+
+                  const isSigned = s?.isSigned === true;
+                  const isRejectedSigner = s?.isRejector === true;
+
+                  const statusLabel = isRejectedSigner
+                    ? "✗ " + t("status.rejected")
+                    : isSigned
+                    ? "✓ " + t("status.signed")
+                    : "○ " + t("status.pending");
+
+                  return (
+                    <div
+                      key={idx}
+                      style={{
+                        border: "1px solid #000",
+                        borderRadius: "0",
+                        padding: "15px",
+                        marginBottom: "15px",
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        backdropFilter: "blur(1px)",
+                      }}
+                    >
+                      {/* Başlık ve durum */}
                       <div
-                        style={{ fontSize: "10px", wordBreak: "break-word" }}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "15px",
+                          paddingBottom: "10px",
+                          borderBottom: "1px solid #eee",
+                        }}
                       >
-                        {device}
+                        <div>
+                          <strong>{t("fieldName")}:</strong>{" "}
+                          {s?.signerName && s.signerName !== "-"
+                            ? s.signerName
+                            : "—"}
+                        </div>
+                        <div
+                          style={{
+                            padding: "3px 8px",
+                            borderRadius: "0",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            color: "#000",
+                            border: "1px solid #000",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {statusLabel}
+                        </div>
+                      </div>
+
+                      {/* Bilgi grid */}
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "10px",
+                          marginBottom: "15px",
+                        }}
+                      >
+                        <div>
+                          <strong style={{ fontSize: "11px" }}>
+                            {t("email")}:
+                          </strong>
+                          <br />
+                          {email || "—"}
+                        </div>
+                        <div>
+                          <strong style={{ fontSize: "11px" }}>
+                            {t("phone")}:
+                          </strong>
+                          <br />
+                          {phone}
+                        </div>
+                        <div>
+                          <strong style={{ fontSize: "11px" }}>
+                            {t("createdAt")}:
+                          </strong>
+                          <br />
+                          {fmt(s?.createdAt)}
+                        </div>
+                        <div>
+                          <strong style={{ fontSize: "11px" }}>
+                            {t("updatedAt")}:
+                          </strong>
+                          <br />
+                          {fmt(s?.updatedAt)}
+                        </div>
+                      </div>
+
+                      {/* Teknik detaylar */}
+                      <div
+                        style={{
+                          backgroundColor: "rgba(248, 249, 250, 0.6)",
+                          padding: "10px",
+                          borderRadius: "0",
+                          border: "1px solid #000",
+                          fontSize: "12px",
+                          backdropFilter: "blur(1px)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontWeight: "bold",
+                            marginBottom: "10px",
+                            fontSize: "11px",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {t("technical_detail_title")}
+                        </div>
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: "8px",
+                          }}
+                        >
+                          <div>
+                            <strong style={{ fontSize: "10px" }}>
+                              {t("sentAt")}:
+                            </strong>
+                            <br />
+                            {fmt(sentAt)}
+                          </div>
+                          <div>
+                            <strong style={{ fontSize: "10px" }}>
+                              {t("trTimestamp")}:
+                            </strong>
+                            <br />
+                            {fmtTR(sentAt)}
+                          </div>
+                          <div>
+                            <strong style={{ fontSize: "10px" }}>
+                              {t("ipAddress")}:
+                            </strong>
+                            <br />
+                            {ip}
+                          </div>
+                          <div>
+                            <strong style={{ fontSize: "10px" }}>
+                              {t("deviceInfo")}:
+                            </strong>
+                            <br />
+                            <div
+                              style={{
+                                fontSize: "10px",
+                                wordBreak: "break-word",
+                              }}
+                            >
+                              {device}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* --- SON SAYFA: Footer ve Red Nedeni --- */}
+            {isLastPage && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "40px",
+                  left: "40px",
+                  width: "calc(100% - 80px)", // Paddingleri düşüyoruz
+                }}
+              >
+                {rejectionReason && (
+                  <div
+                    style={{
+                      border: "2px solid",
+                      padding: "15px",
+                      marginBottom: "20px",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      textTransform: "uppercase",
+                      backgroundColor: "#fff", // Okunabilirlik için
+                    }}
+                  >
+                    {t("reason_rejected")}
+                    <br />
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                        textTransform: "none",
+                      }}
+                    >
+                      {rejectionReason}
+                    </span>
                   </div>
+                )}
+
+                {/* Footer */}
+                <div
+                  style={{
+                    paddingTop: "20px",
+                    borderTop: "1px solid #ccc",
+                    textAlign: "center",
+                    fontSize: "11px",
+                    color: "#666",
+                  }}
+                >
+                  {t("pdf_generated_at")} {pdfDate} {t("pdf_generated_end")}
                 </div>
               </div>
-            );
-          })
-        )}
-      </div>
-      {isRejected && (
-        <div
-          style={{
-            border: "2px solid",
-            padding: "15px",
-            marginBottom: "20px",
-            fontSize: "14px",
-            fontWeight: "bold",
-            textTransform: "uppercase",
-          }}
-        >
-          {t("reason_rejected")}
-          <br />
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: "normal",
-              textTransform: "none",
-            }}
-          >
-            {rejectionReason}
-          </span>
-        </div>
-      )}
-
-      {/* Footer */}
-      <div
-        style={{
-          marginTop: "30px",
-          paddingTop: "20px",
-          borderTop: "1px solid #ccc",
-          textAlign: "center",
-          fontSize: "11px",
-          color: "#666",
-        }}
-      >
-        {t("pdf_generated_at")} {pdfDate} {t("pdf_generated_end")}
-      </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

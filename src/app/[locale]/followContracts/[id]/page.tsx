@@ -101,10 +101,7 @@ export default async function Page({ params, searchParams }: any) {
   const sp = await searchParams;
   const p = await params;
 
-  const rejectStatus = Number(sp.rejectStatus);
   const signatureStatus = Number(sp.signatureStatus);
-
-  const isRejected = rejectStatus === 0;
 
   const id = p.id;
 
@@ -250,11 +247,18 @@ export default async function Page({ params, searchParams }: any) {
             const phone =
               s?.phoneNumber && s.phoneNumber !== "-" ? s.phoneNumber : "—";
 
-            const isDone = !!s?.isSigned;
+            const isSigned = s?.isSigned === true;
+            const isRejectedSigner = s?.isRejector === true;
+
+            const status: "pending" | "signed" | "rejected" = isRejectedSigner
+              ? "rejected"
+              : isSigned
+              ? "signed"
+              : "pending";
 
             let statusChip;
 
-            if (isRejected) {
+            if (status === "rejected") {
               statusChip = (
                 <Chip
                   size="small"
@@ -289,7 +293,7 @@ export default async function Page({ params, searchParams }: any) {
                   }}
                 />
               );
-            } else if (isDone) {
+            } else if (status === "signed") {
               statusChip = (
                 <Chip
                   size="small"
@@ -359,17 +363,19 @@ export default async function Page({ params, searchParams }: any) {
               );
             }
             // --- CARD BACKGROUND / BORDER ---
-            const bgColor = isRejected
-              ? "#fee2e2"
-              : isDone
-              ? UI.successBg
-              : UI.warningBg;
+            const bgColor =
+              status === "rejected"
+                ? "#fee2e2"
+                : status === "signed"
+                ? UI.successBg
+                : UI.warningBg;
 
-            const borderColor = isRejected
-              ? "#dc2626"
-              : isDone
-              ? UI.successBorder
-              : UI.warningBorder;
+            const borderColor =
+              status === "rejected"
+                ? "#dc2626"
+                : status === "signed"
+                ? UI.successBorder
+                : UI.warningBorder;
 
             return (
               <Paper
@@ -493,7 +499,7 @@ export default async function Page({ params, searchParams }: any) {
           })}
         </Stack>
         {/* Reddedilme Nedeni */}
-        {isRejected && data.rejectionReason && (
+        {data.isRejected == true && (
           <Box sx={{ mb: 3, mt: 2 }}>
             <Paper
               elevation={1}
@@ -559,7 +565,6 @@ export default async function Page({ params, searchParams }: any) {
         contractNo={contractNo}
         docMeta={docMeta}
         onlySigners={onlySigners}
-        isRejected={isRejected}
         rejectionReason={data.rejectionReason}
         pdfDate={pdfDate}
       />
