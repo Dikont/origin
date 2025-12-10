@@ -119,6 +119,8 @@ export default async function Page({ params, searchParams }: any) {
 
   const data = await getDetailData.json();
 
+  console.log(data);
+
   const signers: Array<any> = Array.isArray(data?.documentSigners)
     ? data.documentSigners
     : [];
@@ -145,6 +147,14 @@ export default async function Page({ params, searchParams }: any) {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  // --- REJECTED SIGNER ---
+  const rejectedSigner = onlySigners.find(
+    (s) => s.isRejector === true && s.isSigned === false
+  );
+
+  const rejectedBy =
+    rejectedSigner?.signerName || rejectedSigner?.signerMail || "—";
 
   return (
     <Box sx={{ p: { xs: 1.5, md: 3 } }}>
@@ -517,11 +527,15 @@ export default async function Page({ params, searchParams }: any) {
                 {t("reason_rejected")}
               </Typography>
 
+              <Typography variant="body2" sx={{ color: "#7f1d1d" }}>
+                <strong>{t("rejecting")}:</strong> {rejectedBy}
+              </Typography>
+
               <Typography
                 variant="body2"
-                sx={{ color: "#7f1d1d", whiteSpace: "pre-line" }}
+                sx={{ color: "#7f1d1d", whiteSpace: "pre-line", mt: 1 }}
               >
-                {data.rejectionReason}
+                <strong>{t("explanation")}:</strong> {data.rejectionReason}
               </Typography>
             </Paper>
           </Box>
@@ -566,6 +580,7 @@ export default async function Page({ params, searchParams }: any) {
         docMeta={docMeta}
         onlySigners={onlySigners}
         rejectionReason={data.rejectionReason}
+        rejectedSigner={rejectedSigner}
         pdfDate={pdfDate}
       />
     </Box>

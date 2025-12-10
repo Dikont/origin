@@ -6,6 +6,7 @@ export default function HiddenDiv({
   docMeta,
   onlySigners,
   rejectionReason,
+  rejectedSigner,
   pdfDate,
 }: {
   t: (k: string) => string;
@@ -13,6 +14,7 @@ export default function HiddenDiv({
   docMeta: any;
   onlySigners: any[];
   rejectionReason?: string;
+  rejectedSigner?: any;
   pdfDate: string;
 }) {
   // --- Yardımcı Fonksiyonlar (Aynı kaldı) ---
@@ -448,23 +450,27 @@ export default function HiddenDiv({
                       border: "2px solid",
                       padding: "15px",
                       marginBottom: "20px",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      textTransform: "uppercase",
-                      backgroundColor: "#fff", // Okunabilirlik için
+                      backgroundColor: "#fff",
                     }}
                   >
-                    {t("reason_rejected")}
-                    <br />
-                    <span
+                    <div
                       style={{
-                        fontSize: "12px",
-                        fontWeight: "normal",
-                        textTransform: "none",
+                        fontWeight: "bold",
+                        marginBottom: "10px",
+                        fontSize: "11px",
+                        textTransform: "uppercase",
                       }}
                     >
-                      {rejectionReason}
-                    </span>
+                      {t("reason_rejected")}
+                    </div>
+                    <div style={{ fontSize: "11px", marginBottom: "6px" }}>
+                      <strong>{t("rejecting")}:</strong>{" "}
+                      {rejectedSigner?.signerName ?? "—"}
+                    </div>
+
+                    <div style={{ fontSize: "11px", whiteSpace: "pre-line" }}>
+                      <strong>{t("explanation")}:</strong> {rejectionReason}
+                    </div>
                   </div>
                 )}
 
