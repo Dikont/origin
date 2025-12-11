@@ -90,8 +90,26 @@ export default function HiddenDiv({
   if (onlySigners.length === 0) {
     signerChunks.push([]); // Hiç imza yoksa boş bir sayfa oluştur
   } else {
+    // 1. Kullanıcıları böl
     for (let i = 0; i < onlySigners.length; i += CHUNK_SIZE) {
       signerChunks.push(onlySigners.slice(i, i + CHUNK_SIZE));
+    }
+
+    // 2. SON SAYFA KONTROLÜ
+    const lastChunk = signerChunks[signerChunks.length - 1];
+    const isLastPageFull = lastChunk && lastChunk.length === CHUNK_SIZE;
+
+    // Burası kritik nokta: Hangi sayfadayız?
+    // Eğer signerChunks.length 1 ise, demek ki sadece ilk sayfadayız.
+    const isFirstPage = signerChunks.length === 1;
+
+    // MANTIK:
+    // 1. Red nedeni var mı? (rejectionReason)
+    // 2. Son sayfa tam dolu mu? (isLastPageFull)
+    // 3. Ve bu sayfa İLK sayfa mı? (isFirstPage) -> Çünkü Header sadece orada yer kaplıyor.
+    // Şartlar sağlanıyorsa yeni boş sayfa aç, sağlanmıyorsa (yani 4, 6, 8. kullanıcıdaysak) açma.
+    if (rejectionReason && isLastPageFull && isFirstPage) {
+      signerChunks.push([]);
     }
   }
 
@@ -122,7 +140,6 @@ export default function HiddenDiv({
     color: "#000",
     fontSize: "14px",
     lineHeight: "1.4",
-    marginBottom: "20px", // html2canvas alırken karışmasın diye görsel boşluk
   };
 
   return (
