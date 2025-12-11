@@ -113,7 +113,7 @@ export default function RecipientForm({
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       {fields.map((id, key) => (
-        <Box padding="30px" border={"1px solid #ddd"} mb={"20px"} key={id}>
+        <Box padding="30px" border={"1px solid #bdbcbcff"} mb={"20px"} key={id}>
           <Box textAlign={"right"}>
             <IconButton
               onClick={() => handleRemove(id)}
