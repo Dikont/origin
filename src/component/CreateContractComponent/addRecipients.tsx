@@ -11,7 +11,7 @@ import { useSnackbar } from "@/component/SnackbarProvider";
 import { useTranslations } from "next-intl";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-
+// ! Burada düzenleme yapılacak
 type Recipient = {
   label: string;
   name: string;
