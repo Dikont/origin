@@ -71,7 +71,7 @@ export default function Index() {
         );
 
         const data = await res.json();
-        setRejectedBy(data.creatorName);
+        setRejectedBy(data.rejectedByName);
         setDocumentName(data.documentGroupName);
         setContractStatus(data.status);
       } catch (error) {
