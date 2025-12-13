@@ -36,6 +36,7 @@ export type Recipient = {
   Signer: string; // e-posta veya benzersiz anahtar
   SignerName: string;
   phoneNumber?: string;
+  Language?: string;
 };
 
 export type PlacedItem = {
@@ -63,6 +64,7 @@ export type PlacedItem = {
   phoneNumber?: string;
   checked?: string;
   date?: string;
+  Language?: string;
 };
 
 export type DocNameDesc = {
@@ -204,6 +206,7 @@ export function mapSavedToPlaced(
     Signer: userMail,
     SignerName: s.signerName,
     phoneNumber: rec?.phoneNumber || s.phoneNumber,
+    Language: rec?.Language ?? "tr",
   };
 }
 
@@ -360,47 +363,60 @@ export function buildPayload(params: {
 
   const toSignItems = (items: PlacedItem[]) =>
     items.map((item) => {
+      const base = {
+        ...item,
+        Language: item.Language ?? "tr",
+      };
+
       if (item.tab_type === "text") {
-        if (true) {
-          return {
-            ...item,
-            content: "-",
-            content_type: "text",
-          };
-        }
-        return item;
+        return {
+          ...base,
+          content: "-",
+          content_type: "text",
+        };
       }
+
       if (item.tab_type === "date") {
-        if (true)
-          return {
-            ...item,
-            content: "-",
-            content_type: "date",
-          };
-        return item;
+        return {
+          ...base,
+          content: "-",
+          content_type: "date",
+        };
       }
+
       if (item.tab_type === "checkbox") {
-        return { ...item, content: "false", content_type: "checkbox" };
+        return {
+          ...base,
+          content: "false",
+          content_type: "checkbox",
+        };
       }
+
       if (item.tab_type === "phone") {
         return {
-          ...item,
+          ...base,
           content: item.phoneNumber ?? "",
           content_type: "phoneNumber",
         };
       }
+
       if (item.tab_type === "email") {
-        return { ...item, content: item.Signer ?? "", content_type: "email" };
+        return {
+          ...base,
+          content: item.Signer ?? "",
+          content_type: "email",
+        };
       }
+
       if (item.tab_type === "name") {
         return {
-          ...item,
+          ...base,
           content: item.SignerName ?? "",
           content_type: "name",
         };
       }
 
-      return item;
+      return base;
     });
 
   return (async () => {

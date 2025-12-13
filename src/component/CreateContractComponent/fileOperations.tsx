@@ -308,6 +308,7 @@ export default function Index({
       Signer: selectedRecipient.Signer,
       SignerName: selectedRecipient.SignerName,
       phoneNumber: selectedRecipient.phoneNumber,
+      Language: selectedRecipient.Language,
       date: dragged.fieldType === "date" ? getTodayDate() : undefined,
     };
 

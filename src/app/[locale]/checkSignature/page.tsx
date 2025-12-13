@@ -163,8 +163,8 @@ export default function Index() {
 
   if (contractStatus === null) {
     return (
-      <Backdrop open>
-        <CircularProgress />
+      <Backdrop sx={{ color: "#fff", zIndex: 99999 }} open>
+        <CircularProgress sx={{ color: "#2e7d32" }} size={100} />
       </Backdrop>
     );
   }

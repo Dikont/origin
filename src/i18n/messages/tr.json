@@ -19,7 +19,7 @@
     "about": "Hakkımızda",
     "download": "PDF Indir",
     "downloadFollowing": "Sözleşme Takip Belgesi",
-    "changePassword": "Sifre Degistir"
+    "changePassword": "Sifre Değiştir"
   },
   "companyProfile": {
     "errorLoadFailed": "Şirket bilgileri yüklenemedi.",
@@ -288,7 +288,7 @@
     "newPas": "Yeni Şifre",
     "newPasAgain": "Yeni Şifreyi Tekrar Girin",
     "send": "Gönder",
-    "changePassword": "Sifre Degistir",
+    "changePassword": "Sifre Değiştir",
     "name": "Adınız",
     "phoneNumber": "Telefon Numaranız"
   },
@@ -321,9 +321,10 @@
     "title": "Hoş Geldiniz",
     "subtitle": "{firstName} {lastName}",
     "text": "Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
-    "totalContracts": "Toplam Sözleşme Sayfası",
+    "totalContracts": "Toplam Sözleşme",
     "totalSigned": "Toplam İmza",
     "pendingSignatures": "Bekleyen İmza",
+    "rejectedContracts": "Reddedilen Sözleşme",
     "quickAccessTitle": "Hızlı Erişim",
     "contractsTitle": "Sözleşmeler",
     "contractsDesc": " Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
@@ -444,6 +445,12 @@
     "pageCounter": "Sayfa {page} / {total}",
     "continue": "İleri",
     "addRecipientsTitle": "Kullanıcı Ekle",
+    "emailLanguageTitle": "Mail Gönderim Dili",
+    "selectLanguage": "Dil Seçin",
+    "trLanguage": "Türkçe",
+    "enLanguage": "İngilizce",
+    "nlLanguage": "Felemenkçe",
+    "languageError": "Mail dili zorunludur",
     "addDescriptionTitle": "Açıklama Ekle",
     "addSignatureTitle": "İmza Alanı Ekle",
     "convertingToPdf": "PDF formatına dönüştürülüyor...",

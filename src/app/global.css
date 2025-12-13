@@ -1,3 +1,7 @@
+body {
+  margin: 0;
+}
+
 /* Dropdown düzgün açılsın */
 .react-tel-input .country-list {
   top: 58px !important;

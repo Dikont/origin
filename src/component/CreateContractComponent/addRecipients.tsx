@@ -1,6 +1,15 @@
 "use client";
 
-import { Box, Button, Grid, IconButton, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -11,12 +20,19 @@ import { useSnackbar } from "@/component/SnackbarProvider";
 import { useTranslations } from "next-intl";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-// ! Burada düzenleme yapılacak
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["500"],
+});
+
 type Recipient = {
   label: string;
   name: string;
   email: string;
   phone: string;
+  language: string;
 };
 
 export default function RecipientForm({
@@ -46,7 +62,7 @@ export default function RecipientForm({
       /\s+/g,
       ""
     );
-
+    const language = data.get(`language-${id}`)?.toString();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{7,14}$/;
 
@@ -58,6 +74,11 @@ export default function RecipientForm({
 
     if (!phone) err.phone = t("phoneRequired") as any;
     else if (!phoneRegex.test(phone)) err.phone = t("phoneInvalidTR") as any;
+
+    if (!language || language === "") {
+      // Recipient tipinde 'language' yoksa any ile geçebilirsin veya tipi güncelleyebilirsin
+      (err as any).language = t("languageError") as any;
+    }
 
     return err;
   };
@@ -81,6 +102,7 @@ export default function RecipientForm({
           SignerName: data.get(`name-${id}`)?.toString().trim(),
           Signer: data.get(`email-${id}`)?.toString().trim(),
           phoneNumber: `+${data.get(`phone-${id}`)?.toString().trim()}`,
+          Language: data.get(`language-${id}`)?.toString() || "tr",
           color: colorList[recipients.length % colorList.length],
         });
       }
@@ -114,7 +136,58 @@ export default function RecipientForm({
     <form ref={formRef} onSubmit={handleSubmit}>
       {fields.map((id, key) => (
         <Box padding="30px" border={"1px solid #bdbcbcff"} mb={"20px"} key={id}>
-          <Box textAlign={"right"}>
+          <Box
+            mb={1}
+            display="flex"
+            alignItems="start"
+            justifyContent="space-between"
+          >
+            {/* ... Box içi kodları ... */}
+            <Box display="flex-row" alignItems="start">
+              <Typography
+                className={poppins.className}
+                sx={{
+                  fontSize: 12,
+                }}
+              >
+                {t("emailLanguageTitle")}
+              </Typography>
+
+              <Select
+                name={`language-${id}`}
+                defaultValue="" // 1. Başlangıçta boş olsun
+                displayEmpty // 2. Boşken placeholder görünsün
+                size="small"
+                error={!!(errors as any)[id]?.language} // 3. Seçilmezse kırmızı yansın
+                sx={{
+                  minWidth: 130,
+                  color: (fields) => {
+                    return "inherit";
+                  },
+                }}
+              >
+                {/* PLACEHOLDER ITEM */}
+                <MenuItem
+                  value=""
+                  disabled
+                  sx={{ color: "#aaa", fontStyle: "italic" }}
+                >
+                  {t("selectLanguage")}
+                </MenuItem>
+
+                <MenuItem value="tr">{t("trLanguage")}</MenuItem>
+                <MenuItem value="en">{t("enLanguage")}</MenuItem>
+                <MenuItem value="nl">{t("nlLanguage")}</MenuItem>
+              </Select>
+
+              {/* Hata Mesajını göstermek istersen altına ekleyebilirsin */}
+              {(errors as any)[id]?.language && (
+                <Typography color="error" variant="caption" display="block">
+                  {t("languageError")}
+                </Typography>
+              )}
+            </Box>
+
             <IconButton
               onClick={() => handleRemove(id)}
               disabled={fields.length === 1}

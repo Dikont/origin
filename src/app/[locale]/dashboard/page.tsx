@@ -126,22 +126,62 @@ function csvToRows(csv: string) {
 }
 
 function rowsToStats(rows: any[]) {
-  let total = 0,
-    signed = 0,
-    pending = 0;
+  // Her bir grup ID'si için tek bir obje oluşturuyoruz.
+  const groups: Record<string, { status: any; allSigned: boolean }> = {};
 
   for (const r of rows) {
-    const isSigned =
+    const gId = r.DocumentGroupId || r.documentGroupId; // Grup ID'sini al
+    if (!gId) continue; // ID yoksa (hatalı satırsa) atla
+
+    // Bu satırdaki kişinin imza durumu
+    const isSignerSigned =
       normBool(r.IsSigned) ??
       normBool(r.Signed) ??
       normBool(r["is_signed"]) ??
       false;
 
-    total++;
-    if (isSigned) signed++;
-    else pending++;
+    // Bu satırdaki statü (Backend'den gelen 0 veya 1)
+    const status = r.Status ?? r.status ?? r.STATUS;
+
+    if (!groups[gId]) {
+      // Eğer bu grubu ilk kez görüyorsak kaydını aç
+      groups[gId] = {
+        status: status,
+        allSigned: true, // Varsayılan olarak "bitti" kabul edelim, aşağıda kontrol edeceğiz
+      };
+    }
+
+    // Mantık: Gruptaki herhangi bir kişi bile imzalamadıysa (isSignerSigned = false),
+    // o grubun tamamlanma durumu (allSigned) false olur.
+    if (!isSignerSigned) {
+      groups[gId].allSigned = false;
+    }
   }
-  return { total, signed, pending };
+
+  // 2. ADIM: Gruplanmış verileri say (Artık satır değil, belge sayıyoruz)
+  let total = 0,
+    signed = 0,
+    pending = 0,
+    rejected = 0;
+
+  // Oluşturduğumuz groups objesindeki her bir benzersiz grup için dönüyoruz
+  Object.values(groups).forEach((group) => {
+    total++; // Her benzersiz grup ID'si 1 adet "Toplam Belge" demektir.
+
+    // Reddedilme Kontrolü
+    const rawStatus = group.status;
+    const isRejected = rawStatus == 0 || rawStatus === "0";
+
+    if (isRejected) {
+      rejected++; // Öncelik her zaman reddedilenindir.
+    } else if (group.allSigned) {
+      signed++; // Reddedilmemiş VE gruptaki herkes imzalamış -> Tamamlandı
+    } else {
+      pending++; // Reddedilmemiş AMA en az bir kişi imzalamamış -> Bekliyor
+    }
+  });
+
+  return { total, signed, pending, rejected };
 }
 
 function rowsToDetailedReport(rows: any[]) {

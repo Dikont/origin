@@ -37,6 +37,7 @@ export default function DataGridComp({ user, userRole }: any) {
   const { showSnackbar } = useSnackbar();
   const [data, setData] = useState(null) as any;
   const [loading, setLoading] = useState(true);
+  const [routing, setRouting] = useState(false);
   const router = useRouter();
 
   // delete modal
@@ -443,6 +444,8 @@ export default function DataGridComp({ user, userRole }: any) {
   }
 
   const goDetail = (params: any) => {
+    setRouting(true);
+
     const status = params.row.signatureStatus;
     const rejectStatus = params.row.status;
     router.push({
@@ -457,6 +460,11 @@ export default function DataGridComp({ user, userRole }: any) {
   return (
     <Box sx={{ width: "100%" }}>
       {loading && (
+        <Backdrop sx={{ color: "#fff", zIndex: 99999 }} open>
+          <CircularProgress sx={{ color: "#2e7d32" }} size={100} />
+        </Backdrop>
+      )}
+      {routing && (
         <Backdrop sx={{ color: "#fff", zIndex: 99999 }} open>
           <CircularProgress sx={{ color: "#2e7d32" }} size={100} />
         </Backdrop>
