@@ -130,16 +130,16 @@ export default function RootLayout({
   children,
   token,
   user,
-  userRole,
+  userRoles,
 }: {
   children: ReactNode;
   token?: string;
-  userRole?: string;
+  userRoles?: string[];
   user?: any;
 }) {
   const t = useTranslations("menu");
   const locale = useLocale();
-  const menuItems = getMenuItems(t, userRole, locale);
+  const menuItems = getMenuItems(t, userRoles, locale);
   const theme = useTheme();
   const [open, setOpen] = useState<boolean>(true);
 

@@ -20,7 +20,7 @@ export type MenuItem = {
 
 export function getMenuItems(
   t: (k: string) => string,
-  userRole: string | any,
+  userRoles: string[] | undefined,
   locale: string
 ): MenuItem[] {
   const L = (url: string) => `/${locale}${url}`;
@@ -64,12 +64,7 @@ export function getMenuItems(
       type: "item",
     },
     { type: "subheader", text: t("management") },
-    {
-      icon: <ApartmentIcon />,
-      text: t("companyProfile"),
-      url: L("/companyProfile"),
-      type: "item",
-    },
+
     {
       icon: <QuizIcon />,
       text: t("faq"),
@@ -95,8 +90,32 @@ export function getMenuItems(
       type: "item",
     },
   ];
+  // 2. Company Profile Ekleme Mantığı (ARAYA EKLEME)
+  // includes kullanarak kontrolü sağlama alıyoruz
+  if (userRoles?.includes("Admin") || userRoles?.includes("CompanySuperUser")) {
+    // "Create Contract" elemanının listedeki sırasını buluyoruz
+    const targetIndex = items.findIndex((item) => item.url === L("/faq"));
 
-  if (userRole === "Admin") {
+    // Eğer bulursak, tam o sıraya splice ile ekleme yapıyoruz
+    if (targetIndex !== -1) {
+      items.splice(targetIndex, 0, {
+        icon: <ApartmentIcon />,
+        text: t("companyProfile"),
+        url: L("/companyProfile"),
+        type: "item",
+      });
+    } else {
+      // Eğer Create Contract bulunamazsa (kod değişirse) en sona ekle
+      items.push({
+        icon: <ApartmentIcon />,
+        text: t("companyProfile"),
+        url: L("/companyProfile"),
+        type: "item",
+      });
+    }
+  }
+
+  if (userRoles?.includes("Admin")) {
     items.unshift({
       icon: <AdminPanelSettingsIcon />,
       text: "Admin Panel",

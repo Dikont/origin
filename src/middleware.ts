@@ -23,7 +23,7 @@ function splitPath(pathname: string) {
   return { locale, pathWithoutLocale };
 }
 
-// Güvenli cookie parse (URL-encoded olabilir)
+// Güvenli cookie parse
 function safeParseCookie(value?: string) {
   if (!value) return null;
   try {
@@ -31,7 +31,6 @@ function safeParseCookie(value?: string) {
     return JSON.parse(decoded);
   } catch {
     try {
-      // Bazı durumlarda zaten plain JSON olabilir
       return JSON.parse(value);
     } catch {
       return null;
@@ -39,11 +38,10 @@ function safeParseCookie(value?: string) {
   }
 }
 
-// Admin rol kontrolü (sadece 'Admin' aranıyor)
-function hasAdminRole(parsedUser: any) {
-  const roles: string[] =
-    parsedUser?.userRoles ?? parsedUser?.user?.roles ?? [];
-  return Array.isArray(roles) && roles.includes("Admin");
+// YENİ: Rolleri dizi olarak döndüren yardımcı fonksiyon
+function getUserRoles(parsedUser: any): string[] {
+  const roles = parsedUser?.userRoles ?? parsedUser?.user?.roles ?? [];
+  return Array.isArray(roles) ? roles : [];
 }
 
 export function middleware(req: NextRequest) {
@@ -53,16 +51,21 @@ export function middleware(req: NextRequest) {
   const isStatic =
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
-    /\.\w+$/.test(pathname); // dosya uzantılı istekler
+    /\.\w+$/.test(pathname);
 
   const isAuthPage = pathWithoutLocale === "login";
   const isPublicPage = PUBLIC_ROUTES.some((r) =>
     pathWithoutLocale.startsWith(r)
   );
 
-  // ✅ Admin path tespiti (örn. /tr/admin, /en/admin/users vb.)
+  // Path tanımları
   const isAdminPath =
     pathWithoutLocale === "admin" || pathWithoutLocale.startsWith("admin/");
+
+  //  YENİ: Company Profile path tespiti
+  const isCompanyProfilePath =
+    pathWithoutLocale === "companyProfile" ||
+    pathWithoutLocale.startsWith("companyProfile/");
 
   // 1) Statik ve public sayfaları doğrudan geçir
   if (isStatic || isPublicPage) {
@@ -73,7 +76,7 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const userRaw = req.cookies.get("user")?.value;
 
-  // 3) Auth yoksa ve şu an login sayfasında DEĞİLSE → login'e yönlendir + cookie temizle
+  // 3) Auth yoksa -> Login'e
   if (!token || !userRaw) {
     if (!isAuthPage) {
       const res = NextResponse.redirect(new URL(`/${locale}/login`, req.url));
@@ -81,25 +84,39 @@ export function middleware(req: NextRequest) {
       res.cookies.set("user", "", { path: "/", expires: new Date(0) });
       return res;
     }
-    // login sayfasındaysa içeri girsin
     return intlMiddleware(req);
   }
 
-  // 4) Auth VAR ve login sayfasına gelmişse → dashboard'a gönder
+  // 4) Auth VAR ve login sayfasına gelmişse -> Dashboard'a
   if (isAuthPage) {
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
   }
 
-  // 5) ADMIN KORUMASI: Sadece Admin rolü olanlar /admin altını görebilsin
+  // Kullanıcı verisini parse et (Aşağıdaki kontroller için gerekli)
+  const parsedUser = safeParseCookie(userRaw);
+  const roles = getUserRoles(parsedUser);
+
+  // 5) ADMIN KORUMASI: Sadece 'Admin' rolü olanlar
   if (isAdminPath) {
-    const parsedUser = safeParseCookie(userRaw);
-    if (!hasAdminRole(parsedUser)) {
-      // Yetkisiz ise dashboard'a gönder (403 yerine UX açısından daha yumuşak)
+    if (!roles.includes("Admin")) {
+      // Yetkisiz ise dashboard'a gönder
       return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
     }
   }
 
-  // 6) Normal akış
+  // 6) ✅ YENİ: COMPANY PROFILE KORUMASI
+  // Sadece 'Admin' VEYA 'CompanySuperUser' rolü olanlar görebilsin
+  if (isCompanyProfilePath) {
+    const hasAccess =
+      roles.includes("Admin") || roles.includes("CompanySuperUser");
+
+    if (!hasAccess) {
+      // Yetkisi yoksa LOGIN yerine DASHBOARD'a yönlendir
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
+    }
+  }
+
+  // 7) Normal akış
   return intlMiddleware(req);
 }
 

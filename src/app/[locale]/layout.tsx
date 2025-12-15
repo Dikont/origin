@@ -3,14 +3,15 @@ import MainLayout from "@/component/mainLayout";
 import ThemeRegistry from "@/component/ThemeRegistry";
 import { Providers } from "@/store/provider";
 import { cookies } from "next/headers";
-import { ReactNode, Suspense } from "react";
+import { ReactNode } from "react";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import ReactQueryClientProvider from "@/component/ReactQueryClientProvider";
 import { SnackbarProvider } from "@/component/SnackbarProvider";
 import NextTopLoader from "nextjs-toploader";
 import { getMessages } from "next-intl/server";
+
 export const metadata = {
   icons: {
     icon: "/favicon.ico",
@@ -29,12 +30,28 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const userCookie = cookieStore.get("user");
-  const user = userCookie
-    ? JSON.parse(decodeURIComponent(userCookie.value)).user
-    : null;
-  const userRole = userCookie
-    ? JSON.parse(userCookie.value).userRoles[1]
-    : null;
+
+  // --- DEĞİŞİKLİK BAŞLANGICI ---
+  let user = null;
+  let userRoles: string[] = []; // Başlangıçta boş bir dizi tanımlıyoruz
+
+  if (userCookie) {
+    try {
+      // Cookie değerini önce decode ediyoruz (özel karakterler için) sonra parse ediyoruz
+      const parsedData = JSON.parse(decodeURIComponent(userCookie.value));
+
+      // User objesini alıyoruz
+      user = parsedData.user;
+
+      // Rolleri dizi olarak alıyoruz. Eğer yoksa boş dizi atıyoruz.
+      // Örn: ["User"] veya ["User", "Admin"] gibi gelecek.
+      userRoles = parsedData.userRoles || [];
+    } catch (error) {
+      console.error("Cookie parse edilemedi:", error);
+    }
+  }
+  // --- DEĞİŞİKLİK BİTİŞİ ---
+
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
     notFound();
@@ -56,7 +73,10 @@ export default async function RootLayout({
         />
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <MainLayout token={token} user={user} userRole={userRole}>
+            {/* DİKKAT: Buraya artık 'userRole' (tekil string) değil, 
+                'userRoles' (çoğul dizi) gönderiyoruz. 
+            */}
+            <MainLayout token={token} user={user} userRoles={userRoles}>
               <ReactQueryClientProvider>
                 <SnackbarProvider>{children}</SnackbarProvider>
               </ReactQueryClientProvider>
