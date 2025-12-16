@@ -155,10 +155,20 @@ export default function RecipientForm({
 
               <Select
                 name={`language-${id}`}
-                defaultValue="" // 1. Başlangıçta boş olsun
-                displayEmpty // 2. Boşken placeholder görünsün
+                defaultValue=""
+                displayEmpty
                 size="small"
-                error={!!(errors as any)[id]?.language} // 3. Seçilmezse kırmızı yansın
+                error={!!(errors as any)[id]?.language}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      // Disabled olan (yani 'Dil Seçin') elemanını listeden gizle
+                      "& .Mui-disabled": {
+                        display: "none",
+                      },
+                    },
+                  },
+                }}
                 sx={{
                   minWidth: 130,
                   color: (fields) => {
@@ -166,7 +176,6 @@ export default function RecipientForm({
                   },
                 }}
               >
-                {/* PLACEHOLDER ITEM */}
                 <MenuItem
                   value=""
                   disabled
