@@ -445,7 +445,7 @@
     "pageCounter": "Sayfa {page} / {total}",
     "continue": "İleri",
     "addRecipientsTitle": "Kullanıcı Ekle",
-    "emailLanguageTitle": "Mail Gönderim Dili",
+    "emailLanguageTitle": "Mail/Sms Gönderim Dili",
     "selectLanguage": "Dil Seçin",
     "trLanguage": "Türkçe",
     "enLanguage": "İngilizce",

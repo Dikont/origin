@@ -449,7 +449,7 @@
     "pageCounter": "Page {page} / {total}",
     "continue": "Next",
     "addRecipientsTitle": "Add Recipient",
-    "emailLanguageTitle": "Email Sending Language",
+    "emailLanguageTitle": "Email/SMS Sending Language",
     "selectLanguage": "Select Language",
     "trLanguage": "Turkish",
     "enLanguage": "English",

@@ -449,7 +449,7 @@
     "pageCounter": "Pagina {page} / {total}",
     "continue": "Volgende",
     "addRecipientsTitle": "Ontvanger toevoegen",
-    "emailLanguageTitle": "Taal voor het verzenden van e-mail",
+    "emailLanguageTitle": "Verzendtaal voor e-mail/sms",
     "selectLanguage": "Selecteer taal",
     "trLanguage": "Turks",
     "enLanguage": "Engels",
