@@ -67,12 +67,18 @@ export default function Index() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(
-          `${API}/DocumentService/Document/GetDocumentGroupStatus?docGroupId=${docGroupId}`
+          `/api/public/getDocumentGroupStatus?docGroupId=${docGroupId}`
         );
 
+        if (!res.ok) {
+          console.error("Status API error:", res.status);
+          return;
+        }
+
         const data = await res.json();
-        setRejectedBy(data.rejectedByName);
-        setDocumentName(data.documentGroupName);
+
+        setRejectedBy(data.rejectedByName ?? null);
+        setDocumentName(data.documentGroupName ?? null);
         setContractStatus(data.status);
       } catch (error) {
         console.error("fetchStatus:", error);

@@ -10,6 +10,7 @@
     "createContract": "Create Contract",
     "followContracts": "Contract Tracking",
     "drafts": "Drafts",
+    "documentVerification": "Document Verification",
     "aiSupport": "AI Support",
     "reports": "Analytics & Reporting",
     "management": "Management",
@@ -313,7 +314,9 @@
     "snackCheckFailed": "Document verification failed.",
     "snackValidated": "Document verified.",
     "snackInvalid": "The document appears to be invalid.",
-    "snackOperationError": "An error occurred during the operation."
+    "snackOperationError": "An error occurred during the operation.",
+    "validNotChanged": "The timestamp is valid; the file has not changed.",
+    "notFoundOrInvalid": "No match was found or the timestamp is invalid."
   },
   "dashboard": {
     "status": {
@@ -454,7 +457,7 @@
     "trLanguage": "Turkish",
     "enLanguage": "English",
     "nlLanguage": "Dutch",
-    "languageError": "Email language is required",
+    "languageError": "Email/SMS language is mandatory.",
     "addDescriptionTitle": "Add Description",
     "addSignatureTitle": "Add Signature Field",
     "convertingToPdf": "Converting to PDF...",

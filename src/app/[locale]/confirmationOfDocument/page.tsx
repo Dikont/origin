@@ -9,15 +9,21 @@ import {
   Paper,
   Stack,
   Typography,
+  // Yeni eklenen importlar (Header için)
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+// Yeni eklenen navigasyon hookları
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 const fileToPdfBase64 = (file: File) =>
   new Promise<string>((resolve, reject) => {
     const fr = new FileReader();
     fr.onload = () => {
-      const dataUrl = fr.result as string; // "data:application/pdf;base64,...."
+      const dataUrl = fr.result as string;
       resolve(dataUrl.replace(/^data:application\/pdf;base64,/, ""));
     };
     fr.onerror = reject;
@@ -27,6 +33,15 @@ const fileToPdfBase64 = (file: File) =>
 export default function ConfirmationOfDocumentPage() {
   const t = useTranslations("confirmationOfDocument");
   const { showSnackbar } = useSnackbar();
+
+  // --- HEADER VE DİL İÇİN GEREKLİ HOOKLAR ---
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
+    null
+  );
+
   const [isUploaded, setIsUploaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -44,6 +59,19 @@ export default function ConfirmationOfDocumentPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | any>(null);
   const modalCanvasRef = useRef<HTMLCanvasElement | any>(null);
+
+  // --- DİL DEĞİŞTİRME FONKSİYONU ---
+  const changeLanguage = (lng: string) => {
+    // Mevcut path'i parçala: /tr/confirm... -> ["", "tr", "confirm..."]
+    const segments = pathname.split("/");
+    segments[1] = lng; // "tr" yi "en" yap
+
+    const newPath = segments.join("/");
+    // Dil değişirken varsa ?documentId=... gibi parametreleri koru
+    router.push(`${newPath}?${searchParams.toString()}`);
+
+    setLanguageAnchor(null);
+  };
 
   // pdfjs worker yükle
   useEffect(() => {
@@ -184,6 +212,55 @@ export default function ConfirmationOfDocumentPage() {
 
   return (
     <Box style={{ width: "100%", height: "100vh" }}>
+      {/* ---- FIXED HEADER BAŞLANGIÇ (Index.js'den alındı) ---- */}
+      <Box
+        position="fixed"
+        top={0}
+        left={0}
+        width="100%"
+        height="64px"
+        bgcolor="#fff"
+        zIndex={20}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        sx={{ boxShadow: 1 }} // Hafif bir gölge ekledim ki arka plandan ayrılsın
+      >
+        <Box
+          width="100%"
+          maxWidth="1400px"
+          px="32px"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {/* Logo */}
+          <img
+            src="/Dikont-Logo.svg"
+            alt="Logo"
+            style={{ width: "120px", height: "auto" }}
+          />
+
+          {/* Dil */}
+          <IconButton onClick={(e) => setLanguageAnchor(e.currentTarget)}>
+            <Typography>{pathname.split("/")[1].toUpperCase()}</Typography>
+          </IconButton>
+
+          <Menu
+            anchorEl={languageAnchor}
+            open={Boolean(languageAnchor)}
+            onClose={() => setLanguageAnchor(null)}
+          >
+            {["tr", "en", "nl"].map((lng) => (
+              <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
+                {lng.toUpperCase()}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      </Box>
+      {/* ---- FIXED HEADER BİTİŞ ---- */}
+
       <Box
         width={"100%"}
         height={"100%"}
@@ -192,6 +269,7 @@ export default function ConfirmationOfDocumentPage() {
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backdropFilter: "blur(5px)",
+          pt: "64px", // Header yüksekliği kadar padding bıraktım ki içerik altında kalmasın
         }}
         position={"relative"}
       >
@@ -218,6 +296,8 @@ export default function ConfirmationOfDocumentPage() {
               width: "100%",
               maxWidth: "600px",
               background: "white",
+              maxHeight: "calc(100vh - 100px)", // Ekran taşarsa scroll olsun diye
+              overflowY: "auto",
             }}
           >
             <Typography variant="h4" sx={{ mb: 3 }} textAlign={"center"}>

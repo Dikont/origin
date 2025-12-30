@@ -10,6 +10,7 @@
     "createContract": "Contract aanmaken",
     "followContracts": "Contractopvolging",
     "drafts": "Concepten",
+    "documentVerification": "Documentverificatie",
     "aiSupport": "AI-ondersteuning",
     "reports": "Analyse & Rapportage",
     "management": "Beheer",
@@ -313,7 +314,9 @@
     "snackCheckFailed": "Documentcontrole mislukt.",
     "snackValidated": "Document gevalideerd.",
     "snackInvalid": "Het document lijkt ongeldig te zijn.",
-    "snackOperationError": "Er is een fout opgetreden tijdens de bewerking."
+    "snackOperationError": "Er is een fout opgetreden tijdens de bewerking.",
+    "validNotChanged": "The timestamp is valid; the file has not changed.",
+    "notFoundOrInvalid": "No match was found or the timestamp is invalid."
   },
   "dashboard": {
     "status": {
@@ -454,7 +457,7 @@
     "trLanguage": "Turks",
     "enLanguage": "Engels",
     "nlLanguage": "Nederlands",
-    "languageError": "E-mailtaal is vereist",
+    "languageError": "De taal van e-mail/sms-berichten is verplicht.",
     "addDescriptionTitle": "Beschrijving toevoegen",
     "addSignatureTitle": "Handtekeningveld toevoegen",
     "convertingToPdf": "Converteren naar PDF...",

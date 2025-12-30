@@ -1,8 +1,11 @@
+import { useTranslations } from "next-intl";
 import { NextResponse } from "next/server";
 
 const API = process.env.API_BASE_URL!;
 
 export async function POST(req: Request) {
+  const t = useTranslations("confirmationOfDocument");
+
   try {
     const body = await req.json().catch(() => null);
     if (!body) {
@@ -38,9 +41,9 @@ export async function POST(req: Request) {
         .reverse()
         .find((l) => /\bINFO\b/i.test(l)) || "";
     const cleanMessage = isMatch
-      ? "Zaman damgası geçerli, dosya değişmemiş."
+      ? t("validNotChanged")
       : lastInfo.replace(/^\[[^\]]+\]\s*/g, "").trim() ||
-        "Eşleşme bulunamadı veya zaman damgası geçersiz.";
+        t("notFoundOrInvalid");
 
     return NextResponse.json(
       {

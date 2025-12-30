@@ -2,6 +2,7 @@
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ArticleIcon from "@mui/icons-material/Article";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import DomainVerificationIcon from "@mui/icons-material/DomainVerification";
 import SaveIcon from "@mui/icons-material/Save";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -11,6 +12,7 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import LockResetIcon from "@mui/icons-material/LockReset";
+
 export type MenuItem = {
   icon?: React.ReactNode;
   text: string;
@@ -57,12 +59,22 @@ export function getMenuItems(
       url: L("/aiSupport"),
       type: "item",
     },
+
+    // 👇 BURAYA EKLENDİ
+    {
+      icon: <DomainVerificationIcon sx={{ fontSize: 30 }} />,
+      text: t("documentVerification"),
+      url: `/${locale}/confirmationOfDocument`,
+      type: "item",
+    },
+
     {
       icon: <InsightsIcon />,
       text: t("reports"),
       url: L("/reports"),
       type: "item",
     },
+
     { type: "subheader", text: t("management") },
 
     {
@@ -90,13 +102,11 @@ export function getMenuItems(
       type: "item",
     },
   ];
-  // 2. Company Profile Ekleme Mantığı (ARAYA EKLEME)
-  // includes kullanarak kontrolü sağlama alıyoruz
+
+  // Company Profile (Admin / CompanySuperUser)
   if (userRoles?.includes("Admin") || userRoles?.includes("CompanySuperUser")) {
-    // "Create Contract" elemanının listedeki sırasını buluyoruz
     const targetIndex = items.findIndex((item) => item.url === L("/faq"));
 
-    // Eğer bulursak, tam o sıraya splice ile ekleme yapıyoruz
     if (targetIndex !== -1) {
       items.splice(targetIndex, 0, {
         icon: <ApartmentIcon />,
@@ -105,7 +115,6 @@ export function getMenuItems(
         type: "item",
       });
     } else {
-      // Eğer Create Contract bulunamazsa (kod değişirse) en sona ekle
       items.push({
         icon: <ApartmentIcon />,
         text: t("companyProfile"),
@@ -115,6 +124,7 @@ export function getMenuItems(
     }
   }
 
+  // Admin Panel
   if (userRoles?.includes("Admin")) {
     items.unshift({
       icon: <AdminPanelSettingsIcon />,

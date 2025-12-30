@@ -10,6 +10,7 @@
     "createContract": "Sözleşme Oluştur",
     "followContracts": "Sözleşme Takip",
     "drafts": "Taslaklar",
+    "documentVerification": "Belge Doğrulama",
     "aiSupport": "AI Destek",
     "reports": "Analiz ve Raporlama",
     "management": "Yönetim",
@@ -309,7 +310,9 @@
     "snackCheckFailed": "Belge doğrulama başarısız.",
     "snackValidated": "Belge doğrulandı.",
     "snackInvalid": "Belge geçersiz görünüyor.",
-    "snackOperationError": "İşlem sırasında hata oluştu."
+    "snackOperationError": "İşlem sırasında hata oluştu.",
+    "validNotChanged": "Zaman damgası geçerli, dosya değişmemiş.",
+    "notFoundOrInvalid": "Eşleşme bulunamadı veya zaman damgası geçersiz."
   },
   "dashboard": {
     "status": {
@@ -450,7 +453,7 @@
     "trLanguage": "Türkçe",
     "enLanguage": "İngilizce",
     "nlLanguage": "Felemenkçe",
-    "languageError": "Mail dili zorunludur",
+    "languageError": "Mail / Sms dili zorunludur",
     "addDescriptionTitle": "Açıklama Ekle",
     "addSignatureTitle": "İmza Alanı Ekle",
     "convertingToPdf": "PDF formatına dönüştürülüyor...",
