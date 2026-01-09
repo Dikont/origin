@@ -699,9 +699,13 @@ export default function RootLayout({
               <Image
                 src="/Dikont-Logo.svg"
                 alt="Login Image"
-                width={72}
+                width={120}
                 height={28}
-                style={{ objectFit: "cover" }}
+                style={{
+                  objectFit: "cover",
+                  width: "120px", // Buraya ekledik
+                  height: "auto", // Buraya ekledik
+                }}
               />
               <Box>
                 <IconButton onClick={openLanguageMenu}>
