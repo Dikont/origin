@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 314.58 302.08">
+  <!-- Generator: Adobe Illustrator 29.8.4, SVG Export Plug-In . SVG Version: 2.1.1 Build 6)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: url(#linear-gradient2);
+      }
+
+      .st1 {
+        fill: url(#linear-gradient1);
+      }
+
+      .st2 {
+        fill: url(#linear-gradient4);
+      }
+
+      .st3 {
+        fill: url(#linear-gradient3);
+      }
+
+      .st4 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="50.17" y1="188.85" x2="286.44" y2="188.85" gradientTransform="translate(0 306.83) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".24" stop-color="#fafbfc"/>
+      <stop offset=".52" stop-color="#ededee"/>
+      <stop offset=".81" stop-color="#d5d7db"/>
+      <stop offset="1" stop-color="#c2c6cc"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient1" x1="50.14" y1="128.94" x2="80.65" y2="128.94" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient2" x1="182.03" y1="128.94" x2="286.29" y2="128.94" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient3" x1="46.6" y1="75.98" x2="286.4" y2="75.98" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient4" x1="190.44" y1="40.05" x2="286.29" y2="40.05" xlink:href="#linear-gradient"/>
+  </defs>
+  <path class="st4" d="M117.47,200.67L50.8,115.88c-.88-1.22-.88-2.87.22-3.98h0c1.11-1.11,2.76-1.22,4.09-.33l67.77,51.96c.88.66,2.21.66,3.1,0L282.42,32.3c1-.88,2.43-.77,3.32.11h0c.88,1,1,2.43,0,3.43l-153.78,165.39c-3.98,4.31-10.83,3.98-14.48-.55Z"/>
+  <rect class="st1" x="50.14" y="171.93" width="30.51" height="11.94"/>
+  <rect class="st0" x="182.03" y="171.93" width="104.37" height="11.94"/>
+  <rect class="st3" x="46.6" y="224.88" width="239.8" height="11.94"/>
+  <rect class="st2" x="190.44" y="260.82" width="95.85" height="11.94"/>
+</svg>
