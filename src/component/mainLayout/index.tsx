@@ -153,7 +153,7 @@ export default function RootLayout({
   const currentLocale = pathname.split("/")[1];
 
   const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
-    null
+    null,
   );
 
   const locales = ["tr", "en", "nl"];
@@ -675,26 +675,32 @@ export default function RootLayout({
             component="main"
             sx={{
               flexGrow: 1,
-              p: 3,
-              // width: `calc(100% - ${open ? drawerWidth : 57}px)`,
+              // DÜZELTME 1: Padding'i tamamen sıfırladık
+              p: 0,
+
               backgroundColor:
                 theme.palette.mode === "dark"
                   ? theme.palette.background.default
                   : "#fafafb",
               minHeight: "100vh",
               height: "100%",
+
+              // DÜZELTME 2: Flex Column ekledik ki Header ve Sayfa alt alta yapışsın
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            <Box
-              m={"-24px"}
+            {/* HEADER KISMI */}
+            {/* <Box
+              // DÜZELTME 3: m={"-24px"} SİLDİK (Artık gerek yok çünkü padding 0)
               px={"32px"}
               height={"64px"}
               bgcolor={"#fff"}
               position={"relative"}
               display={"flex"}
               alignItems={"center"}
-              // zIndex={99}
               justifyContent={"space-between"}
+              sx={{ flexShrink: 0, borderBottom: "1px solid #eee" }} // Altına hafif çizgi ekledim şık dursun diye
             >
               <Image
                 src="/Dikont-Logo.svg"
@@ -703,8 +709,8 @@ export default function RootLayout({
                 height={28}
                 style={{
                   objectFit: "cover",
-                  width: "120px", // Buraya ekledik
-                  height: "auto", // Buraya ekledik
+                  width: "120px",
+                  height: "auto",
                 }}
               />
               <Box>
@@ -724,8 +730,10 @@ export default function RootLayout({
                   ))}
                 </Menu>
               </Box>
-            </Box>
-            {children}
+            </Box> */}
+
+            {/* DÜZELTME 4: Children'ı bir Box içine alıp kalan alanı kaplamasını sağladık */}
+            <Box sx={{ flex: 1, position: "relative" }}>{children}</Box>
           </Box>
         )}
       </Box>
