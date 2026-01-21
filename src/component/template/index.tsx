@@ -184,8 +184,8 @@ export default function Template({ user }: { user: string | null }) {
       } else {
         setData((prev: any[]) =>
           prev.filter(
-            (x: any) => String(x.documentGroupId) !== String(pendingId)
-          )
+            (x: any) => String(x.documentGroupId) !== String(pendingId),
+          ),
         );
       }
     } catch (e) {

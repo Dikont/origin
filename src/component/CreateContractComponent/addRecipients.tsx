@@ -60,7 +60,7 @@ export default function RecipientForm({
     const email = data.get(`email-${id}`)?.toString().trim() || "";
     const phone = (data.get(`phone-${id}`)?.toString().trim() || "").replace(
       /\s+/g,
-      ""
+      "",
     );
     const language = data.get(`language-${id}`)?.toString();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -100,7 +100,11 @@ export default function RecipientForm({
         recipients.push({
           label: data.get(`label-${id}`),
           SignerName: data.get(`name-${id}`)?.toString().trim(),
-          Signer: data.get(`email-${id}`)?.toString().trim(),
+          Signer: data
+            .get(`email-${id}`)
+            ?.toString()
+            .trim()
+            .toLocaleLowerCase(),
           phoneNumber: `+${data.get(`phone-${id}`)?.toString().trim()}`,
           Language: data.get(`language-${id}`)?.toString() || "tr",
           color: colorList[recipients.length % colorList.length],
@@ -243,7 +247,7 @@ export default function RecipientForm({
                     value={""}
                     onChange={(value) => {
                       const input = document.querySelector(
-                        `input[name="phone-${id}"]`
+                        `input[name="phone-${id}"]`,
                       ) as HTMLInputElement;
                       if (input) input.value = value;
                     }}

@@ -42,7 +42,7 @@ export default function Index() {
   const [isSms, setIsSms] = useState("false");
 
   const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
-    null
+    null,
   );
   // Statsu kotrolü ile sözleşme reddedildi mi reddedimedi mi (0 ise Reddedildi)
   const [contractStatus, setContractStatus] = useState<null | number>(null);
@@ -67,7 +67,7 @@ export default function Index() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(
-          `/api/public/getDocumentGroupStatus?docGroupId=${docGroupId}`
+          `/api/public/getDocumentGroupStatus?docGroupId=${docGroupId}`,
         );
 
         if (!res.ok) {
@@ -99,11 +99,12 @@ export default function Index() {
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
 
+    const cleanEmail = values.email.toString().trim().toLowerCase();
     try {
       const res = await fetch(`/api/checkSignature`, {
         method: "POST",
         body: JSON.stringify({
-          mail: values.email,
+          mail: cleanEmail,
           userName: values.username,
           DocumentId: documentId,
           isSms: isSms,
@@ -123,7 +124,7 @@ export default function Index() {
       if (res.ok && !data.error) {
         showSnackbar(
           isSms === "true" ? t("smsSentEnterCode") : t("emailSentEnterCode"),
-          "success"
+          "success",
         );
         setStep(1);
       } else {
@@ -159,7 +160,7 @@ export default function Index() {
 
     if (!data.error) {
       dispatch(
-        setSignerData({ docs: data.docs, vw_SignerTabs: data.vw_SignerTabs })
+        setSignerData({ docs: data.docs, vw_SignerTabs: data.vw_SignerTabs }),
       );
       setStep(2);
     } else {

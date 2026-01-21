@@ -1,57 +1,23 @@
+/* =========================================
+   1. GENEL AYARLAR & RECIPIENT FORM (ESKİ TASARIM)
+   Bu kısım, RecipientForm gibi standart sayfalar içindir.
+   ========================================= */
+
 body {
   margin: 0;
 }
 
-/* Dropdown düzgün açılsın */
-.react-tel-input .country-list {
-  top: 58px !important;
-  left: 0 !important;
-  right: auto !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-  position: absolute !important;
-  z-index: 99999 !important;
-}
-
-/* Inner input */
-.react-tel-input .form-control {
-  border: none !important;
-  background: transparent !important;
-  outline: none !important;
-}
-
-/* Wrapper */
+/* Genel Wrapper Ayarları */
 .react-tel-input {
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
+  font-family: inherit;
 }
 
-/* Flag dropdown (solda kalması için) */
-.react-tel-input .flag-dropdown {
-  position: absolute !important;
-  left: 0 !important;
-  right: auto !important;
+/* --- RECIPIENT FORM ÖZEL SINIFLARI --- */
+/* Bu sınıflar RecipientForm.tsx içindeki proplarla eşleşir */
 
-  width: 48px !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-
-  border-top-left-radius: 24px !important;
-  border-bottom-left-radius: 24px !important;
-  z-index: 3 !important;
-}
-
-/* Hover’da arka plan çıkmasın */
-.react-tel-input .flag-dropdown:hover,
-.react-tel-input .flag-dropdown:focus {
-  background: transparent !important;
-}
-
-/* RECIPIENT FORM PHONE INPUT */
 .recipient-phone-container {
   width: 100% !important;
+  border: 1px solid #d0d0d0 !important;
   border-radius: 4px !important;
   height: 56px !important;
   background: #fafafa !important;
@@ -59,79 +25,111 @@ body {
   align-items: center !important;
   padding-left: 0 !important;
   box-sizing: border-box !important;
+  position: relative !important;
 }
 
 .recipient-phone-input {
+  background: transparent !important;
   border: none !important;
   outline: none !important;
   width: 100% !important;
   height: 54px !important;
   border-radius: 8px !important;
   font-size: 16px !important;
+  color: #333 !important;
+  padding-left: 52px !important;
 }
 
+/* Standart Dropdown (Recipient Form İçin) */
+.recipient-phone-dropdown {
+  top: 58px !important;
+  left: 0 !important;
+  border-radius: 8px !important;
+  z-index: 99999 !important;
+  background: #fff !important;
+  color: #000 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.recipient-phone-dropdown .country:hover {
+  background-color: #f0f0f0 !important;
+}
+
+/* Standart Bayrak Butonu */
 .recipient-phone-button {
   width: 48px !important;
   height: 100% !important;
   background: transparent !important;
-}
-
-.recipient-phone-dropdown {
-  border-radius: 8px !important;
-  z-index: 99999 !important;
-  background: #fafafa !important;
-}
-
-/* --- LOGIN SAYFASI PHONE INPUT DÜZELTMELERİ --- */
-
-/* 1. Ana Kapsayıcı: Arka planı ve kenarlıkları şeffaf yap */
-.login-phone-override .react-tel-input {
   border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  font-family: inherit !important; /* Poppins fontunu alsın */
+  border-radius: 4px 0 0 4px !important;
 }
 
-/* 2. Input Alanı: Yazı tipi, rengi ve şeffaflık */
-.login-phone-override .form-control {
+.recipient-phone-button .selected-flag {
   background: transparent !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 200 !important; /* ExtraLight */
-  font-size: 14px !important;
-  height: 32px !important;
   width: 100% !important;
+  height: 100% !important;
 }
 
-/* 3. Placeholder (Lütfen telefon giriniz yazısı) rengi */
+/* =========================================
+   2. LOGIN SAYFASI ÖZELLEŞTİRMELERİ (DÜZELTİLMİŞ HALİ)
+   Sadece .login-phone-override sınıfı altındakileri etkiler.
+   ========================================= */
+
+/* 1. Kapsayıcıyı Şeffaf Yap */
+.login-phone-override .react-tel-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 2. Asıl Input Alanı (O beyaz kutuyu yok eden kod burası) */
+.login-phone-override .form-control {
+  background: transparent !important; /* Arka planı sil */
+  border: none !important; /* Çerçeveyi sil */
+  color: white !important; /* Yazı rengi beyaz */
+  font-weight: 200 !important; /* İnce font */
+  font-size: 14px !important;
+  width: 100% !important;
+  padding-left: 48px !important; /* Bayrak payı */
+  height: 35px !important; /* Yükseklik ayarı */
+}
+
+/* 3. Placeholder Rengi */
 .login-phone-override .form-control::placeholder {
   color: rgba(255, 255, 255, 0.5) !important;
   font-weight: 200 !important;
 }
 
-/* 4. Bayrak Kutusu: Tıklanınca veya normalde tamamen şeffaf olsun */
-.login-phone-override .flag-dropdown,
-.login-phone-override .flag-dropdown.open,
-.login-phone-override .flag-dropdown:hover,
-.login-phone-override .selected-flag,
+/* 4. Tarayıcı Otomatik Doldurma (Autofill) Rengini Kapatma */
+/* Bu kısım o inatçı beyaz/mavi arka planı engeller */
+.login-phone-override .form-control:-webkit-autofill,
+.login-phone-override .form-control:-webkit-autofill:hover,
+.login-phone-override .form-control:-webkit-autofill:focus,
+.login-phone-override .form-control:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* 5. Bayrak Kısmı */
+.login-phone-override .flag-dropdown {
+  background: transparent !important;
+  border: none !important;
+}
+
+.login-phone-override .selected-flag {
+  background: transparent !important;
+  padding: 0 0 0 8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
 .login-phone-override .selected-flag:hover,
 .login-phone-override .selected-flag:focus {
   background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-.login-phone-override .selected-flag {
-  padding: 3px !important; /* O 8px'lik padding'i sıfırlar */
-  align-items: start !important;
-  justify-content: center !important;
 }
 
-/* Bayrak simgesinin boyutuyla oynamak istersen (Opsiyonel) */
-.login-phone-override .selected-flag .flag {
-  transform: scale(1.1); /* Biraz büyütür */
-}
-
-/* 5. Bayrak yanındaki ok işaretini beyaz yap */
+/* Ok işareti beyaz olsun */
 .login-phone-override .selected-flag .arrow {
   border-top-color: white !important;
 }
@@ -139,62 +137,31 @@ body {
   border-bottom-color: white !important;
 }
 
-/* 6. Açılan Ülke Listesi (Burası okunabilsin diye beyaz kalsın ama kenarları yuvarlak olsun) */
+/* 6. Açılan Ülke Listesi (Cam Efekti) */
 .login-phone-override .country-list {
-  background-color: white !important;
-  color: #333 !important;
-  border-radius: 12px !important;
-  margin-top: 10px !important;
-}
-
-/* --- AÇILAN LİSTE (DROPDOWN) CAM EFEKTİ --- */
-
-.login-phone-override .country-list {
-  /* Arka plan: Hafif siyah/mor şeffaf (Senin temana uygun) */
-  background: rgba(30, 10, 40, 0.85) !important;
-
-  /* Arkasını bulanıklaştır (Buzlu cam etkisi) */
+  background: rgba(30, 10, 40, 0.95) !important;
   backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
-
-  /* Kenarlıklar ve Yuvarlaklık */
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 12px !important;
-
-  /* Yazı Rengi */
   color: white !important;
-
-  /* Liste dışına taşmayı engelle */
-  overflow-x: hidden !important;
   margin-top: 10px !important;
-  width: 300px !important; /* Genişlik ayarı */
+  width: 300px !important;
 }
 
-/* Listedeki ülke isimleri */
-.login-phone-override .country-list .country {
-  transition: all 0.2s ease;
-}
-
-/* Mouse ile üzerine gelince (Hover) */
+/* Liste Hover Efekti */
 .login-phone-override .country-list .country:hover,
 .login-phone-override .country-list .country.highlight {
-  /* Seçili olanı hafif beyazlat */
   background-color: rgba(255, 255, 255, 0.15) !important;
-  color: #fff !important;
 }
 
-/* Scrollbar (Kaydırma çubuğu) tasarımı - Daha ince ve şık */
+/* Scrollbar Login İçin */
 .login-phone-override .country-list::-webkit-scrollbar {
   width: 6px;
 }
 .login-phone-override .country-list::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
 }
 .login-phone-override .country-list::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-}
-.login-phone-override .country-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
 }
