@@ -159,35 +159,14 @@ export default function RecipientForm({
 
               <Select
                 name={`language-${id}`}
-                defaultValue=""
-                displayEmpty
+                defaultValue="tr"
                 size="small"
                 error={!!(errors as any)[id]?.language}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      // Disabled olan (yani 'Dil Seçin') elemanını listeden gizle
-                      "& .Mui-disabled": {
-                        display: "none",
-                      },
-                    },
-                  },
-                }}
                 sx={{
                   minWidth: 130,
-                  color: (fields) => {
-                    return "inherit";
-                  },
+                  color: "inherit",
                 }}
               >
-                <MenuItem
-                  value=""
-                  disabled
-                  sx={{ color: "#aaa", fontStyle: "italic" }}
-                >
-                  {t("selectLanguage")}
-                </MenuItem>
-
                 <MenuItem value="tr">{t("trLanguage")}</MenuItem>
                 <MenuItem value="en">{t("enLanguage")}</MenuItem>
                 <MenuItem value="nl">{t("nlLanguage")}</MenuItem>

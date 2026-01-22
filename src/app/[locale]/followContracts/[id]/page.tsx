@@ -45,7 +45,7 @@ function fmtTR(dt?: string | null) {
   const d = new Date(dt);
   if (isNaN(d.getTime())) return "-";
   return d.toLocaleString("tr-TR", {
-    timeZone: "Europe/Istanbul",
+    // timeZone: "Europe/Istanbul",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -89,7 +89,7 @@ function extractEmail(meta: any, fallbackEmail?: string | null): string | null {
 function extractSentAt(
   meta: any,
   signerUpdated?: string | null,
-  docUpdated?: string | null
+  docUpdated?: string | null,
 ): string | null {
   return (
     meta?.sentAt || meta?.lastReminderAt || signerUpdated || docUpdated || null
@@ -117,7 +117,10 @@ export default async function Page({ params, searchParams }: any) {
     body: JSON.stringify({ docGId: id }),
   });
 
+  console.log(getDetailData);
+
   const data = await getDetailData.json();
+  console.log(data);
 
   const signers: Array<any> = Array.isArray(data?.documentSigners)
     ? data.documentSigners
@@ -148,7 +151,7 @@ export default async function Page({ params, searchParams }: any) {
 
   // --- REJECTED SIGNER ---
   const rejectedSigner = onlySigners.find(
-    (s) => s.isRejector === true && s.isSigned === false
+    (s) => s.isRejector === true && s.isSigned === false,
   );
 
   const rejectedBy =
@@ -239,7 +242,7 @@ export default async function Page({ params, searchParams }: any) {
             const sentAt = extractSentAt(
               metaObj,
               s?.updatedAt,
-              docMeta?.updatedAt
+              docMeta?.updatedAt,
             );
 
             const ip =
@@ -261,8 +264,8 @@ export default async function Page({ params, searchParams }: any) {
             const status: "pending" | "signed" | "rejected" = isRejectedSigner
               ? "rejected"
               : isSigned
-              ? "signed"
-              : "pending";
+                ? "signed"
+                : "pending";
 
             let statusChip;
 
@@ -375,15 +378,15 @@ export default async function Page({ params, searchParams }: any) {
               status === "rejected"
                 ? "#fee2e2"
                 : status === "signed"
-                ? UI.successBg
-                : UI.warningBg;
+                  ? UI.successBg
+                  : UI.warningBg;
 
             const borderColor =
               status === "rejected"
                 ? "#dc2626"
                 : status === "signed"
-                ? UI.successBorder
-                : UI.warningBorder;
+                  ? UI.successBorder
+                  : UI.warningBorder;
 
             return (
               <Paper
