@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 import { NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
 import * as mammoth from "mammoth"; // <-- eklendi
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     if (!form)
       return NextResponse.json(
         { error: "FormData bekleniyor" },
-        { status: 400 }
+        { status: 400 },
       );
 
     const prompt = String(form.get("prompt") || "").trim();
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     if (!prompt && !file) {
       return NextResponse.json(
         { error: "En az bir alan gerekli: prompt veya file" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -73,16 +73,16 @@ export async function POST(req: Request) {
       if (!ALLOWED.includes(file.type))
         return NextResponse.json(
           { error: `Desteklenmeyen dosya türü: ${file.type || "unknown"}` },
-          { status: 415 }
+          { status: 415 },
         );
       if (file.size > MAX_SIZE)
         return NextResponse.json(
           {
             error: `Dosya çok büyük. Maksimum ${Math.round(
-              MAX_SIZE / 1024 / 1024
+              MAX_SIZE / 1024 / 1024,
             )}MB`,
           },
-          { status: 413 }
+          { status: 413 },
         );
     }
 
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
     if (!userId)
       return NextResponse.json(
         { error: "userId bulunamadı (cookie 'user')" },
-        { status: 400 }
+        { status: 400 },
       );
 
     const dec = await callTokenDecrease(authToken, await userId);
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
               : dec.payload?.error || "TokenDecrease başarısız",
           status: dec.status,
         },
-        { status: dec.status }
+        { status: dec.status },
       );
     }
     const remainingTokens: number | undefined = (dec.payload as TokenDecreaseOk)
@@ -134,11 +134,25 @@ export async function POST(req: Request) {
       const isTxt = file.type === "text/plain";
 
       if (isPdf) {
+        // --- YENİ EKLENECEK KISIM BURASI ---
+
+        // 1. Dosyayı tampon belleğe (Buffer) alıyoruz ki "okundu" hatası vermesin
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        // 2. OpenAI'ın sevdiği formata çeviriyoruz
+        const openaiFile = await toFile(buffer, file.name || "dosya.pdf", {
+          type: "application/pdf",
+        });
+
+        // 3. Şimdi temiz bir şekilde yüklüyoruz
         const uploaded = await client.files.create({
-          file,
+          file: openaiFile,
           purpose: "assistants",
         });
         uploadedFileId = uploaded.id;
+
+        // --- YENİ KISIM BİTTİ ---
       } else if (isDocx) {
         const buf = Buffer.from(await file.arrayBuffer());
         const { value } = await mammoth.extractRawText({ buffer: buf });
@@ -183,7 +197,7 @@ export async function POST(req: Request) {
     const output = response.output_text || "Herhangi bir çıktı alınamadı.";
     return NextResponse.json(
       { ok: true, result: output, remainingTokens, userId },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err: any) {
     const message =

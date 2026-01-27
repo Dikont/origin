@@ -60,12 +60,12 @@ export default async function NotificationsPage() {
       body: JSON.stringify({
         userId: user?.user.id,
       }),
-    }
+    },
   );
   const data = await getNotifications.json();
   const items: Notif[] = (Array.isArray(data) ? data : []).filter(Boolean);
   items.sort(
-    (a, b) => new Date(b.sentDate).getTime() - new Date(a.sentDate).getTime()
+    (a, b) => new Date(b.sentDate).getTime() - new Date(a.sentDate).getTime(),
   );
 
   return (

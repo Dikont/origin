@@ -32,6 +32,8 @@ import { useSnackbar } from "../SnackbarProvider";
 import PdfSinglePage from "./pdfSinglePage";
 import { useTranslations } from "next-intl";
 import CssDataGridResponsive from "@/component/cssDataGridResponsive";
+import FilterListIcon from "@mui/icons-material/FilterList"; // İsteğe bağlı ikon
+
 export default function DataGridComp({ user, userRole }: any) {
   const t = useTranslations("followContracts");
   const { showSnackbar } = useSnackbar();
@@ -39,6 +41,10 @@ export default function DataGridComp({ user, userRole }: any) {
   const [loading, setLoading] = useState(true);
   const [routing, setRouting] = useState(false);
   const router = useRouter();
+
+  // --- FİLTRELEME STATE'İ ---
+  // "ALL", "COMPLETED", "WAITING", "IN_PROGRESS", "REJECTED"
+  const [filterStatus, setFilterStatus] = useState("ALL");
 
   // delete modal
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -59,12 +65,20 @@ export default function DataGridComp({ user, userRole }: any) {
 
   const columns: GridColDef[] = [
     {
+      field: "creatorName",
+      headerName: "Oluşturan",
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "sozlesme_name",
       headerName: t("colContractName"),
       flex: 1,
       align: "center",
       headerAlign: "center",
     },
+
     {
       field: "template_name",
       headerName: t("colTemplateName"),
@@ -237,7 +251,7 @@ export default function DataGridComp({ user, userRole }: any) {
     if (!res.ok) {
       showSnackbar(
         data?.error || t("snackErrorWithStatus", { status: res.status }),
-        "error"
+        "error",
       );
       return;
     }
@@ -271,8 +285,8 @@ export default function DataGridComp({ user, userRole }: any) {
       } else {
         setData((prev: any) =>
           prev.filter(
-            (x: any) => String(x.documentGroupId) !== String(pendingId)
-          )
+            (x: any) => String(x.documentGroupId) !== String(pendingId),
+          ),
         );
       }
     } finally {
@@ -296,20 +310,50 @@ export default function DataGridComp({ user, userRole }: any) {
       : "-";
 
   const safeData = Array.isArray(data) ? data : [];
-  const rows = safeData.map((item: any) => {
+
+  // -----------------------------------------------------------------
+  // 1. ADIM: VERİYİ FİLTRELEME
+  // -----------------------------------------------------------------
+  const filteredData = safeData.filter((item: any) => {
     const rate = item.signCompletionRate ?? 0;
     const status = item.status;
 
-    // --- Durum sıralama mantığı ---
-    // 0 → Reddedildi
-    // 1 → Bekliyor
-    // 2 → Devam Ediyor
-    // 3 → Tamamlandı
-    let sortValue = 0;
+    // Tümü seçiliyse hepsini göster
+    if (filterStatus === "ALL") return true;
 
-    if (status === 0) sortValue = 0; // REDDEDİLDİ
-    else if (rate === 100) sortValue = 3; // TAMAMLANDI
-    else if (rate === 0) sortValue = 1; // BEKLİYOR
+    // Reddedilenleri göster
+    if (filterStatus === "REJECTED") return status === 0;
+
+    // --- Diğer durumlar için: Eğer statüsü Red (0) ise bunları listeden çıkar ---
+    // Çünkü "Bekliyor" veya "Tamamlandı" listesinde reddedilenlerin işi yok.
+    if (status === 0) return false;
+
+    // Tamamlandı
+    if (filterStatus === "COMPLETED") return rate === 100;
+
+    // Bekliyor
+    if (filterStatus === "WAITING") return rate === 0;
+
+    // Devam Ediyor
+    if (filterStatus === "IN_PROGRESS") return rate > 0 && rate < 100;
+
+    return true;
+  });
+
+  // -----------------------------------------------------------------
+  // 2. ADIM: FİLTRELENMİŞ VERİDEN ROWS OLUŞTURMA
+  // -----------------------------------------------------------------
+  const rows = filteredData.map((item: any) => {
+    const rate = item.signCompletionRate ?? 0;
+    const status = item.status;
+
+    let sortValue = 0;
+    if (status === 0)
+      sortValue = 0; // REDDEDİLDİ
+    else if (rate === 100)
+      sortValue = 3; // TAMAMLANDI
+    else if (rate === 0)
+      sortValue = 1; // BEKLİYOR
     else sortValue = 2; // DEVAM EDİYOR
 
     return {
@@ -317,6 +361,7 @@ export default function DataGridComp({ user, userRole }: any) {
       documentGroupId: item.documentGroupId,
       documentS3Path: item.documentS3Path,
       sozlesme_name: item.documentGroupName,
+      creatorName: item.creatorName,
       template_name:
         item.documentGroupDesc.length > 0
           ? item.documentGroupDesc
@@ -327,8 +372,6 @@ export default function DataGridComp({ user, userRole }: any) {
 
       signatureStatus: rate,
       status: status,
-
-      // 🔥 SIRALAMA için gereken numeric değer
       sortValue,
     };
   });
@@ -342,6 +385,7 @@ export default function DataGridComp({ user, userRole }: any) {
         body: JSON.stringify({ user, userRole }),
       });
       const json = await res.json();
+      console.log("📦 getDocumentTakip RAW RESPONSE:", json);
       setData(json);
       setLoading(false);
     })();
@@ -421,7 +465,7 @@ export default function DataGridComp({ user, userRole }: any) {
         setPageNum(1);
         setPreviewIsPdf(false);
         setPreviewSrc(
-          `data:image/png;base64,${normalizePdfBase64(data.documentS3Path)}`
+          `data:image/png;base64,${normalizePdfBase64(data.documentS3Path)}`,
         );
         setPreviewOpen(true);
       }
@@ -470,6 +514,109 @@ export default function DataGridComp({ user, userRole }: any) {
         </Backdrop>
       )}
 
+      {/* --- FİLTRE BUTONLARI BURAYA EKLENDİ --- */}
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}
+      >
+        <Button
+          variant={filterStatus === "ALL" ? "contained" : "outlined"}
+          onClick={() => setFilterStatus("ALL")}
+          startIcon={<FilterListIcon />}
+          disableRipple // <--- 1. Dalga efektini kapatır
+          color="inherit"
+          sx={{
+            borderRadius: 5,
+            textTransform: "none",
+            fontWeight: 600,
+            transition: "none", // <--- 2. Renk geçişini anlık yapar (Animasyonu kapatır)
+            boxShadow: "none", // Dolu olduğunda gölgeyi de kapatabilirsin daha düz durur
+            "&:active": { boxShadow: "none" },
+            "&:focus": { outline: "none" }, // Tıkladıktan sonra odaklanma izini siler
+          }}
+        >
+          Tümü
+        </Button>
+
+        <Button
+          variant={filterStatus === "COMPLETED" ? "contained" : "outlined"}
+          color="success"
+          onClick={() => setFilterStatus("COMPLETED")}
+          startIcon={<CheckCircleIcon />}
+          disableRipple
+          sx={{
+            borderRadius: 5,
+            textTransform: "none",
+            fontWeight: 600,
+            transition: "none", // Animasyon kapalı
+            boxShadow: "none",
+            "&:active": { boxShadow: "none" },
+            "&:focus": { outline: "none" },
+          }}
+        >
+          {t("table_status.completed")}
+        </Button>
+
+        <Button
+          variant={filterStatus === "WAITING" ? "contained" : "outlined"}
+          color="warning"
+          onClick={() => setFilterStatus("WAITING")}
+          startIcon={<HourglassEmptyRoundedIcon />}
+          disableRipple
+          sx={{
+            borderRadius: 5,
+            textTransform: "none",
+            fontWeight: 600,
+            transition: "none", // Animasyon kapalı
+            boxShadow: "none",
+            "&:active": { boxShadow: "none" },
+            "&:focus": { outline: "none" },
+          }}
+        >
+          {t("table_status.waiting")}
+        </Button>
+
+        <Button
+          variant={filterStatus === "IN_PROGRESS" ? "contained" : "outlined"}
+          color="info"
+          onClick={() => setFilterStatus("IN_PROGRESS")}
+          startIcon={<AutorenewIcon />}
+          disableRipple
+          sx={{
+            borderRadius: 5,
+            textTransform: "none",
+            fontWeight: 600,
+            transition: "none", // Animasyon kapalı
+            boxShadow: "none",
+            "&:active": { boxShadow: "none" },
+            "&:focus": { outline: "none" },
+          }}
+        >
+          {t("table_status.in_progress")}
+        </Button>
+
+        <Button
+          variant={filterStatus === "REJECTED" ? "contained" : "outlined"}
+          color="error"
+          onClick={() => setFilterStatus("REJECTED")}
+          startIcon={<DoNotDisturbOnIcon />}
+          disableRipple
+          sx={{
+            borderRadius: 5,
+            textTransform: "none",
+            fontWeight: 600,
+            transition: "none", // Animasyon kapalı
+            boxShadow: "none",
+            "&:active": { boxShadow: "none" },
+            "&:focus": { outline: "none" },
+          }}
+        >
+          {t("table_status.rejected")}
+        </Button>
+      </Stack>
+      {/* -------------------------------------- */}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -484,6 +631,7 @@ export default function DataGridComp({ user, userRole }: any) {
             isRowSelectable={() => false}
             hideFooterSelectedRowCount
             initialState={{
+              sorting: { sortModel: [{ field: "createdDate", sort: "desc" }] },
               pagination: { paginationModel: { pageSize: 10, page: 0 } },
             }}
             pageSizeOptions={[5, 10, 25]}
