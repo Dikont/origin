@@ -41,11 +41,15 @@ async function callTokenDecrease(authToken: string, userId: string) {
     body: form,
   });
 
+  // GÖVDEYİ SADECE BİR KEZ OKUYORUZ
+  const rawBody = await resp.text();
   let payload: any = null;
+
   try {
-    payload = await resp.json();
+    // Eğer gelen metin JSON ise parse et, değilse olduğu gibi bırak
+    payload = JSON.parse(rawBody);
   } catch {
-    payload = await resp.text();
+    payload = rawBody;
   }
 
   return { ok: resp.ok, status: resp.status, payload };
