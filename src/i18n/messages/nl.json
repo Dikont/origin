@@ -383,6 +383,7 @@
     "downloadPDF": "PDF downloaden",
     "bannerTitle": "Contractopvolgingslijst",
     "bannerDesc": "Volg hier je contractbeheer- en ondertekeningsprocessen.",
+    "colCreatorName": "Naam maker",
     "colContractName": "Contractnaam",
     "colTemplateName": "Sjabloonnaam",
     "colSignatureStatus": "Handtekeningstatus",

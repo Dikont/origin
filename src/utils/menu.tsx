@@ -23,7 +23,7 @@ export type MenuItem = {
 export function getMenuItems(
   t: (k: string) => string,
   userRoles: string[] | undefined,
-  locale: string
+  locale: string,
 ): MenuItem[] {
   const L = (url: string) => `/${locale}${url}`;
 
@@ -89,12 +89,12 @@ export function getMenuItems(
       url: L("/notifications"),
       type: "item",
     },
-    {
-      icon: <InfoOutlinedIcon />,
-      text: t("about"),
-      url: L("/about"),
-      type: "item",
-    },
+    // {
+    //   icon: <InfoOutlinedIcon />,
+    //   text: t("about"),
+    //   url: L("/about"),
+    //   type: "item",
+    // },
     {
       icon: <LockResetIcon />,
       text: t("changePassword"),

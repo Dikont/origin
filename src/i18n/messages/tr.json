@@ -379,6 +379,7 @@
     "downloadPDF": "PDF indir",
     "bannerTitle": "Sözleşme Takip Listesi",
     "bannerDesc": "Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
+    "colCreatorName": "Oluşturan Adı",
     "colContractName": "Sözleşme Adı",
     "colTemplateName": "Şablon Adı",
     "colSignatureStatus": "İmza Durumu",

@@ -383,6 +383,7 @@
     "downloadPDF": "Download PDF",
     "bannerTitle": "Contract Tracking List",
     "bannerDesc": "Track your contract management and signing processes here.",
+    "colCreatorName": "Creator Name",
     "colContractName": "Contract Name",
     "colTemplateName": "Template Name",
     "colSignatureStatus": "Signature Status",

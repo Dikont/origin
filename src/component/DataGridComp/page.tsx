@@ -66,7 +66,7 @@ export default function DataGridComp({ user, userRole }: any) {
   const columns: GridColDef[] = [
     {
       field: "creatorName",
-      headerName: "Oluşturan",
+      headerName: t("colCreatorName"),
       flex: 1,
       align: "center",
       headerAlign: "center",
@@ -385,7 +385,6 @@ export default function DataGridComp({ user, userRole }: any) {
         body: JSON.stringify({ user, userRole }),
       });
       const json = await res.json();
-      console.log("📦 getDocumentTakip RAW RESPONSE:", json);
       setData(json);
       setLoading(false);
     })();
