@@ -16,6 +16,7 @@ import DirectionsCarOutlinedIcon from "@mui/icons-material/DirectionsCarOutlined
 
 import { formatDateFunc } from "@/utils/common";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 
 type Props = {
   firstName: string;
@@ -122,7 +123,13 @@ export default function Banner({
   const waterSavedLiters = report?.waterSavedLiters ?? 0;
   const preventedKm = report?.equivalentCarKm;
 
-  console.log(report);
+  const locale = useLocale(); // "tr" | "en" | "nl" gibi
+
+  const formattedDate = new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
 
   return (
     <Grid container rowSpacing={3} columnSpacing={2}>
@@ -190,7 +197,7 @@ export default function Banner({
                       fontSize: 12,
                     }}
                   >
-                    {formatDateFunc(new Date())}
+                    {formattedDate}
                   </Typography>
                 </Stack>
               </Box>
