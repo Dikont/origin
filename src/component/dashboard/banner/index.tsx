@@ -38,7 +38,7 @@ function StatCard({ icon, value, label, accent = "green" }: StatCardProps) {
     <Box
       sx={{
         flex: 1,
-        minWidth: { xs: "100%", sm: 180 },
+        minWidth: { xs: "100%", sm: 190 },
         p: 1.5,
         borderRadius: 3,
         background: `linear-gradient(135deg, ${alpha("#ffffff", 0.06)} 0%, ${alpha(
@@ -184,7 +184,7 @@ export default function Banner({
                     sx={{
                       color: alpha("#fff", 0.65),
                       fontSize: 13,
-                      maxWidth: 450,
+                      maxWidth: 480,
                     }}
                   >
                     {t("text")}

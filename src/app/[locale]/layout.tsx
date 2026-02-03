@@ -1,6 +1,5 @@
 import "@/app/global.css";
 import MainLayout from "@/component/mainLayout";
-import ThemeRegistry from "@/component/ThemeRegistry";
 import { Providers } from "@/store/provider";
 import { cookies } from "next/headers";
 import { ReactNode } from "react";
@@ -11,6 +10,7 @@ import ReactQueryClientProvider from "@/component/ReactQueryClientProvider";
 import { SnackbarProvider } from "@/component/SnackbarProvider";
 import NextTopLoader from "nextjs-toploader";
 import { getMessages } from "next-intl/server";
+import { Poppins } from "next/font/google";
 
 export const metadata = {
   icons: {
@@ -18,6 +18,13 @@ export const metadata = {
     shortcut: "/favicon.ico",
   },
 };
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"], // ihtiyacın olanları ekle
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export default async function RootLayout({
   children,
@@ -62,7 +69,7 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body style={{ margin: 0 }}>
+      <body style={{ margin: 0 }} className={poppins.variable}>
         <NextTopLoader
           showSpinner={false}
           color="#227A2F"
