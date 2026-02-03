@@ -24,7 +24,7 @@ export const CustomBannerCard = styled(Box)(({ theme }) => ({
   transition: "transform 240ms ease, box-shadow 240ms ease",
   transform: "translateY(0px)",
   "&:hover": {
-    transform: "scale(1.02)",
+    transform: "scale(1.01)",
     boxShadow:
       "0 0 0 0 rgba(0,0,0,0.3), 0px 10px 14px 1px rgba(0,0,0,0.22), 0 0 0 0 rgba(0,0,0,0.2)",
   },
@@ -42,21 +42,25 @@ export const CustomBannerCard = styled(Box)(({ theme }) => ({
 }));
 
 export const CustomCard = styled(Box)(({ theme }) => ({
-  padding: "10px",
-  background: "#FFF",
-  borderRadius: "10px",
-  boxShadow:
-    "0px 3px 3px -2px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 1px 8px 0px rgba(0,0,0,0.12)",
-  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-  transform: "scale(1)",
-  "&:hover": {
-    transform: "scale(1.02)",
-    boxShadow:
-      "0 0 0 0 rgba(0,0,0,0.3), 0px 10px 14px 1px rgba(0,0,0,0.22), 0 0 0 0 rgba(0,0,0,0.2)",
-  },
-  flex: 1,
+  borderRadius: 12,
+  // gradient bg
+  backgroundImage: "linear-gradient(135deg, #646E9F 0%, #453562 100%)",
+  color: theme.palette.common.white,
+
+  // subtle border (dark temada güzel duruyor)
+  border: "1px solid rgba(255,255,255,0.10)",
+
+  boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+  transform: "translateY(0)",
   display: "flex",
-  justifyContent: "center",
+  flexDirection: "column",
+  overflow: "hidden",
+
+  "&:hover": {
+    transform: "scale(1.01)",
+    boxShadow: "0 14px 32px rgba(0,0,0,0.18)",
+  },
 }));
 
 export const CustomCardBlue = styled(Box, {
