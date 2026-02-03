@@ -117,10 +117,7 @@ export default async function Page({ params, searchParams }: any) {
     body: JSON.stringify({ docGId: id }),
   });
 
-  console.log(getDetailData);
-
   const data = await getDetailData.json();
-  console.log(data);
 
   const signers: Array<any> = Array.isArray(data?.documentSigners)
     ? data.documentSigners

@@ -15,34 +15,26 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import LockResetIcon from "@mui/icons-material/LockReset";
 import {
   Avatar,
   Button,
   ListSubheader,
   Menu,
   MenuItem,
-  Switch,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { ReactNode, useState } from "react";
 import { getMenuItems } from "@/utils/menu";
-import { useSelector, useDispatch } from "react-redux";
-// import { toggleMode } from "@/features/theme/themeSlice";
-// import { AppDispatch, RootState } from "@/store";
-// import { useTranslation } from "next-i18next";
 import { Logout } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
-import { AppDispatch, RootState } from "@/store";
-import Image from "next/image";
-import { toggleMode } from "@/store/slices/themeSlice";
-// import { logout } from "@/features/auth/authSlice";
 import MenuIconHamburger from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
+import { GlobalStyles } from "@mui/material";
+
 const drawerWidth = 260;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -152,15 +144,11 @@ export default function RootLayout({
 
   const currentLocale = pathname.split("/")[1];
 
-  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
-    null,
-  );
-
-  const locales = ["tr", "en", "nl"];
-
-  const openLanguageMenu = (e: React.MouseEvent<HTMLElement>) => {
-    setLanguageAnchor(e.currentTarget);
-  };
+  const languageOptions = [
+    { code: "tr", label: "TR", flag: "/login/tr1.png" },
+    { code: "en", label: "EN", flag: "/login/en2.png" },
+    { code: "nl", label: "NL", flag: "/login/nl3.png" },
+  ];
 
   const changeLanguage = (lng: string) => {
     // Dil değiştirmede parametreleri koruma
@@ -169,7 +157,6 @@ export default function RootLayout({
     segments[1] = lng;
 
     router.push(segments.join("/") + search);
-    setLanguageAnchor(null);
   };
 
   const handleDrawerOpen = () => {
@@ -232,7 +219,15 @@ export default function RootLayout({
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-
+        <GlobalStyles
+          styles={{
+            "@keyframes headerGradient": {
+              "0%": { backgroundPosition: "0% 50%" },
+              "50%": { backgroundPosition: "100% 50%" },
+              "100%": { backgroundPosition: "0% 50%" },
+            },
+          }}
+        />
         {token ? (
           <>
             <AnimatePresence>
@@ -351,76 +346,31 @@ export default function RootLayout({
                   />
                 )}
               </Box>
-              {/* <Box
-                sx={{
-                  marginLeft: "auto",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 2,
-                }}
-              >
-                <IconButton onClick={toggleLanguage}>
-                  <Typography>
-                    {currentLocale === "tr" ? "TR" : "EN"}
-                  </Typography>
-                </IconButton>
-                <IconButton
-                  onClick={handleOpenUserMenu}
-                  sx={{
-                    p: 0,
-                    "&:hover": {
-                      backgroundColor: "transparent",
-                    },
-                  }}
-                  disableFocusRipple
-                  disableRipple
-                >
-                  <Avatar alt="Remy Sharp" />
-                  <Typography sx={{ ml: 1 }}>
-                    {user?.firstName} {user?.lastName}
-                  </Typography>
-                </IconButton>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <MenuItem onClick={handleLogout}>
-                    <>
-                      <Typography sx={{ textAlign: "center", mr: 2 }}>
-                        Logout
-                      </Typography>
-                      <IconButton disableRipple>
-                        <Logout />
-                      </IconButton>
-                    </>
-                  </MenuItem>
-                </Menu>
-              </Box> */}
             </Box>
+            {/* Header Alanı */}
             <AppBar
               position="fixed"
               open={open}
-              color="default"
               sx={{
                 width: `calc(100% - ${open ? drawerWidth : 57}px)`,
                 ml: `${drawerWidth}px`,
-                display: {
-                  xs: "none",
-                  md: "flex",
-                },
+                display: { xs: "none", md: "flex" },
+
+                // ✅ background yerine backgroundImage kullan
+                backgroundImage: `linear-gradient(
+      90deg,
+      #2C1737 0%,
+      #5C2230 25%,
+      #646E9F 50%,
+      #796171 75%,
+      #453562 100%
+    )`,
+                backgroundSize: "300% 300%",
+                animation: "headerGradient 15s ease infinite",
+
+                // bazen MUI default overlay / shadow karışır:
+                boxShadow: "none",
+                color: "#fff",
               }}
             >
               <Toolbar
@@ -435,97 +385,137 @@ export default function RootLayout({
                   aria-label="open drawer"
                   onClick={handleDrawerOpen}
                   edge="start"
-                  sx={[
-                    {
-                      mr: 2,
-                    },
-                    open && { display: "none" },
-                  ]}
+                  sx={[{ mr: 2 }, open && { display: "none" }]}
                 >
                   <MenuIcon />
                 </IconButton>
+
                 <Box
                   sx={{
                     marginLeft: "auto",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
                     gap: 2,
                   }}
                 >
-                  <IconButton onClick={openLanguageMenu}>
-                    <Typography>{currentLocale.toUpperCase()}</Typography>
-                  </IconButton>
+                  {/* DİL SEÇİCİ (YAN YANA) */}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {languageOptions.map((lang) => {
+                      const isActive = lang.code === currentLocale;
 
-                  <Menu
-                    anchorEl={languageAnchor}
-                    open={Boolean(languageAnchor)}
-                    onClose={() => setLanguageAnchor(null)}
-                  >
-                    {locales.map((lng) => (
-                      <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
-                        {lng.toUpperCase()}
-                      </MenuItem>
-                    ))}
-                  </Menu>
+                      return (
+                        <Button
+                          key={lang.code}
+                          onClick={() => changeLanguage(lang.code)}
+                          disableRipple
+                          variant="text"
+                          sx={{
+                            minWidth: 0,
+                            px: 2.5,
+                            py: 1.2,
+
+                            borderRadius: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            textTransform: "none",
+                            color: "#fff",
+
+                            // aktif değilken
+                            opacity: isActive ? 1 : 0.65,
+                            backgroundColor: isActive
+                              ? "rgba(0,0,0,0.22)"
+                              : "transparent",
+
+                            "&:hover": {
+                              backgroundColor: isActive
+                                ? "rgba(0,0,0,0.28)"
+                                : "rgba(255,255,255,0.12)",
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={lang.flag}
+                            alt={lang.label}
+                            sx={{
+                              width: 22,
+                              height: 16,
+                              borderRadius: "2px",
+                              objectFit: "cover",
+                              boxShadow: isActive
+                                ? "0 0 0 2px rgba(255,255,255,0.7)"
+                                : "none",
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontWeight: isActive ? 700 : 500,
+                              fontSize: 13,
+                              color: "#fff",
+                            }}
+                          >
+                            {lang.label}
+                          </Typography>
+                        </Button>
+                      );
+                    })}
+                  </Box>
+
+                  {/* USER BUTONU */}
                   <IconButton
                     onClick={handleOpenUserMenu}
                     sx={{
                       p: 0,
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
+                      "&:hover": { backgroundColor: "transparent" },
                     }}
-                    disableFocusRipple
-                    disableRipple
                   >
                     <Avatar alt="Remy Sharp" />
-                    <Typography sx={{ ml: 1 }}>
+                    <Typography
+                      sx={{
+                        ml: 1,
+                        fontWeight: 500, // 👈 KALINLIK
+                        fontSize: 16,
+                        color: "#fff", // header koyuysa net görünür
+                      }}
+                    >
                       {user?.firstName} {user?.lastName}
                     </Typography>
                   </IconButton>
+
+                  {/* USER MENÜ (LOGOUT KALIYOR) */}
                   <Menu
                     sx={{ mt: "45px" }}
                     id="menu-appbar"
                     anchorEl={anchorElUser}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                     keepMounted
-                    transformOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
+                    transformOrigin={{ vertical: "bottom", horizontal: "left" }}
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
                     <MenuItem
+                      onClick={handleLogout}
                       sx={{
-                        ":hover": {
-                          bgcolor: "white",
-                        },
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 2,
+                        minWidth: 160,
+                        ":hover": { bgcolor: "white" },
                       }}
                     >
-                      <Box display={"flex"} flexDirection={"column"}>
-                        <Box
-                          display={"flex"}
-                          alignItems={"center"}
-                          onClick={handleLogout}
-                        >
-                          <Typography sx={{ textAlign: "center", mr: 2 }}>
-                            Logout
-                          </Typography>
-                          <IconButton disableRipple>
-                            <Logout />
-                          </IconButton>
-                        </Box>
-                      </Box>
+                      <Typography>Logout</Typography>
+                      <Logout fontSize="small" />
                     </MenuItem>
                   </Menu>
                 </Box>
               </Toolbar>
             </AppBar>
+            {/* Header Alanı Bitiş */}
+
+            {/* Menü Alanı */}
             <Drawer
               variant="permanent"
               open={open}
@@ -539,19 +529,28 @@ export default function RootLayout({
                 }}
               >
                 <Button
-                  sx={{ flex: 1 }}
                   disableRipple
                   disableFocusRipple
                   variant="text"
                   href="/dashboard"
+                  sx={{
+                    minWidth: 0,
+                    px: 3,
+
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
                   <img
-                    src="/Dikont-Logo.svg"
-                    alt=""
+                    src={open ? "/Dikont-Logo.svg" : "/kucukDikont-Logo.png"}
+                    alt="Dikont"
                     style={{
-                      width: open ? "127px" : "50px",
-                      height: open ? "100%" : "auto",
-                      transition: "all 0.3s",
+                      width: open ? 120 : 36,
+                      height: open ? 32 : 36,
+                      objectFit: "contain",
+                      transition: "all 0.5s ease",
+                      display: "block",
                     }}
                   />
                 </Button>
@@ -628,30 +627,11 @@ export default function RootLayout({
               </List>
               <List sx={{ mt: "auto" }}>
                 <Divider />
-                {/* <ListItem disablePadding>
-                  {open ? (
-                    <ListItemButton
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      {darkMode ? <DarkModeIcon /> : <LightModeIcon />}
-                      <p>{darkMode ? "Dark" : "Light"} Mode</p>
-                      <Switch
-                        checked={darkMode === "dark"}
-                        onClick={() => dispatch(toggleMode())}
-                      />
-                    </ListItemButton>
-                  ) : (
-                    <ListItemButton onClick={() => dispatch(toggleMode())}>
-                      {darkMode ? <DarkModeIcon /> : <LightModeIcon />}
-                    </ListItemButton>
-                  )}
-                </ListItem> */}
               </List>
             </Drawer>
+            {/* Menü Alanı Bitiş */}
+
+            {/* Panel Ana Yapı Alanı */}
             <Box
               component="main"
               sx={{
@@ -669,6 +649,7 @@ export default function RootLayout({
             >
               {children}
             </Box>
+            {/* Panel Ana Yapı Alanı Bitiş */}
           </>
         ) : (
           <Box
@@ -690,48 +671,6 @@ export default function RootLayout({
               flexDirection: "column",
             }}
           >
-            {/* HEADER KISMI */}
-            {/* <Box
-              // DÜZELTME 3: m={"-24px"} SİLDİK (Artık gerek yok çünkü padding 0)
-              px={"32px"}
-              height={"64px"}
-              bgcolor={"#fff"}
-              position={"relative"}
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              sx={{ flexShrink: 0, borderBottom: "1px solid #eee" }} // Altına hafif çizgi ekledim şık dursun diye
-            >
-              <Image
-                src="/Dikont-Logo.svg"
-                alt="Login Image"
-                width={120}
-                height={28}
-                style={{
-                  objectFit: "cover",
-                  width: "120px",
-                  height: "auto",
-                }}
-              />
-              <Box>
-                <IconButton onClick={openLanguageMenu}>
-                  <Typography>{currentLocale.toUpperCase()}</Typography>
-                </IconButton>
-
-                <Menu
-                  anchorEl={languageAnchor}
-                  open={Boolean(languageAnchor)}
-                  onClose={() => setLanguageAnchor(null)}
-                >
-                  {locales.map((lng) => (
-                    <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
-                      {lng.toUpperCase()}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </Box> */}
-
             {/* DÜZELTME 4: Children'ı bir Box içine alıp kalan alanı kaplamasını sağladık */}
             <Box sx={{ flex: 1, position: "relative" }}>{children}</Box>
           </Box>

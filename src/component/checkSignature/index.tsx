@@ -319,13 +319,13 @@ export default function PdfSigner({
     }>
   >([]);
   const [activeSignatureTab, setActiveSignatureTab] = useState<number | null>(
-    null
+    null,
   );
   const [signaturePadEnabled, setSignaturePadEnabled] = useState(false);
   /* ----- read data from store ----- */
   const docs = useSelector((s: RootState) => s.signer.docs) as DocPage[];
   const signerTabs = useSelector(
-    (s: RootState) => s.signer.vw_SignerTabs
+    (s: RootState) => s.signer.vw_SignerTabs,
   ) as SignerTab[];
 
   const pages = useMemo(() => {
@@ -362,7 +362,7 @@ export default function PdfSigner({
 
   // checkbox state by tabId
   const [checkboxByTab, setCheckboxByTab] = useState<Record<number, boolean>>(
-    {}
+    {},
   );
 
   // expose clear on pad if you need (kept for compatibility)
@@ -442,7 +442,7 @@ export default function PdfSigner({
         /* ---------- CHECKBOX (sadece kullanıcının kendi alanları) ---------- */
         if (kind === "checkbox" && isUserTab(t, otpCode, signerInformation)) {
           const s = Math.round(
-            DEFAULT_SIZES.checkbox.w * Math.min(scaleX, scaleY)
+            DEFAULT_SIZES.checkbox.w * Math.min(scaleX, scaleY),
           );
           const cx = x;
           const cy = y;
@@ -501,8 +501,8 @@ export default function PdfSigner({
           const borderColor = sigObj?.isSigned
             ? "#4caf50" // imzalı: yeşil
             : isActive
-            ? "#2196f3" // AKTİF: mavi
-            : "#e21414ff"; // pasif: kırmızı
+              ? "#2196f3" // AKTİF: mavi
+              : "#e21414ff"; // pasif: kırmızı
           const borderWidth = isActive ? 5 : 4;
 
           if (sigObj?.isSigned && sigObj.dataUrl) {
@@ -599,7 +599,7 @@ export default function PdfSigner({
     const yy = ((e.clientY - r.top) / r.height) * c.height;
 
     const hit = hitRectsRef.current.find(
-      (h) => xx >= h.x && xx <= h.x + h.w && yy >= h.y && yy <= h.y + h.h
+      (h) => xx >= h.x && xx <= h.x + h.w && yy >= h.y && yy <= h.y + h.h,
     );
     if (!hit) return;
 
@@ -657,7 +657,7 @@ export default function PdfSigner({
     const myTabs = signerTabs.filter(
       (t) =>
         (t.tab_type || "").toLowerCase() === "signature" &&
-        isUserTab(t, otpCode, signerInformation)
+        isUserTab(t, otpCode, signerInformation),
     );
 
     if (!myTabs.length) {
@@ -667,7 +667,7 @@ export default function PdfSigner({
 
     // Check if all signature fields are filled
     const unsignedTabs = myTabs.filter(
-      (t) => !signaturesByTab[t.tabId]?.isSigned
+      (t) => !signaturesByTab[t.tabId]?.isSigned,
     );
     if (unsignedTabs.length > 0) {
       showSnackbar(t("warning_fill_all_signatures"), "warning");
@@ -695,7 +695,7 @@ export default function PdfSigner({
       const first = empties[0];
       setTimeout(() => {
         const el = document.querySelector<HTMLInputElement>(
-          `[data-tab-id="${first.tabId}"]`
+          `[data-tab-id="${first.tabId}"]`,
         );
         el?.focus();
       }, 50);
@@ -714,7 +714,7 @@ export default function PdfSigner({
     const myCheckboxTabs = signerTabs.filter(
       (t) =>
         (t.tab_type || "").toLowerCase() === "checkbox" &&
-        isUserTab(t, otpCode, signerInformation)
+        isUserTab(t, otpCode, signerInformation),
     );
 
     const checkboxes = myCheckboxTabs.map((t) => {
@@ -915,7 +915,7 @@ export default function PdfSigner({
                     // Her karakter için yaklaşık 0.6em genişlik
                     const estimatedWidth = Math.max(
                       widthPct,
-                      currentText.length * 0.8 + 5
+                      currentText.length * 0.8 + 5,
                     );
                     dynamicWidth = Math.min(estimatedWidth, maxWidthPct);
                   }
@@ -984,7 +984,7 @@ export default function PdfSigner({
                       )}
                     </Box>
                   );
-                }
+                },
               )}
           </Box>
 
@@ -1055,7 +1055,7 @@ async function getMetadataInfo() {
             lon: String(pos.coords.longitude),
           }),
         () => resolve({ lat: "unknown", lon: "unknown" }),
-        { enableHighAccuracy: true, timeout: 5000 }
+        { enableHighAccuracy: true, timeout: 5000 },
       );
     } else resolve({ lat: "unknown", lon: "unknown" });
   });
