@@ -360,9 +360,7 @@ export default function RootLayout({
                 backgroundImage: `linear-gradient(
       90deg,
       #2C1737 0%,
-      #5C2230 25%,
-      #646E9F 50%,
-      #796171 75%,
+      #5C2230 50%,
       #453562 100%
     )`,
                 backgroundSize: "300% 300%",

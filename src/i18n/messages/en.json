@@ -327,9 +327,14 @@
       "completed": "Completed",
       "rejected": "Rejected"
     },
-    "title": "Welcome",
+    "title": "Admin Panel",
     "subtitle": "{firstName} {lastName}",
     "text": "Track your contract management and signing processes here.",
+    "documentBanner": "Documents",
+    "documentBannerDesc": "Digitized",
+    "waterBannerDesc": "Water Saved",
+    "carBannerDesc": "Driving Prevented",
+
     "totalContracts": "Total Contract",
     "totalSigned": "Total Signatures",
     "pendingSignatures": "Pending Signatures",

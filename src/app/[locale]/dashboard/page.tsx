@@ -65,6 +65,23 @@ export default async function Dashboard() {
     cache: "no-store",
   });
 
+  const sustainabilityRes = await fetch(
+    getBaseUrl(
+      `/api/getSustainabilityReport?userId=${encodeURIComponent(userId)}`,
+    ),
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    },
+  );
+
+  const bannerReport = sustainabilityRes.ok
+    ? await sustainabilityRes.json()
+    : null;
+
   const ab = await res.arrayBuffer();
 
   let rows: any[] | null = null;
@@ -93,7 +110,7 @@ export default async function Dashboard() {
         user: user?.user.id,
         userRole: userRole,
       }),
-    }
+    },
   );
 
   if (getUserDocumentTakip.status !== 200) {
@@ -103,7 +120,8 @@ export default async function Dashboard() {
 
   return (
     <Box display="flex" flexDirection="column" gap={3}>
-      <Banner user={user.user} />
+      <Banner user={user.user} report={bannerReport} />
+
       <ContractInfo data={getSignatureAnalyticsData} />
       <QuickAccess />
       <ChartComp data={report} />

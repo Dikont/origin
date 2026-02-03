@@ -327,9 +327,14 @@
       "completed": "Voltooid",
       "rejected": "Afgewezen"
     },
-    "title": "Welkom",
+    "title": "Beheerderspaneel",
     "subtitle": "{firstName} {lastName}",
     "text": "Volg hier je contractbeheer- en ondertekeningsprocessen.",
+    "documentBanner": "Documenten",
+    "documentBannerDesc": "Gedigitaliseerd",
+    "waterBannerDesc": "Water Bespaard",
+    "carBannerDesc": "Autoverkeer Voorkomen",
+
     "totalContracts": "Totaalcontract",
     "totalSigned": "Totaal aantal handtekeningen",
     "pendingSignatures": "Handtekeningen in afwachting",

@@ -68,7 +68,7 @@ function toBarProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
   const xLabels = labels.map((x) =>
-    x.date.toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit" })
+    x.date.toLocaleDateString("tr-TR", { day: "2-digit", month: "2-digit" }),
   );
   const yValues = labels.map((x) => x.count);
 

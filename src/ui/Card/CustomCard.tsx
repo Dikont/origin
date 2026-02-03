@@ -1,24 +1,43 @@
 "use client";
-import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import { styled, alpha } from "@mui/material/styles";
 
 interface CustomCardBlueProps {
   background?: string;
 }
 
 export const CustomBannerCard = styled(Box)(({ theme }) => ({
-  padding: "20px",
-  background: "linear-gradient(90deg, #00b16a 0%, #43e97b 100%)",
-  color: "#FFF",
-  borderRadius: "10px",
+  padding: 20,
+  borderRadius: 18,
+  position: "relative",
+  overflow: "hidden",
+
+  // dark glass
+  background: `linear-gradient(135deg, ${alpha("#5C2230", 0.92)} 0%, ${alpha(
+    "#5C2230",
+    0.88,
+  )} 60%, ${alpha("#5C2230", 0.9)} 100%)`,
+  border: `1px solid ${alpha(theme.palette.common.white, 0.08)}`,
   boxShadow:
-    "0px 3px 3px -2px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 1px 8px 0px rgba(0,0,0,0.12)",
-  transition: "transform 0.6s ease, box-shadow 0.6s ease",
-  transform: "scale(1)",
+    "0px 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05)",
+
+  transition: "transform 240ms ease, box-shadow 240ms ease",
+  transform: "translateY(0px)",
   "&:hover": {
     transform: "scale(1.02)",
     boxShadow:
       "0 0 0 0 rgba(0,0,0,0.3), 0px 10px 14px 1px rgba(0,0,0,0.22), 0 0 0 0 rgba(0,0,0,0.2)",
+  },
+
+  // soft glow accents (sol alt yeşil, sağ üst mavi)
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: -120,
+    background:
+      "radial-gradient(circle at 15% 70%, rgb(44 23 55), transparent 45%), radial-gradient(circle at 85% 25%, rgb(44 23 55), transparent 45%)",
+    filter: "blur(10px)",
+    pointerEvents: "none",
   },
 }));
 
