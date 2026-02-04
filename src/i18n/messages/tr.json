@@ -349,7 +349,7 @@
     "reportsDesc": "Raporlama ve Entegrasyon.",
     "weeklyCompletedSignatures": "Haftalık Tamamlanan İmza",
     "weeklyInvites": "Haftalık İmza Daveti",
-    "signatures": "{count, plural, one {# imza} other {# imza}}",
+    "signaturesLabel": "İmza",
     "recentContractsTitle": "Son Sözleşmeler",
     "colContractNo": "Sözleşme No",
     "colContractName": "Sözleşme Adı",

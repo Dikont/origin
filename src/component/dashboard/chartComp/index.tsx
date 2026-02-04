@@ -7,12 +7,7 @@ import { useTranslations } from "next-intl";
 type Point = { day: string; count: number };
 
 const commonSx = {
-  "& .MuiChartsAxis-line": { stroke: "#e0e0e0", strokeWidth: 1.5 },
-  "& .MuiChartsAxis-tickLabel": {
-    fill: "#666",
-    fontSize: 12,
-    fontWeight: 500,
-  },
+  "& .MuiChartsAxis-line": { stroke: "#000000", strokeWidth: 1.2 },
 
   // yatay grid dotted istersen:
   "& .MuiChartsGrid-horizontalLine": {
@@ -107,15 +102,25 @@ function toLineProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
   const max = Math.max(0, ...yValues);
   const niceMax = Math.max(10, Math.ceil(max / 10) * 10);
 
+  const tickStyleX = {
+    fontFamily: "Arial, sans-serif",
+    fill: "#000000",
+    fontSize: 12,
+    fontWeight: 700,
+  } as const;
+  const tickStyleY = {
+    fontFamily: "Arial, sans-serif",
+    fill: "#000000",
+    fontSize: 12,
+    fontWeight: 700,
+  } as const;
   return {
     xAxis: [
       {
         id: "bottom-axis",
         data: xLabels,
         scaleType: "point" as const,
-        tickLabelStyle: {
-          fontSize: 12,
-        },
+        tickLabelStyle: tickStyleX,
       },
     ],
     series: [{ data: yValues }],
@@ -124,11 +129,21 @@ function toLineProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
         min: 0,
         max: niceMax,
         tickNumber: 5,
+        tickLabelStyle: tickStyleY,
 
-        valueFormatter: (v: number) => t("signatures", { count: v }),
+        label: t("signaturesLabel"),
+
+        labelStyle: {
+          fontFamily: "Arial, sans-serif",
+          fill: "#000",
+          fontSize: 20,
+          fontWeight: 400,
+        },
+        valueFormatter: (v: number) => String(v),
       },
     ],
+
     grid: { horizontal: true, vertical: false },
-    margin: { top: 0, right: 0, bottom: 0, left: 10 },
+    margin: { top: 0, right: 0, bottom: 0, left: 0 },
   } as const;
 }

@@ -354,7 +354,7 @@
     "reportsDesc": "Reporting & Integration.",
     "weeklyCompletedSignatures": "Weekly Completed Signatures",
     "weeklyInvites": "Weekly Signature Invitations",
-    "signatures": "{count, plural, one {# signature} other {# signatures}}",
+    "signaturesLabel": "Signature",
     "recentContractsTitle": "Recent Contracts",
     "colContractNo": "Contract No",
     "colContractName": "Contract Name",

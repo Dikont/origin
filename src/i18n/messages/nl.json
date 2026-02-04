@@ -354,7 +354,7 @@
     "reportsDesc": "Rapportage & Integratie.",
     "weeklyCompletedSignatures": "Wekelijks voltooide handtekeningen",
     "weeklyInvites": "Wekelijkse handtekeninguitnodigingen",
-    "signatures": "{count, plural, one {# handtekening} other {# handtekeningen}}",
+    "signaturesLabel": "Handtekening",
     "recentContractsTitle": "Recente contracten",
     "colContractNo": "Contractnr.",
     "colContractName": "Contractnaam",
