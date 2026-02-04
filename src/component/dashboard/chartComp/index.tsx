@@ -1,9 +1,25 @@
 "use client";
+
 import { Grid, Paper, Typography } from "@mui/material";
-import { BarChart } from "@mui/x-charts/BarChart";
+import { LineChart } from "@mui/x-charts/LineChart";
 import { useTranslations } from "next-intl";
 
 type Point = { day: string; count: number };
+
+const commonSx = {
+  "& .MuiChartsAxis-line": { stroke: "#e0e0e0", strokeWidth: 1.5 },
+  "& .MuiChartsAxis-tickLabel": {
+    fill: "#666",
+    fontSize: 12,
+    fontWeight: 500,
+  },
+
+  // yatay grid dotted istersen:
+  "& .MuiChartsGrid-horizontalLine": {
+    stroke: "#e5e7eb",
+    strokeDasharray: "3 4",
+  },
+} as const;
 
 export default function ChartComp({
   data,
@@ -12,47 +28,63 @@ export default function ChartComp({
 }) {
   const t = useTranslations("dashboard");
 
-  const ts = toBarProps(data.timeSeries, t);
-  const signed = toBarProps(data.timeSeriesSigned, t);
+  const ts = toLineProps(data.timeSeries, t);
+  const signed = toLineProps(data.timeSeriesSigned, t);
 
   return (
     <Grid container rowSpacing={3} columnSpacing={4}>
       <Grid size={{ xs: 12, md: 6 }}>
         <Paper sx={{ p: 2, borderRadius: "10px" }}>
-          <Typography variant="h5" textAlign="center" color="#262626" mb="20px">
+          <Typography variant="h5" textAlign="start" mb="20px" ml="20px">
             {t("weeklyCompletedSignatures")}
           </Typography>
-          <BarChart
+          <LineChart
             {...ts}
             height={400}
+            series={ts.series.map((s) => ({
+              ...s,
+              area: true,
+              curve: "natural",
+              showMark: false,
+              color: "#2e7d32",
+            }))}
             sx={{
-              "& .MuiBarElement-root": { rx: 6 },
-              "& .MuiChartsAxis-line": { stroke: "#e0e0e0", strokeWidth: 1.5 },
-              "& .MuiChartsAxis-tickLabel": {
-                fill: "#666",
-                fontSize: 12,
-                fontWeight: 500,
+              ...commonSx,
+              "& .MuiAreaElement-root": {
+                fillOpacity: 0.2,
+              },
+              "& .MuiLineElement-root": {
+                strokeWidth: 3,
               },
             }}
           />
         </Paper>
       </Grid>
 
+      {/* Haftalık İmza Daveti */}
       <Grid size={{ xs: 12, md: 6 }}>
         <Paper sx={{ p: 2, borderRadius: "10px" }}>
-          <Typography variant="h5" textAlign="center" color="#262626" mb="20px">
+          <Typography variant="h5" textAlign="start" mb="20px" ml="20px">
             {t("weeklyInvites")}
           </Typography>
-          <BarChart
+
+          <LineChart
             {...signed}
             height={400}
+            series={signed.series.map((s) => ({
+              ...s,
+              area: true,
+              curve: "natural",
+              showMark: false,
+              color: "#453562",
+            }))}
             sx={{
-              "& .MuiBarElement-root": { rx: 6 },
-              "& .MuiChartsAxis-line": { stroke: "#e0e0e0", strokeWidth: 1.5 },
-              "& .MuiChartsAxis-tickLabel": {
-                fill: "#666",
-                fontSize: 12,
-                fontWeight: 500,
+              ...commonSx,
+              "& .MuiAreaElement-root": {
+                fillOpacity: 0.2,
+              },
+              "& .MuiLineElement-root": {
+                strokeWidth: 3,
               },
             }}
           />
@@ -62,7 +94,8 @@ export default function ChartComp({
   );
 }
 
-function toBarProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
+function toLineProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
+  console.log("Gelen Ham Veri:", arr);
   const labels = (arr ?? [])
     .map((d) => ({ date: new Date(d.day), count: d.count ?? 0 }))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -76,17 +109,27 @@ function toBarProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
   const niceMax = Math.max(10, Math.ceil(max / 10) * 10);
 
   return {
-    xAxis: [{ data: xLabels }],
+    xAxis: [
+      {
+        id: "bottom-axis",
+        data: xLabels,
+        scaleType: "point" as const,
+        tickLabelStyle: {
+          fontSize: 12,
+        },
+      },
+    ],
     series: [{ data: yValues }],
     yAxis: [
       {
         min: 0,
         max: niceMax,
         tickNumber: 5,
+
         valueFormatter: (v: number) => t("signatures", { count: v }),
       },
     ],
     grid: { horizontal: true, vertical: false },
-    margin: { top: 0, right: 0, bottom: 0, left: 0 },
-  };
+    margin: { top: 0, right: 0, bottom: 0, left: 10 },
+  } as const;
 }
