@@ -360,7 +360,13 @@
     "colContractName": "Contractnaam",
     "colStatus": "Situatie",
     "colFirstSentDate": "Eerste verzenddatum",
-    "colLastSignDate": "Laatste ondertekeningsdatum"
+    "colLastSignDate": "Laatste ondertekeningsdatum",
+    "searchPlaceholder": "Zoek...",
+    "table": {
+      "rowsPerPage": "Rijen per pagina",
+      "noRows": "Geen records",
+      "noResults": "Geen resultaten gevonden"
+    }
   },
   "template": {
     "readyDraftsTitle": "Kant-en-klare concepten",

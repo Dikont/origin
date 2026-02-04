@@ -95,7 +95,6 @@ export default function ChartComp({
 }
 
 function toLineProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
-  console.log("Gelen Ham Veri:", arr);
   const labels = (arr ?? [])
     .map((d) => ({ date: new Date(d.day), count: d.count ?? 0 }))
     .sort((a, b) => a.date.getTime() - b.date.getTime());

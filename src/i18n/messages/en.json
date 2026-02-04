@@ -360,7 +360,13 @@
     "colContractName": "Contract Name",
     "colStatus": "Status",
     "colFirstSentDate": "First Sent Date",
-    "colLastSignDate": "Last Sign Date"
+    "colLastSignDate": "Last Sign Date",
+    "searchPlaceholder": "Search...",
+    "table": {
+      "rowsPerPage": "Rows per page",
+      "noRows": "No rows",
+      "noResults": "No results found"
+    }
   },
   "template": {
     "readyDraftsTitle": "Ready Drafts",

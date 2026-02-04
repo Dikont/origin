@@ -1,60 +1,88 @@
 "use client";
+
 import { Box } from "@mui/material";
-export default function Index({ children }: { children: React.ReactNode }) {
+import React from "react";
+
+export default function CssDataGridResponsive({
+  children,
+  height = 630,
+}: {
+  children: React.ReactNode;
+  height?: number;
+}) {
   return (
     <Box
       sx={{
-        width: "100%",
-        height: "600px",
         position: "relative",
+        height: { xs: 520, md: height },
         overflow: "hidden",
-        transform: "translateZ(0)", // YENİ STACKING CONTEXT
-        isolation: "isolate", // CSS İZOLASYON
+
+        // Kart hissi
+        borderRadius: 3,
+        border: "1px solid rgba(17,24,39,0.08)",
+        backgroundColor: "#fff",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
       }}
     >
+      {/* sol fade */}
+      <Box
+        sx={{
+          pointerEvents: "none",
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 28,
+          zIndex: 2,
+          background:
+            "linear-gradient(90deg, rgba(255,255,255,1) 20%, rgba(255,255,255,0) 100%)",
+        }}
+      />
+
+      {/* sağ fade */}
+      <Box
+        sx={{
+          pointerEvents: "none",
+          position: "absolute",
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: 28,
+          zIndex: 2,
+          background:
+            "linear-gradient(270deg, rgba(255,255,255,1) 20%, rgba(255,255,255,0) 100%)",
+        }}
+      />
+
       <Box
         sx={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          overflowX: "scroll", // auto yerine scroll
+          inset: 0,
+          overflowX: "auto",
           overflowY: "hidden",
-          // Mobil scroll aktif etme
-          WebkitOverflowScrolling: "touch", // iOS smooth scroll
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": {
-            height: "10px", // Scroll bar yüksekliği
-            backgroundColor: "#f5f5f5",
+          WebkitOverflowScrolling: "touch",
+
+          // İç boşluk (grid kenarlara yapışmasın)
+          p: 0, // DataGrid zaten full olsun istiyorsan 0 kalsın
+          // istersen şöyle yap: p: { xs: 0, md: 0.25 },
+
+          // Modern scrollbar
+          "&::-webkit-scrollbar": { height: 10 },
+          "&::-webkit-scrollbar-thumb": {
+            borderRadius: 999,
+            backgroundColor: "rgba(17,24,39,0.18)",
+            border: "2px solid rgba(255,255,255,0.9)",
+          },
+          "&:hover::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(17,24,39,0.28)",
           },
           "&::-webkit-scrollbar-track": {
-            backgroundColor: "#f5f5f5",
-            borderRadius: "10px",
+            backgroundColor: "transparent",
           },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#c1c1c1",
-            borderRadius: "10px",
-            border: "2px solid #f5f5f5",
-            "&:hover": {
-              backgroundColor: "#a8a8a8",
-            },
-            "&:active": {
-              backgroundColor: "#888",
-            },
-          },
-          // Mobil için touch scroll
-          "@media (max-width: 768px)": {
-            "&::-webkit-scrollbar": {
-              height: "14px", // Mobilde daha kalın
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "#666", // Daha koyu renk
-            },
-            // Touch scroll indicator
-            scrollbarWidth: "thin", // Firefox
-            scrollbarColor: "#666 #f5f5f5", // Firefox
-          },
+
+          // Firefox
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(17,24,39,0.25) transparent",
         }}
       >
         {children}

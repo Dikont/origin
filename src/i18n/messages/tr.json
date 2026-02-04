@@ -355,7 +355,13 @@
     "colContractName": "Sözleşme Adı",
     "colStatus": "Durum",
     "colFirstSentDate": "İlk Gönderim Tarihi",
-    "colLastSignDate": "Son İmza Tarihi"
+    "colLastSignDate": "Son İmza Tarihi",
+    "searchPlaceholder": "Ara...",
+    "table": {
+      "rowsPerPage": "Satır / Sayfa",
+      "noRows": "Kayıt bulunamadı",
+      "noResults": "Sonuç bulunamadı"
+    }
   },
   "template": {
     "readyDraftsTitle": "Hazır Taslaklar",
