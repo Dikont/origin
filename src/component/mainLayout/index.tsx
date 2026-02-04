@@ -141,6 +141,19 @@ export default function RootLayout({
   const router = useRouter();
 
   const pathname = usePathname();
+  // Aktif menü için yardımcılar
+  const normalizePath = (p: string) => {
+    const noQuery = p.split("?")[0].split("#")[0];
+    return noQuery !== "/" ? noQuery.replace(/\/+$/, "") : "/";
+  };
+
+  const isActiveMenu = (current: string, target?: string) => {
+    if (!target) return false;
+    const cur = normalizePath(current);
+    const t = normalizePath(target);
+    if (cur === t) return true;
+    return cur.startsWith(t + "/");
+  };
 
   const currentLocale = pathname.split("/")[1];
 
@@ -362,7 +375,7 @@ export default function RootLayout({
                   xs: 0,
                   md: open ? `${drawerWidth}px` : "57px",
                 },
-                // ✅ background yerine backgroundImage kullan
+                // background yerine backgroundImage kullan
                 display: "flex",
                 backgroundImage: `linear-gradient(
       90deg,
@@ -621,9 +634,7 @@ export default function RootLayout({
               <Divider />
               <List>
                 {menuItems.map((item, index) => {
-                  const segments = pathname.split("/").filter(Boolean);
-                  const cleanPath = "/" + (segments.slice(1).join("/") ?? "");
-                  const isActive = cleanPath === item.url;
+                  const active = isActiveMenu(pathname, item.url);
                   if (item.type === "subheader") {
                     return open ? (
                       <ListSubheader
@@ -649,20 +660,6 @@ export default function RootLayout({
                       disableHoverListener={open}
                       placement="right"
                       sx={{
-                        "&:hover": {
-                          bgcolor: "#e6f4ff",
-                          color: "#1677ff",
-                          ".listItemIcon": { color: "#1677ff" },
-                        },
-                        "&:hover > div > div": {
-                          color: "#1677ff",
-                        },
-                        ...(isActive && {
-                          bgcolor: "#e6f4ff",
-                          color: "#1677ff",
-                          ".listItemIcon": { color: "#1677ff" },
-                          "& > div > div": { color: "#1677ff" },
-                        }),
                         mb: 1,
                       }}
                     >
@@ -672,7 +669,44 @@ export default function RootLayout({
                           if (item.url) router.push(item.url);
                         }}
                       >
-                        <ListItemButton>
+                        <ListItemButton
+                          selected={active}
+                          sx={{
+                            /* ========== NORMAL ========== */
+                            color: "#3c3c3c",
+
+                            "& .MuiListItemIcon-root": {
+                              color: "#3c3c3c",
+                            },
+
+                            /* ========== HOVER (seçili değilken) ========== */
+                            "&:hover": {
+                              bgcolor: "#646E9F",
+                              color: "#ffffff",
+                            },
+                            "&:hover .MuiListItemIcon-root": {
+                              color: "#ffffff",
+                            },
+
+                            /* ========== SELECTED (aktif sayfa) ========== */
+                            "&.Mui-selected": {
+                              bgcolor: "#453562", // seçiliyken bg
+                              color: "#ffffff", // seçiliyken text
+                            },
+                            "&.Mui-selected .MuiListItemIcon-root": {
+                              color: "#ffffff", // seçiliyken icon
+                            },
+
+                            /* ========== SELECTED + HOVER ========== */
+                            "&.Mui-selected:hover": {
+                              bgcolor: "#5a4375", // seçiliyken hover bg
+                              color: "#ffffff",
+                            },
+                            "&.Mui-selected:hover .MuiListItemIcon-root": {
+                              color: "#ffffff",
+                            },
+                          }}
+                        >
                           <ListItemIcon>{item.icon}</ListItemIcon>
                           <ListItemText primary={item.text} />
                         </ListItemButton>
