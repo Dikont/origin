@@ -83,20 +83,43 @@ export const CustomCardBlue = styled(Box, {
 export const CustomCardQuickAccess = styled(Box)(({ theme }) => ({
   height: "100%",
   display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  borderRadius: "10px",
-  boxShadow:
-    "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
-  background: "linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%)",
-  transition: "transform 0.7s ease, box-shadow 0.7s ease",
-  transform: "scale(1)",
+  borderRadius: 14,
+  background: "#646E9F", // ✅ sabit
+  position: "relative",
+  overflow: "hidden",
+  cursor: "pointer",
+
+  // modern görünüm: ince border + yumuşak shadow
+  border: `1px solid ${alpha("#ffffff", 0.14)}`,
+  boxShadow: "0px 10px 28px rgba(0,0,0,0.18)",
+  transition:
+    "transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease",
+
+  // hafif “shine” overlay (arka plan sabit ama premium hissi verir)
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    background:
+      "radial-gradient(900px circle at 0% 0%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 55%)",
+    opacity: 0.9,
+    pointerEvents: "none",
+  },
+
   "&:hover": {
-    boxShadow:
-      "0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12)",
-    background: "linear-gradient(120deg, #cfdef3 0%, #e0eafc 100%)",
-    transform: "scale(1.02)",
-    cursor: "pointer",
+    transform: "scale(1.01)",
+    boxShadow: "0px 18px 46px rgba(0,0,0,0.28)",
+    borderColor: alpha("#ffffff", 0.28),
+  },
+
+  "&:active": {
+    transform: "translateY(-1px)",
+  },
+
+  // klavye ile odaklanınca da güzel dursun
+  "&:focus-visible": {
+    outline: `3px solid ${alpha(theme.palette.primary.main, 0.35)}`,
+    outlineOffset: 2,
   },
 }));
 

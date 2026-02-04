@@ -352,11 +352,18 @@ export default function RootLayout({
               position="fixed"
               open={open}
               sx={{
-                width: `calc(100% - ${open ? drawerWidth : 57}px)`,
-                ml: `${drawerWidth}px`,
-                display: { xs: "none", md: "flex" },
-
+                // Desktop: drawer'a göre genişlik ayarla
+                width: {
+                  xs: "100%",
+                  md: `calc(100% - ${open ? drawerWidth : 57}px)`,
+                },
+                // Desktop: drawer açıkken margin-left ver
+                ml: {
+                  xs: 0,
+                  md: open ? `${drawerWidth}px` : "57px",
+                },
                 // ✅ background yerine backgroundImage kullan
+                display: "flex",
                 backgroundImage: `linear-gradient(
       90deg,
       #2C1737 0%,
@@ -374,30 +381,73 @@ export default function RootLayout({
               <Toolbar
                 sx={{
                   display: "flex",
-                  justifyContent: "space-between",
                   alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 1,
+                  minHeight: 64,
+                  px: { xs: 1.5, md: 2 },
                 }}
               >
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawerOpen}
-                  edge="start"
-                  sx={[{ mr: 2 }, open && { display: "none" }]}
-                >
-                  <MenuIcon />
-                </IconButton>
+                {/* SOL TARAF: Mobil hamburger + Desktop drawer open */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {/* MOBİL HAMBURGER (xs - sm) */}
+                  <Box
+                    sx={{
+                      display: { xs: "flex", md: "none" },
+                      alignItems: "center",
+                    }}
+                  >
+                    <IconButton
+                      color="inherit"
+                      onClick={() => setMobilNavOpen(!mobilNavOpen)}
+                      sx={{ mr: 0.5 }}
+                    >
+                      {mobilNavOpen ? <MenuOpenIcon /> : <MenuIconHamburger />}
+                    </IconButton>
 
+                    {/*  LOGO (hamburger yanında) */}
+                    <Box
+                      component="img"
+                      src="/Dikont-Logo-Beyaz.svg"
+                      alt="Dikont"
+                      onClick={() => router.push("/dashboard")}
+                      sx={{
+                        ml: 1,
+                        width: 100,
+                        height: 34,
+                        objectFit: "contain",
+                        cursor: "pointer",
+                        // çok küçük ekranda taşmasın
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Box>
+
+                  {/* DESKTOP DRAWER OPEN BUTONU (md+) */}
+                  <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      onClick={handleDrawerOpen}
+                      edge="start"
+                      sx={[{ mr: 1 }, open && { display: "none" }]}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+
+                {/* SAĞ TARAF: Dil + User */}
                 <Box
                   sx={{
                     marginLeft: "auto",
                     display: "flex",
                     alignItems: "center",
-                    gap: 2,
+                    gap: { xs: 1, md: 2 },
                   }}
                 >
-                  {/* DİL SEÇİCİ (YAN YANA) */}
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {/* DİL SEÇİCİ */}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     {languageOptions.map((lang) => {
                       const isActive = lang.code === currentLocale;
 
@@ -409,9 +459,8 @@ export default function RootLayout({
                           variant="text"
                           sx={{
                             minWidth: 0,
-                            px: 2.5,
-                            py: 1.2,
-
+                            px: { xs: 1.2, md: 2.5 },
+                            py: { xs: 0.8, md: 1.2 },
                             borderRadius: 2,
                             display: "flex",
                             alignItems: "center",
@@ -419,7 +468,6 @@ export default function RootLayout({
                             textTransform: "none",
                             color: "#fff",
 
-                            // aktif değilken
                             opacity: isActive ? 1 : 0.65,
                             backgroundColor: isActive
                               ? "rgba(0,0,0,0.22)"
@@ -447,8 +495,11 @@ export default function RootLayout({
                                 : "none",
                             }}
                           />
+
+                          {/* ✅ Mobilde yazı gizli, sm+ görünür */}
                           <Typography
                             sx={{
+                              display: { xs: "none", sm: "block" },
                               fontWeight: isActive ? 700 : 500,
                               fontSize: 13,
                               color: "#fff",
@@ -467,22 +518,27 @@ export default function RootLayout({
                     sx={{
                       p: 0,
                       "&:hover": { backgroundColor: "transparent" },
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
                     }}
                   >
-                    <Avatar alt="Remy Sharp" />
+                    <Avatar alt="User" />
+                    {/* ✅ Mobilde isim gizli, md+ görünür */}
                     <Typography
                       sx={{
-                        ml: 1,
-                        fontWeight: 500, // 👈 KALINLIK
+                        display: { xs: "none", md: "block" },
+                        fontWeight: 500,
                         fontSize: 16,
-                        color: "#fff", // header koyuysa net görünür
+                        color: "#fff",
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {user?.firstName} {user?.lastName}
                     </Typography>
                   </IconButton>
 
-                  {/* USER MENÜ (LOGOUT KALIYOR) */}
+                  {/* USER MENÜ */}
                   <Menu
                     sx={{ mt: "45px" }}
                     id="menu-appbar"
@@ -517,7 +573,9 @@ export default function RootLayout({
             <Drawer
               variant="permanent"
               open={open}
-              sx={{ display: { xs: "none", md: "block" } }}
+              sx={{
+                display: { xs: "none", md: "block" },
+              }}
             >
               <DrawerHeader
                 sx={{
