@@ -1,20 +1,8 @@
 "use client";
 
 import { useSnackbar } from "@/component/SnackbarProvider";
-import {
-  Box,
-  Button,
-  Grid,
-  Modal,
-  Paper,
-  Stack,
-  Typography,
-  // Yeni eklenen importlar (Header için)
-  IconButton,
-  Menu,
-  MenuItem,
-} from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Box, Button, Modal, Paper, Stack, Typography } from "@mui/material";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 // Yeni eklenen navigasyon hookları
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -30,6 +18,9 @@ const fileToPdfBase64 = (file: File) =>
     fr.readAsDataURL(file);
   });
 
+type LangCode = "tr" | "en" | "nl";
+type Lang = { code: LangCode; label: string; flag?: string };
+
 export default function ConfirmationOfDocumentPage() {
   const t = useTranslations("confirmationOfDocument");
   const { showSnackbar } = useSnackbar();
@@ -38,9 +29,27 @@ export default function ConfirmationOfDocumentPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
-    null
+
+  const languageOptions: Lang[] = useMemo(
+    () => [
+      { code: "tr", label: "TR", flag: "/login/tr1.png" },
+      { code: "en", label: "EN", flag: "/login/en2.png" },
+      { code: "nl", label: "NL", flag: "/login/nl3.png" },
+    ],
+    [],
   );
+
+  const currentLocale = (pathname?.split("/")?.[1] as LangCode) || "tr";
+
+  const changeLanguage = (lng: LangCode) => {
+    // /tr/xxx -> /en/xxx
+    const segments = pathname.split("/");
+    segments[1] = lng;
+    const newPath = segments.join("/");
+
+    const qs = searchParams.toString();
+    router.push(qs ? `${newPath}?${qs}` : newPath);
+  };
 
   const [isUploaded, setIsUploaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -59,19 +68,6 @@ export default function ConfirmationOfDocumentPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement | any>(null);
   const modalCanvasRef = useRef<HTMLCanvasElement | any>(null);
-
-  // --- DİL DEĞİŞTİRME FONKSİYONU ---
-  const changeLanguage = (lng: string) => {
-    // Mevcut path'i parçala: /tr/confirm... -> ["", "tr", "confirm..."]
-    const segments = pathname.split("/");
-    segments[1] = lng; // "tr" yi "en" yap
-
-    const newPath = segments.join("/");
-    // Dil değişirken varsa ?documentId=... gibi parametreleri koru
-    router.push(`${newPath}?${searchParams.toString()}`);
-
-    setLanguageAnchor(null);
-  };
 
   // pdfjs worker yükle
   useEffect(() => {
@@ -104,7 +100,7 @@ export default function ConfirmationOfDocumentPage() {
   async function renderPage(
     pageNum: number,
     ref: React.RefObject<HTMLCanvasElement>,
-    maxW: number
+    maxW: number,
   ) {
     if (!ref.current || !pdfDoc) return;
     const canvas = ref.current;
@@ -198,10 +194,6 @@ export default function ConfirmationOfDocumentPage() {
       } else {
         showSnackbar(data?.message || t("snackInvalid"), "warning", 5000);
       }
-
-      if (data?.redirectUrl) {
-        // router.push(data.redirectUrl)
-      }
     } catch (err) {
       console.error(err);
       showSnackbar(t("snackOperationError"), "error", 5000);
@@ -211,52 +203,125 @@ export default function ConfirmationOfDocumentPage() {
   };
 
   return (
-    <Box style={{ width: "100%", height: "100vh" }}>
-      {/* ---- FIXED HEADER BAŞLANGIÇ (Index.js'den alındı) ---- */}
+    <Box sx={{ width: "100%", height: "100vh" }}>
+      {/* ---- FIXED HEADER BAŞLANGIÇ ---- */}
       <Box
-        position="fixed"
-        top={0}
-        left={0}
-        width="100%"
-        height="64px"
-        bgcolor="#fff"
-        zIndex={20}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        sx={{ boxShadow: 1 }} // Hafif bir gölge ekledim ki arka plandan ayrılsın
+        component="header"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "64px",
+          zIndex: 20,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#fff",
+          boxShadow: "none",
+          backgroundImage:
+            "linear-gradient(90deg,#2C1737 0%,#5C2230 50%,#453562 100%)",
+          backgroundSize: "300% 300%",
+          animation: "headerGradient 15s ease infinite",
+          "@keyframes headerGradient": {
+            "0%": { backgroundPosition: "0% 50%" },
+            "50%": { backgroundPosition: "100% 50%" },
+            "100%": { backgroundPosition: "0% 50%" },
+          },
+        }}
       >
         <Box
-          width="100%"
-          maxWidth="1400px"
-          px="32px"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            px: { xs: 1.5, md: "32px" }, // xs biraz küçülsün
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+          }}
         >
           {/* Logo */}
-          <img
-            src="/Dikont-Logo.svg"
-            alt="Logo"
-            style={{ width: "120px", height: "auto" }}
+          <Box
+            component="img"
+            src="/Dikont-Logo-Beyaz.svg"
+            alt="Dikont"
+            sx={{
+              width: { xs: 110, sm: 130 },
+              height: 34,
+              objectFit: "contain",
+              flexShrink: 0,
+            }}
           />
 
-          {/* Dil */}
-          <IconButton onClick={(e) => setLanguageAnchor(e.currentTarget)}>
-            <Typography>{pathname.split("/")[1].toUpperCase()}</Typography>
-          </IconButton>
-
-          <Menu
-            anchorEl={languageAnchor}
-            open={Boolean(languageAnchor)}
-            onClose={() => setLanguageAnchor(null)}
+          {/* Dil: sm+ butonlar */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+            }}
           >
-            {["tr", "en", "nl"].map((lng) => (
-              <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
-                {lng.toUpperCase()}
-              </MenuItem>
-            ))}
-          </Menu>
+            {languageOptions.map((lang) => {
+              const isActive = lang.code === currentLocale;
+              return (
+                <Button
+                  key={lang.code}
+                  onClick={() => changeLanguage(lang.code)}
+                  disableRipple
+                  variant="text"
+                  sx={{
+                    minWidth: 0,
+                    px: { sm: 2, md: 2.5 },
+                    py: 1,
+                    borderRadius: 2,
+                    textTransform: "none",
+                    color: "#fff",
+                    opacity: isActive ? 1 : 0.65,
+                    backgroundColor: isActive
+                      ? "rgba(0,0,0,0.22)"
+                      : "transparent",
+                    "&:hover": {
+                      backgroundColor: isActive
+                        ? "rgba(0,0,0,0.28)"
+                        : "rgba(255,255,255,0.12)",
+                      opacity: 1,
+                    },
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {lang.flag ? (
+                    <Box
+                      component="img"
+                      src={lang.flag}
+                      alt={lang.label}
+                      sx={{
+                        width: 22,
+                        height: 16,
+                        borderRadius: "2px",
+                        objectFit: "cover",
+                        boxShadow: isActive
+                          ? "0 0 0 2px rgba(255,255,255,0.7)"
+                          : "none",
+                      }}
+                    />
+                  ) : null}
+
+                  <Typography
+                    sx={{
+                      fontWeight: isActive ? 700 : 500,
+                      fontSize: 13,
+                      color: "#fff",
+                    }}
+                  >
+                    {lang.label}
+                  </Typography>
+                </Button>
+              );
+            })}
+          </Box>
         </Box>
       </Box>
       {/* ---- FIXED HEADER BİTİŞ ---- */}

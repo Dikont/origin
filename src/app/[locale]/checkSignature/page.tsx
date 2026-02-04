@@ -1,19 +1,12 @@
 "use client";
 
-import {
-  Backdrop,
-  CircularProgress,
-  IconButton,
-  Paper,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { Backdrop, CircularProgress, Paper } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckSignature from "@/component/checkSignature";
@@ -22,7 +15,8 @@ import { useDispatch } from "react-redux";
 import { setSignerData } from "@/store/slices/signerSlice";
 import { useTranslations } from "next-intl";
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL!;
+type LangCode = "tr" | "en" | "nl";
+type Lang = { code: LangCode; label: string; flag?: string };
 
 export default function Index() {
   const t = useTranslations("checkSignature");
@@ -41,23 +35,30 @@ export default function Index() {
   const [loading, setLoading] = useState(false);
   const [isSms, setIsSms] = useState("false");
 
-  const [languageAnchor, setLanguageAnchor] = useState<null | HTMLElement>(
-    null,
-  );
   // Statsu kotrolü ile sözleşme reddedildi mi reddedimedi mi (0 ise Reddedildi)
   const [contractStatus, setContractStatus] = useState<null | number>(null);
   const [rejectedBy, setRejectedBy] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
 
-  const changeLanguage = (lng: string) => {
+  const languageOptions: Lang[] = useMemo(
+    () => [
+      { code: "tr", label: "TR", flag: "/login/tr1.png" },
+      { code: "en", label: "EN", flag: "/login/en2.png" },
+      { code: "nl", label: "NL", flag: "/login/nl3.png" },
+    ],
+    [],
+  );
+
+  const currentLocale = (pathname?.split("/")?.[1] as LangCode) || "tr";
+
+  const changeLanguage = (lng: LangCode) => {
+    // /tr/xxx -> /en/xxx
     const segments = pathname.split("/");
     segments[1] = lng;
-
     const newPath = segments.join("/");
-    //dil değiştirdiğinde query parametrelerini koru
-    router.push(`${newPath}?${searchParams.toString()}`);
 
-    setLanguageAnchor(null);
+    const qs = searchParams.toString();
+    router.push(qs ? `${newPath}?${qs}` : newPath);
   };
 
   // Sözleşme status kontrolü 0 ise reddedilmiş oluyor
@@ -186,49 +187,122 @@ export default function Index() {
 
       {/* ---- FIXED HEADER WITH CENTERED CONTENT ---- */}
       <Box
-        position="fixed"
-        top={0}
-        left={0}
-        width="100%"
-        height="64px"
-        bgcolor="#fff"
-        zIndex={20}
-        display="flex"
-        alignItems="center"
-        justifyContent="center" // <-- Dikkat: içerik ortalanıyor
+        component="header"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "64px",
+          zIndex: 20,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#fff",
+          boxShadow: "none",
+          backgroundImage:
+            "linear-gradient(90deg,#2C1737 0%,#5C2230 50%,#453562 100%)",
+          backgroundSize: "300% 300%",
+          animation: "headerGradient 15s ease infinite",
+          "@keyframes headerGradient": {
+            "0%": { backgroundPosition: "0% 50%" },
+            "50%": { backgroundPosition: "100% 50%" },
+            "100%": { backgroundPosition: "0% 50%" },
+          },
+        }}
       >
-        {/* İçteki sınırlı genişlikli kutu */}
         <Box
-          width="100%"
-          maxWidth="1400px" // <-- Bu genişliği login sayfasıyla aynı yap
-          px="32px"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            px: { xs: 1.5, md: "32px" }, // xs biraz küçülsün
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+          }}
         >
           {/* Logo */}
-          <img
-            src="/Dikont-Logo.svg"
-            alt="Logo"
-            style={{ width: "120px", height: "auto" }}
+          <Box
+            component="img"
+            src="/Dikont-Logo-Beyaz.svg"
+            alt="Dikont"
+            sx={{
+              width: { xs: 110, sm: 130 },
+              height: 34,
+              objectFit: "contain",
+              flexShrink: 0,
+            }}
           />
 
-          {/* Dil */}
-          <IconButton onClick={(e) => setLanguageAnchor(e.currentTarget)}>
-            <Typography>{pathname.split("/")[1].toUpperCase()}</Typography>
-          </IconButton>
-
-          <Menu
-            anchorEl={languageAnchor}
-            open={Boolean(languageAnchor)}
-            onClose={() => setLanguageAnchor(null)}
+          {/* Dil: sm+ butonlar */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+            }}
           >
-            {["tr", "en", "nl"].map((lng) => (
-              <MenuItem key={lng} onClick={() => changeLanguage(lng)}>
-                {lng.toUpperCase()}
-              </MenuItem>
-            ))}
-          </Menu>
+            {languageOptions.map((lang) => {
+              const isActive = lang.code === currentLocale;
+              return (
+                <Button
+                  key={lang.code}
+                  onClick={() => changeLanguage(lang.code)}
+                  disableRipple
+                  variant="text"
+                  sx={{
+                    minWidth: 0,
+                    px: { sm: 2, md: 2.5 },
+                    py: 1,
+                    borderRadius: 2,
+                    textTransform: "none",
+                    color: "#fff",
+                    opacity: isActive ? 1 : 0.65,
+                    backgroundColor: isActive
+                      ? "rgba(0,0,0,0.22)"
+                      : "transparent",
+                    "&:hover": {
+                      backgroundColor: isActive
+                        ? "rgba(0,0,0,0.28)"
+                        : "rgba(255,255,255,0.12)",
+                      opacity: 1,
+                    },
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {lang.flag ? (
+                    <Box
+                      component="img"
+                      src={lang.flag}
+                      alt={lang.label}
+                      sx={{
+                        width: 22,
+                        height: 16,
+                        borderRadius: "2px",
+                        objectFit: "cover",
+                        boxShadow: isActive
+                          ? "0 0 0 2px rgba(255,255,255,0.7)"
+                          : "none",
+                      }}
+                    />
+                  ) : null}
+
+                  <Typography
+                    sx={{
+                      fontWeight: isActive ? 700 : 500,
+                      fontSize: 13,
+                      color: "#fff",
+                    }}
+                  >
+                    {lang.label}
+                  </Typography>
+                </Button>
+              );
+            })}
+          </Box>
         </Box>
       </Box>
       {/* ---- /HEADER ---- */}
