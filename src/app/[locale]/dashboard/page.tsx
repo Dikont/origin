@@ -66,9 +66,7 @@ export default async function Dashboard() {
   });
 
   const sustainabilityRes = await fetch(
-    getBaseUrl(
-      `/api/getSustainabilityReport?userId=${encodeURIComponent(userId)}`,
-    ),
+    getBaseUrl("/api/getSustainabilityReport"),
     {
       method: "GET",
       headers: {
@@ -81,7 +79,6 @@ export default async function Dashboard() {
   const bannerReport = sustainabilityRes.ok
     ? await sustainabilityRes.json()
     : null;
-
   const ab = await res.arrayBuffer();
 
   let rows: any[] | null = null;

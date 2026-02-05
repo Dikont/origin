@@ -15,18 +15,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Auth token yok" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
-    if (!userId) {
-      return NextResponse.json(
-        { error: "userId parametresi eksik" },
-        { status: 400 },
-      );
-    }
-
-    const url = `${API}/api/Sustainability/GetReport?userId=${encodeURIComponent(
-      userId,
-    )}`;
+    const url = `${API}/SustainabilityService/Sustainability/GetReport`;
 
     const resp = await fetch(url, {
       method: "GET",
