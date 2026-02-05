@@ -300,6 +300,8 @@
     "phoneNumber": "Phone Number"
   },
   "confirmationOfDocument": {
+    "companyName": "Dikont Software and Digital Signature Inc.",
+    "copyright": "© {year} – All rights reserved.",
     "title": "Upload Document",
     "dropHintPrimary": "Drop your PDF here or upload",
     "startButton": "Start",

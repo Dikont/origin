@@ -296,6 +296,8 @@
     "phoneNumber": "Telefon Numaranız"
   },
   "confirmationOfDocument": {
+    "companyName": "Dikont Yazılım ve Dijital İmza A.Ş.",
+    "copyright": "© {year} – Tüm hakları saklıdır.",
     "title": "Doküman Yükleme",
     "dropHintPrimary": "PDF dosyanızı buraya bırakın veya yükleyin",
     "startButton": "Başla",

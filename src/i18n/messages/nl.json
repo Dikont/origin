@@ -300,6 +300,8 @@
     "phoneNumber": "Telefoonnummer"
   },
   "confirmationOfDocument": {
+    "companyName": "Dikont Software en Digitale Handtekening N.V.",
+    "copyright": "© {year} – Alle rechten voorbehouden.",
     "title": "Document uploaden",
     "dropHintPrimary": "Plaats je PDF hier of upload",
     "startButton": "Starten",

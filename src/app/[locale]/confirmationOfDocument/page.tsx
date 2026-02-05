@@ -4,6 +4,9 @@ import { useSnackbar } from "@/component/SnackbarProvider";
 import { Box, Button, Modal, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import IconButton from "@mui/material/IconButton";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+
 // Yeni eklenen navigasyon hookları
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
@@ -52,7 +55,6 @@ export default function ConfirmationOfDocumentPage() {
   };
 
   const [isUploaded, setIsUploaded] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -84,9 +86,14 @@ export default function ConfirmationOfDocumentPage() {
 
   // küçük kart önizleme render
   useEffect(() => {
-    if (!pdfDoc) return;
-    renderPage(pageNumber, canvasRef, 800);
-  }, [pdfDoc, pageNumber]);
+    if (!pdfDoc || !isUploaded) return;
+
+    const raf = requestAnimationFrame(() => {
+      renderPage(pageNumber, canvasRef, 800);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [pdfDoc, pageNumber, isUploaded]);
 
   // modal açıldığında sayfayı çiz
   useEffect(() => {
@@ -152,7 +159,6 @@ export default function ConfirmationOfDocumentPage() {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setIsDragging(false);
     const f = e.dataTransfer.files?.[0];
     if (f) handleFile(f);
   };
@@ -202,6 +208,31 @@ export default function ConfirmationOfDocumentPage() {
     }
   };
 
+  const resetUpload = () => {
+    // modal açıksa kapat
+    setModalOpen(false);
+
+    // state reset
+    setIsUploaded(false);
+    setPdfDoc(null);
+    setPdfBase64("");
+    setNumPages(0);
+    setPageNumber(1);
+    setModalPage(1);
+
+    // file input reset (aynı dosyayı tekrar seçebilmek için)
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    // canvas temizle
+    const c1 = canvasRef.current;
+    if (c1) c1.getContext("2d")?.clearRect(0, 0, c1.width, c1.height);
+
+    const c2 = modalCanvasRef.current;
+    if (c2) c2.getContext("2d")?.clearRect(0, 0, c2.width, c2.height);
+  };
+
+  const year = new Date().getFullYear();
+
   return (
     <Box sx={{ width: "100%", height: "100vh" }}>
       {/* ---- FIXED HEADER BAŞLANGIÇ ---- */}
@@ -209,7 +240,7 @@ export default function ConfirmationOfDocumentPage() {
         component="header"
         sx={{
           position: "fixed",
-          top: 0,
+          top: 20,
           left: 0,
           width: "100%",
           height: "64px",
@@ -217,17 +248,6 @@ export default function ConfirmationOfDocumentPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#fff",
-          boxShadow: "none",
-          backgroundImage:
-            "linear-gradient(90deg,#2C1737 0%,#5C2230 50%,#453562 100%)",
-          backgroundSize: "300% 300%",
-          animation: "headerGradient 15s ease infinite",
-          "@keyframes headerGradient": {
-            "0%": { backgroundPosition: "0% 50%" },
-            "50%": { backgroundPosition: "100% 50%" },
-            "100%": { backgroundPosition: "0% 50%" },
-          },
         }}
       >
         <Box
@@ -330,11 +350,12 @@ export default function ConfirmationOfDocumentPage() {
         width={"100%"}
         height={"100%"}
         sx={{
-          backgroundImage: "url('/login/1.jpg')",
+          backgroundImage: "url('/verification/verificationBg.png')",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
+          minHeight: "100dvh", // mobilde gerçek viewport
+          overflow: "hidden", // sağdaki beyaz taşmayı keser
           backdropFilter: "blur(5px)",
-          pt: "64px", // Header yüksekliği kadar padding bıraktım ki içerik altında kalmasın
         }}
         position={"relative"}
       >
@@ -343,7 +364,6 @@ export default function ConfirmationOfDocumentPage() {
           top="0"
           width={"100%"}
           height={"100%"}
-          sx={{ background: "rgba(0, 0, 0, 0.5)" }}
           zIndex={-1}
         />
         <Box
@@ -355,17 +375,27 @@ export default function ConfirmationOfDocumentPage() {
         >
           <Paper
             sx={{
-              p: 4,
+              px: 5,
+              py: 4,
               mx: "20px",
-              borderRadius: 4,
+              borderRadius: 12,
               width: "100%",
               maxWidth: "600px",
-              background: "white",
-              maxHeight: "calc(100vh - 100px)", // Ekran taşarsa scroll olsun diye
+              background:
+                "linear-gradient(160deg, #027395 0%, #00315d 40%, #00315d 55%, #027395 100%)",
+              border: "2px solid rgb(4, 153, 199)",
               overflowY: "auto",
             }}
           >
-            <Typography variant="h4" sx={{ mb: 3 }} textAlign={"center"}>
+            <Typography
+              variant="h4"
+              textAlign={"center"}
+              sx={{
+                color: "#fff",
+                fontWeight: 700,
+                mb: 3,
+              }}
+            >
               {t("title")}
             </Typography>
 
@@ -374,21 +404,20 @@ export default function ConfirmationOfDocumentPage() {
                 <Box
                   onDragEnter={(e) => {
                     e.preventDefault();
-                    setIsDragging(true);
                   }}
                   onDragOver={(e) => {
                     e.preventDefault();
-                    setIsDragging(true);
                   }}
                   onDragLeave={(e) => {
                     e.preventDefault();
-                    setIsDragging(false);
                   }}
                   sx={{
                     height: 300,
-                    border: "2px dashed #aaa",
                     borderRadius: 2,
-                    backgroundColor: isDragging ? "#e0f7fa" : "#f9f9f9",
+                    backgroundColor: "rgba(255,255,255,0.08)",
+                    backdropFilter: "blur(6px)",
+                    border: "3px dashed rgba(255,255,255,0.5)",
+
                     textAlign: "center",
                     display: "flex",
                     alignItems: "center",
@@ -398,14 +427,39 @@ export default function ConfirmationOfDocumentPage() {
                   }}
                   onDrop={handleDrop}
                 >
-                  <Typography variant="h6">{t("dropHintPrimary")}</Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 600,
+                      mb: 1,
+                    }}
+                  >
+                    {t("dropHintPrimary")}
+                  </Typography>
                   <Button
                     variant="contained"
-                    color="warning"
                     onClick={handleUploadClick}
+                    sx={{
+                      py: 1,
+                      px: 3,
+                      borderRadius: 2,
+                      color: "#fff",
+                      fontWeight: 600,
+                      textTransform: "none",
+                      border: 1,
+                      background:
+                        "linear-gradient(135deg, #025f4d 0%, #01775f 100%)",
+                      boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+                      },
+                    }}
                   >
                     {t("startButton")}
                   </Button>
+
                   <input
                     type="file"
                     accept=".pdf"
@@ -437,6 +491,23 @@ export default function ConfirmationOfDocumentPage() {
                         },
                       }}
                     >
+                      <IconButton
+                        onClick={resetUpload}
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          zIndex: 5,
+                          color: "#fff",
+                          backgroundColor: "rgba(0,0,0,0.35)",
+                          backdropFilter: "blur(6px)",
+                          "&:hover": { backgroundColor: "rgba(0,0,0,0.55)" },
+                        }}
+                      >
+                        <CloseRoundedIcon fontSize="small" />
+                      </IconButton>
+
                       <canvas
                         ref={canvasRef}
                         style={{ width: "100%", height: "100%" }}
@@ -459,7 +530,25 @@ export default function ConfirmationOfDocumentPage() {
                         }}
                         onClick={() => setModalOpen(true)}
                       >
-                        <Button variant="contained" color="warning">
+                        <Button
+                          variant="contained"
+                          sx={{
+                            py: 1,
+                            px: 2,
+                            borderRadius: 2,
+                            color: "#fff",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            border: 1,
+                            background:
+                              "linear-gradient(135deg, #025f4d 0%, #01775f 100%)",
+                            boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                            "&:hover": {
+                              background:
+                                "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+                            },
+                          }}
+                        >
                           {t("previewButton")}
                         </Button>
                       </Box>
@@ -468,7 +557,6 @@ export default function ConfirmationOfDocumentPage() {
                     <Box
                       sx={{
                         height: 150,
-                        border: "2px dashed #aaa",
                         borderRadius: 2,
                         display: "flex",
                         flexDirection: "column",
@@ -477,28 +565,52 @@ export default function ConfirmationOfDocumentPage() {
                         gap: 2,
                         textAlign: "center",
                         padding: "20px",
-                        backgroundColor: isDragging ? "#e0f7fa" : "#f9f9f9",
+                        backgroundColor: "rgba(255,255,255,0.08)",
+                        backdropFilter: "blur(6px)",
+                        border: "3px dashed rgba(255,255,255,0.5)",
                         p: 2,
                         width: "200px",
                       }}
                       onDrop={handleDrop}
                       onDragEnter={(e) => {
                         e.preventDefault();
-                        setIsDragging(true);
                       }}
                       onDragOver={(e) => {
                         e.preventDefault();
-                        setIsDragging(true);
                       }}
                       onDragLeave={(e) => {
                         e.preventDefault();
-                        setIsDragging(false);
                       }}
                     >
-                      <Typography fontSize={"14px"}>
+                      <Typography
+                        fontSize={"14px"}
+                        sx={{
+                          color: "#fff",
+                          fontWeight: 300,
+                        }}
+                      >
                         {t("dropHintPrimary")}
                       </Typography>
-                      <Button variant="contained" onClick={handleUploadClick}>
+                      <Button
+                        variant="contained"
+                        onClick={handleUploadClick}
+                        sx={{
+                          py: 1,
+                          px: 2,
+                          borderRadius: 2,
+                          color: "#fff",
+                          fontWeight: 600,
+                          textTransform: "none",
+                          border: 1,
+                          background:
+                            "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+                          boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+                          },
+                        }}
+                      >
                         {t("uploadButton")}
                       </Button>
                       <input
@@ -514,9 +626,24 @@ export default function ConfirmationOfDocumentPage() {
                   <Box display={"flex"} justifyContent={"center"} mt={"50px"}>
                     <Button
                       variant="contained"
-                      color="success"
                       onClick={handleCheckDocument}
                       disabled={loading}
+                      sx={{
+                        py: 1,
+                        px: 2,
+                        borderRadius: 2,
+                        color: "#fff",
+                        fontWeight: 600,
+                        textTransform: "none",
+                        border: 1,
+                        background:
+                          "linear-gradient(135deg, #025f4d 0%, #01775f 100%)",
+                        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                        "&:hover": {
+                          background:
+                            "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+                        },
+                      }}
                     >
                       {t("checkButton")}
                     </Button>
@@ -568,6 +695,59 @@ export default function ConfirmationOfDocumentPage() {
               </Modal>
             </Box>
           </Paper>
+        </Box>
+        {/* Ağaç Resmi Alt Ortada */}
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: { xs: 64, md: 0 }, // footer yazılara yer aç
+            left: "50%",
+            transform: "translateX(-50%)",
+            opacity: 0.6,
+            pointerEvents: "none",
+          }}
+        >
+          <Box
+            component="img"
+            src="/verification/verificationTree.png"
+            alt=""
+            sx={{
+              width: { xs: 350, sm: 420, md: 500 }, // ✅ mobilde ekranı aşmaz
+              maxWidth: 500,
+              height: "auto",
+              display: "block",
+            }}
+          />
+        </Box>
+        {/* Sol Alttaki Yazı */}
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 24,
+            left: { xs: "50%", md: 24 },
+            transform: { xs: "translateX(-50%)", md: "none" },
+            fontSize: { xs: 12, md: 14 },
+            color: "#7186a1",
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {t("copyright", { year })}
+        </Box>
+        {/* Sağ Alttaki Yazı */}
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 24,
+            right: 24,
+            fontSize: 14,
+            color: "#7186a1",
+            textAlign: "right",
+            pointerEvents: "none",
+            display: { xs: "none", md: "block" }, // ✅ mobilde kapat
+          }}
+        >
+          {t("companyName")}
         </Box>
       </Box>
     </Box>
