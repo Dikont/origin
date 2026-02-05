@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  alpha,
   Box,
   Button,
+  CardContent,
   Chip,
   Divider,
   Grid,
@@ -21,6 +23,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { useTranslations } from "next-intl"; // ✅ client için
+import { CustomBannerCard } from "@/ui/Card/CustomCard";
 
 export default function Index() {
   const t = useTranslations("ai");
@@ -75,10 +78,10 @@ export default function Index() {
           (res.status === 401
             ? t("snackbar_need_auth")
             : res.status === 413
-            ? t("snackbar_file_too_large")
-            : res.status === 415
-            ? t("snackbar_unsupported_type")
-            : `${t("snackbar_request_failed")} (${res.status}).`);
+              ? t("snackbar_file_too_large")
+              : res.status === 415
+                ? t("snackbar_unsupported_type")
+                : `${t("snackbar_request_failed")} (${res.status}).`);
 
         if (
           String(msg).includes("Token Hakkınız Yok") ||
@@ -97,7 +100,7 @@ export default function Index() {
       if (typeof remaining === "number") {
         showSnackbar(
           t("snackbar_done_with_remaining", { remaining }),
-          "success"
+          "success",
         );
       } else {
         showSnackbar(t("snackbar_done"), "success");
@@ -130,26 +133,43 @@ export default function Index() {
   }, []);
   return (
     <>
-      <Box
-        sx={{
-          background: "linear-gradient(90deg, #00b16a 0%, #43e97b 100%)",
-          borderRadius: 2,
-          p: "20px",
-          color: "white",
-        }}
-      >
-        <Grid container spacing={2} alignItems="center">
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h1" fontSize="24px" fontWeight="bold">
-              {t("hero_title")}
-            </Typography>
-            <Typography>{t("hero_subtitle")}</Typography>
-          </Grid>
-        </Grid>
+      <Box>
+        <CustomBannerCard>
+          <CardContent
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              position: "relative",
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: alpha("#fff", 1),
+                  fontWeight: 900,
+                  fontSize: { xs: 18, sm: 22 },
+                }}
+              >
+                {t("hero_title")}
+              </Typography>
+              <Typography
+                sx={{
+                  color: alpha("#fff", 0.82),
+                  fontSize: { xs: 13, sm: 14 },
+                  fontWeight: 500,
+                  mt: 0.5,
+                }}
+              >
+                {t("hero_subtitle")}
+              </Typography>
+            </Box>
+          </CardContent>
+        </CustomBannerCard>
       </Box>
 
       <Box>
-        <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid container spacing={2} sx={{ my: 2 }}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={1}
@@ -161,7 +181,13 @@ export default function Index() {
                 flexDirection: "column",
               }}
             >
-              <Typography fontWeight="bold" mb={2}>
+              <Typography
+                mb={2}
+                sx={{
+                  fontWeight: 600,
+                  fontSize: 20,
+                }}
+              >
                 {t("upload_title")}
               </Typography>
 
@@ -170,7 +196,7 @@ export default function Index() {
                 onDragOver={onDragOver}
                 onClick={!file ? onChoose : undefined}
                 sx={{
-                  border: "2px dashed #2684FF",
+                  border: "4px dashed #646E9F",
                   borderRadius: "10px",
                   textAlign: "center",
                   py: "20px",
@@ -183,9 +209,9 @@ export default function Index() {
                 {!file ? (
                   <>
                     <CloudUploadIcon
-                      sx={{ fontSize: 40, color: "#2684FF", mb: 1 }}
+                      sx={{ fontSize: 40, color: "#646E9F", mb: 1 }}
                     />
-                    <Typography fontWeight="500">
+                    <Typography fontWeight="600">
                       {t("upload_drop_or_select")}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -204,7 +230,7 @@ export default function Index() {
                         gap: 1,
                         alignItems: "center",
                         bgcolor: "rgba(38,132,255,0.08)",
-                        border: "1px solid #2684FF33",
+                        border: "1px solid #646E9F",
                         px: 1.25,
                         py: 0.5,
                         borderRadius: "999px",
@@ -213,7 +239,7 @@ export default function Index() {
                       }}
                     >
                       <CheckCircleIcon
-                        sx={{ fontSize: 16, color: "#2e7d32" }}
+                        sx={{ fontSize: 16, color: "#646E9F" }}
                       />
                       {t("upload_badge_uploaded")}
                     </Box>
@@ -221,7 +247,7 @@ export default function Index() {
                     {/* Dosya bilgisi */}
                     <Box sx={{ textAlign: "center" }}>
                       <InsertDriveFileIcon
-                        sx={{ fontSize: 48, color: "#2684FF", mb: 1 }}
+                        sx={{ fontSize: 48, color: "#646E9F", mb: 1 }}
                       />
                       <Typography fontWeight={600}>{file.name}</Typography>
                       <Typography
@@ -245,13 +271,19 @@ export default function Index() {
                           variant="outlined"
                           onClick={onChoose}
                           startIcon={<CloudUploadIcon />}
+                          sx={{
+                            fontWeight: 600,
+                          }}
                         >
                           {t("upload_change")}
                         </Button>
                         <Button
                           size="small"
-                          variant="text"
+                          variant="outlined"
                           color="error"
+                          sx={{
+                            fontWeight: 600,
+                          }}
                           onClick={() => setFile(null)}
                         >
                           {t("upload_remove")}
@@ -278,16 +310,28 @@ export default function Index() {
               sx={{
                 p: 2,
                 borderRadius: 2,
-                height: { xs: "100%", md: "275px" },
+                height: { xs: "100%", md: "100%" },
                 display: "flex",
                 flexDirection: "column",
               }}
             >
               <Box display={"flex"} justifyContent={"space-between"}>
-                <Typography fontWeight="bold" mb={2}>
+                <Typography
+                  mb={2}
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 20,
+                  }}
+                >
                   {t("instructions_title")}
                 </Typography>
-                <Typography fontWeight="bold" mb={2}>
+                <Typography
+                  mb={2}
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: 18,
+                  }}
+                >
                   Token:{tokenValue}
                 </Typography>
               </Box>
@@ -301,7 +345,7 @@ export default function Index() {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     "&:hover fieldset": {
-                      borderColor: "#2684FF",
+                      borderColor: "#646E9F",
                       borderWidth: 2,
                     },
                   },
@@ -309,20 +353,40 @@ export default function Index() {
               />
 
               <Button
-                variant="contained"
                 fullWidth
                 disabled={!canAnalyze}
                 startIcon={loading ? undefined : <LockIcon />}
-                sx={{ mt: 2 }}
+                sx={{
+                  mt: 2,
+                  py: 1,
+                  borderRadius: "6px",
+                  color: "#fff",
+                  fontWeight: 600,
+                  border: 1,
+                  background:
+                    "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+                  boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+                  },
+                  "&.Mui-disabled": {
+                    background:
+                      "linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)",
+                    color: "#e5e7eb",
+                    borderColor: "#9ca3af",
+                    boxShadow: "none",
+                    cursor: "not-allowed",
+                  },
+                }}
                 onClick={analyze}
               >
                 {loading ? t("analyzing") : t("analyze")}
               </Button>
             </Paper>
           </Grid>
-
-          {result && <AnalysisResult markdown={result} t={t} />}
         </Grid>
+        {result && <AnalysisResult markdown={result} t={t} />}
       </Box>
     </>
   );
@@ -336,158 +400,230 @@ function AnalysisResult({
   t: (k: string, p?: any) => string;
 }) {
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 3,
-        borderRadius: 3,
-        border: "1px solid",
-        borderColor: "divider",
-        bgcolor: "background.paper",
-      }}
-    >
-      {/* Üst başlık şeridi */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-        <Chip
-          icon={<ArrowRightAltRoundedIcon />}
-          label={t("chip_suggestions")}
-          color="primary"
-          variant="outlined"
-          sx={{ fontWeight: 600 }}
-        />
-        <Divider sx={{ flex: 1 }} />
-      </Box>
-
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          h1: ({ children }) => (
-            <Typography
-              variant="h5"
-              fontWeight={700}
-              gutterBottom
-              sx={{ color: "primary.main" }}
-            >
-              {children}
-            </Typography>
-          ),
-          h2: ({ children }) => (
-            <Typography
-              variant="h6"
-              fontWeight={700}
-              gutterBottom
-              sx={{ mt: 3, color: "primary.dark" }}
-            >
-              {children}
-            </Typography>
-          ),
-          h3: ({ children }) => (
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              gutterBottom
-              sx={{ mt: 2, color: "text.primary" }}
-            >
-              {children}
-            </Typography>
-          ),
-          p: ({ children }) => (
-            <Typography
-              variant="body1"
-              sx={{ mb: 1.25, color: "text.secondary" }}
-            >
-              {children}
-            </Typography>
-          ),
-          strong: ({ children }) => (
-            <Box
-              component="span"
-              sx={{
-                fontWeight: 700,
-                color: "primary.main",
-              }}
-            >
-              {children}
-            </Box>
-          ),
-          ul: ({ children }) => (
-            <Box
-              component="ul"
-              sx={{
-                m: 0,
-                mb: 2,
-                pl: 0,
-                listStyle: "none",
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
-            >
-              {children}
-            </Box>
-          ),
-          ol: ({ children }) => (
-            <Box
-              component="ol"
-              sx={{
-                m: 0,
-                mb: 2,
-                pl: 2.5,
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
-            >
-              {children}
-            </Box>
-          ),
-          li: ({ children }) => (
-            <Box
-              component="li"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1.5,
-                p: 1,
-                borderRadius: 2,
-                bgcolor: "grey.50",
-                transition: "background 0.2s",
-                "&:hover": { bgcolor: "grey.100" },
-              }}
-            >
-              <CheckCircleRoundedIcon
-                sx={{ fontSize: 18, color: "success.main", mt: "1px" }}
-              />
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{ color: "text.primary" }}
-              >
-                {children}
-              </Typography>
-            </Box>
-          ),
-          hr: () => <Divider sx={{ my: 3 }} />,
-          code: ({ children }) => (
-            <Box
-              component="code"
-              sx={{
-                px: 0.75,
-                py: 0.25,
-                borderRadius: 1,
-                bgcolor: "grey.100",
-                color: "primary.dark",
-                fontFamily: "monospace",
-                fontSize: "0.85rem",
-              }}
-            >
-              {children}
-            </Box>
-          ),
+    <Grid size={{ xs: 12 }} sx={{ mt: 1 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          width: "100%",
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          overflow: "hidden",
+          bgcolor: "background.paper",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
         }}
       >
-        {markdown}
-      </ReactMarkdown>
-    </Paper>
+        <Box
+          sx={{
+            px: { xs: 2, sm: 3 },
+            py: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            background:
+              "linear-gradient(135deg, rgba(100,110,159,0.10), rgba(1,86,167,0.06))",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Chip
+            icon={<ArrowRightAltRoundedIcon />}
+            label={t("chip_suggestions")}
+            variant="filled"
+            sx={{
+              fontWeight: 800,
+              borderRadius: 999,
+              bgcolor: "rgba(1,86,167,0.10)",
+              color: "primary.dark",
+              "& .MuiChip-icon": { color: "primary.dark" },
+            }}
+          />
+
+          <Box sx={{ flex: 1 }} />
+
+          <Chip
+            label={t("analyze")}
+            size="small"
+            variant="outlined"
+            sx={{
+              fontWeight: 700,
+              borderRadius: 999,
+              bgcolor: "rgba(0,0,0,0.02)",
+            }}
+          />
+        </Box>
+
+        <Box sx={{ px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h1: ({ children }) => (
+                <Typography
+                  variant="h5"
+                  fontWeight={900}
+                  gutterBottom
+                  sx={{ letterSpacing: -0.3, color: "text.primary" }}
+                >
+                  {children}
+                </Typography>
+              ),
+              h2: ({ children }) => (
+                <Typography
+                  variant="h6"
+                  fontWeight={900}
+                  gutterBottom
+                  sx={{ mt: 2.5, color: "text.primary" }}
+                >
+                  {children}
+                </Typography>
+              ),
+              h3: ({ children }) => (
+                <Typography
+                  variant="subtitle1"
+                  fontWeight={800}
+                  gutterBottom
+                  sx={{ mt: 2, color: "text.primary" }}
+                >
+                  {children}
+                </Typography>
+              ),
+              p: ({ children }) => (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 1.25,
+                    color: "text.secondary",
+                    lineHeight: 1.75,
+                  }}
+                >
+                  {children}
+                </Typography>
+              ),
+              strong: ({ children }) => (
+                <Box
+                  component="span"
+                  sx={{
+                    fontWeight: 900,
+                    color: "text.primary",
+                  }}
+                >
+                  {children}
+                </Box>
+              ),
+
+              // Modern list cards
+              ul: ({ children }) => (
+                <Box
+                  component="ul"
+                  sx={{
+                    m: 0,
+                    mt: 1,
+                    mb: 2,
+                    pl: 0,
+                    listStyle: "none",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  {children}
+                </Box>
+              ),
+              ol: ({ children }) => (
+                <Box
+                  component="ol"
+                  sx={{
+                    m: 0,
+                    mt: 1,
+                    mb: 2,
+                    pl: 0,
+                    listStyle: "none",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  {children}
+                </Box>
+              ),
+              li: ({ children }) => (
+                <Box
+                  component="li"
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1.25,
+                    p: 1.25,
+                    borderRadius: 2,
+                    bgcolor: "rgba(100,110,159,0.06)",
+                    border: "1px solid rgba(100,110,159,0.18)",
+                    transition: "transform .12s ease, background .12s ease",
+                    "&:hover": {
+                      bgcolor: "rgba(1,86,167,0.06)",
+                      transform: "translateY(-1px)",
+                    },
+                  }}
+                >
+                  <CheckCircleRoundedIcon
+                    sx={{ fontSize: 18, color: "success.main", mt: "2px" }}
+                  />
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{ color: "text.primary", lineHeight: 1.65 }}
+                  >
+                    {children}
+                  </Typography>
+                </Box>
+              ),
+
+              hr: () => <Divider sx={{ my: 2.5 }} />,
+
+              code: ({ children }) => (
+                <Box
+                  component="code"
+                  sx={{
+                    px: 0.75,
+                    py: 0.25,
+                    borderRadius: 1,
+                    bgcolor: "rgba(0,0,0,0.06)",
+                    color: "primary.dark",
+                    fontFamily:
+                      "ui-monospace, SFMono-Regular, Menlo, monospace",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  {children}
+                </Box>
+              ),
+
+              // Blockquote (varsa AI bazen kullanır)
+              blockquote: ({ children }) => (
+                <Box
+                  sx={{
+                    my: 2,
+                    px: 2,
+                    py: 1.25,
+                    borderLeft: "4px solid",
+                    borderLeftColor: "primary.main",
+                    bgcolor: "rgba(1,86,167,0.06)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", lineHeight: 1.7 }}
+                  >
+                    {children}
+                  </Typography>
+                </Box>
+              ),
+            }}
+          >
+            {markdown}
+          </ReactMarkdown>
+        </Box>
+      </Paper>
+    </Grid>
   );
 }
