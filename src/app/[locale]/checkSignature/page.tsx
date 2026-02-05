@@ -15,6 +15,83 @@ import { useDispatch } from "react-redux";
 import { setSignerData } from "@/store/slices/signerSlice";
 import { useTranslations } from "next-intl";
 
+const inputSx = {
+  mb: 2.5,
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "#345c7f",
+    borderRadius: "20px",
+
+    "& fieldset": {
+      borderColor: "rgba(255,255,255,0.7)",
+    },
+    "&:hover fieldset": {
+      borderColor: "#ffffff",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#ffffff",
+    },
+    "& input:-webkit-autofill": {
+      WebkitBoxShadow: "0 0 0 1000px #345c7f inset",
+      WebkitTextFillColor: "white",
+      caretColor: "white",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "rgba(180,200,215,0.75)",
+    fontWeight: 600,
+  },
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#fff",
+  },
+  "& input": {
+    color: "#fff",
+  },
+};
+
+const inputFormSx = {
+  mb: 2.5,
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "#345c7f",
+    borderRadius: "20px",
+
+    "& fieldset": {
+      borderColor: "rgba(255,255,255,0.7)",
+    },
+    "&:hover fieldset": {
+      borderColor: "#ffffff",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#ffffff",
+    },
+    "& input:-webkit-autofill": {
+      WebkitBoxShadow: "0 0 0 1000px #345c7f inset",
+      WebkitTextFillColor: "white",
+      caretColor: "white",
+    },
+  },
+  "& .MuiInputLabel-root": {
+    color: "rgba(180,200,215,0.75)",
+    fontWeight: 600,
+  },
+  "& .MuiInputLabel-root.Mui-focused": {
+    color: "#fff",
+  },
+  "& input": {
+    color: "#fff",
+  },
+  "& input[type=number]": {
+    MozAppearance: "textfield",
+  },
+  "& input[type=number]::-webkit-outer-spin-button": {
+    WebkitAppearance: "none",
+    margin: 0,
+  },
+  "& input[type=number]::-webkit-inner-spin-button": {
+    WebkitAppearance: "none",
+    margin: 0,
+  },
+};
+
 type LangCode = "tr" | "en" | "nl";
 type Lang = { code: LangCode; label: string; flag?: string };
 
@@ -37,6 +114,8 @@ export default function Index() {
 
   // Statsu kotrolü ile sözleşme reddedildi mi reddedimedi mi (0 ise Reddedildi)
   const [contractStatus, setContractStatus] = useState<null | number>(null);
+  const [isCompleted, setIsCompleted] = useState<boolean | null>(null);
+
   const [rejectedBy, setRejectedBy] = useState<string | null>(null);
   const [documentName, setDocumentName] = useState<string | null>(null);
 
@@ -81,6 +160,7 @@ export default function Index() {
         setRejectedBy(data.rejectedByName ?? null);
         setDocumentName(data.documentGroupName ?? null);
         setContractStatus(data.status);
+        setIsCompleted(data.isCompleted);
       } catch (error) {
         console.error("fetchStatus:", error);
       }
@@ -169,6 +249,15 @@ export default function Index() {
     }
   };
 
+  const step0View =
+    contractStatus === 0
+      ? "rejected"
+      : isCompleted === true
+        ? "completed"
+        : "form";
+
+  const year = new Date().getFullYear();
+
   if (contractStatus === null) {
     return (
       <Backdrop sx={{ color: "#fff", zIndex: 99999 }} open>
@@ -190,7 +279,7 @@ export default function Index() {
         component="header"
         sx={{
           position: "fixed",
-          top: 0,
+          top: 20,
           left: 0,
           width: "100%",
           height: "64px",
@@ -198,17 +287,6 @@ export default function Index() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#fff",
-          boxShadow: "none",
-          backgroundImage:
-            "linear-gradient(90deg,#2C1737 0%,#5C2230 50%,#453562 100%)",
-          backgroundSize: "300% 300%",
-          animation: "headerGradient 15s ease infinite",
-          "@keyframes headerGradient": {
-            "0%": { backgroundPosition: "0% 50%" },
-            "50%": { backgroundPosition: "100% 50%" },
-            "100%": { backgroundPosition: "0% 50%" },
-          },
         }}
       >
         <Box
@@ -319,9 +397,11 @@ export default function Index() {
           width={"100%"}
           height={"100%"}
           sx={{
-            backgroundImage: "url('/login/1.jpg')",
+            backgroundImage: "url('/verification/verificationBg.png')",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
+            minHeight: "100dvh", // mobilde gerçek viewport
+            overflow: "hidden", // sağdaki beyaz taşmayı keser
             backdropFilter: "blur(5px)",
           }}
           position={"relative"}
@@ -331,7 +411,6 @@ export default function Index() {
             top="0"
             width={"100%"}
             height={"100%"}
-            sx={{ background: "rgba(0, 0, 0, 0.5)" }}
             zIndex={-1}
           />
 
@@ -343,47 +422,114 @@ export default function Index() {
             zIndex={2}
           >
             {step === 0 &&
-              (contractStatus === 0 ? (
+              (step0View === "rejected" ? (
                 // REDDEDİLMİŞ EKRANI
                 <Paper
                   sx={{
-                    p: 4,
+                    px: 5,
+                    py: 4,
                     mx: "20px",
-                    borderRadius: 4,
+                    borderRadius: 12,
                     width: "100%",
                     maxWidth: "600px",
-                    background: "white",
                     textAlign: "center",
+                    background:
+                      "linear-gradient(160deg, #c94444   0%, #8d2222   40%, #8d2222   55%, #c94444   100%)",
+
+                    backdropFilter: "blur(12px)",
+                    border: "2px solid rgb(255, 0, 0)",
                   }}
                 >
-                  <Typography variant="h4" color="error" mb={2}>
+                  <Typography
+                    variant="h4"
+                    color="error"
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 700,
+                      mb: 3,
+                    }}
+                  >
                     {t("reject_contract")}
                   </Typography>
 
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 500,
+                      fontSize: 13,
+                    }}
+                  >
                     {t("reject_contract_desc", {
                       docName: documentName ?? "---",
                       rejectedBy: rejectedBy ?? "---",
                     })}
                   </Typography>
                 </Paper>
-              ) : (
-                // NORMAL FORM (status 1)
+              ) : step0View === "completed" ? (
+                // TAMAMLANDI EKRANI
                 <Paper
                   sx={{
-                    p: 4,
+                    px: 5,
+                    py: 4,
                     mx: "20px",
-                    borderRadius: 4,
+                    borderRadius: 12,
                     width: "100%",
                     maxWidth: "600px",
-                    background: "white",
+                    textAlign: "center",
+                    background:
+                      "linear-gradient(160deg, #2e7d32    0%, #1b5e20    40%, #1b5e20    55%, #2e7d32    100%)",
+
+                    backdropFilter: "blur(12px)",
+                    border: "2px solid rgb(13, 255, 4)",
                   }}
                 >
                   <Typography
                     variant="h4"
-                    gutterBottom
+                    color="error"
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 700,
+                      mb: 3,
+                    }}
+                  >
+                    {t("completed_contract")}
+                  </Typography>
+
+                  <Typography
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 500,
+                      fontSize: 13,
+                    }}
+                  >
+                    {t("completed_contract_desc")}
+                  </Typography>
+                </Paper>
+              ) : (
+                // NORMAL FORM (status 1)
+                <Paper
+                  sx={{
+                    px: 5,
+                    py: 4,
+                    mx: "20px",
+                    borderRadius: 12,
+                    width: "100%",
+                    maxWidth: "600px",
+                    background:
+                      "linear-gradient(160deg, #027395 0%, #00315d 40%, #00315d 55%, #027395 100%)",
+
+                    backdropFilter: "blur(12px)",
+                    border: "2px solid rgb(4, 153, 199)",
+                  }}
+                >
+                  <Typography
+                    variant="h4"
                     textAlign="center"
-                    mb="28px"
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 700,
+                      mb: 3,
+                    }}
                   >
                     {t("signatureVerification")}
                   </Typography>
@@ -394,7 +540,7 @@ export default function Index() {
                       label={t("username")}
                       variant="outlined"
                       name="username"
-                      sx={{ mb: 3 }}
+                      sx={inputSx}
                     />
 
                     <TextField
@@ -403,7 +549,7 @@ export default function Index() {
                       autoCapitalize="none"
                       variant="outlined"
                       name="email"
-                      sx={{ mb: 4 }}
+                      sx={inputSx}
                     />
 
                     <Box
@@ -411,21 +557,50 @@ export default function Index() {
                       justifyContent="space-between"
                       gap="20px"
                     >
+                      {/* YEŞİL */}
                       <Button
                         fullWidth
-                        variant="contained"
                         type="submit"
-                        color="success"
                         value="email"
+                        sx={{
+                          py: 1.4,
+                          borderRadius: "16px",
+                          color: "#fff",
+                          fontWeight: 600,
+                          textTransform: "none",
+                          border: 1,
+                          background:
+                            "linear-gradient(135deg, #025f4d 0%, #01775f 100%)",
+                          boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+                          },
+                        }}
                       >
                         {t("sendEmail")}
                       </Button>
 
+                      {/* MAVİ */}
                       <Button
                         fullWidth
-                        variant="contained"
                         type="submit"
                         value="sms"
+                        sx={{
+                          py: 1.4,
+                          borderRadius: "16px",
+                          color: "#fff",
+                          fontWeight: 600,
+                          textTransform: "none",
+                          border: 1,
+                          background:
+                            "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+                          boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+                          },
+                        }}
                       >
                         {t("sendSms")}
                       </Button>
@@ -437,23 +612,40 @@ export default function Index() {
             {step === 1 && (
               <Paper
                 sx={{
-                  p: 4,
-                  borderRadius: 4,
+                  px: 5,
+                  py: 4,
+                  mx: "20px",
+                  borderRadius: 12,
                   width: "100%",
                   maxWidth: "600px",
-                  mx: "20px",
-                  background: "white",
+                  background:
+                    "linear-gradient(160deg, #027395 0%, #00315d 40%, #00315d 55%, #027395 100%)",
+
+                  backdropFilter: "blur(12px)",
+                  border: "2px solid rgb(4, 153, 199)",
                 }}
               >
-                <Typography variant="h4" textAlign="center" mb="12px">
+                <Typography
+                  variant="h4"
+                  textAlign="center"
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    mb: 2,
+                  }}
+                >
                   {t("codeVerification")}
                 </Typography>
 
                 <Typography
-                  variant="body2"
-                  color="text.secondary"
                   mb={3}
                   textAlign={"center"}
+                  sx={{
+                    color: "#fff",
+                    fontWeight: 700,
+                    mb: 3,
+                    fontSize: 14,
+                  }}
                 >
                   {isSms === "true" ? t("enterPhoneCode") : t("enterEmailCode")}
                 </Typography>
@@ -464,7 +656,7 @@ export default function Index() {
                     label={t("verificationCode")}
                     variant="outlined"
                     name="code"
-                    sx={{ mb: 4 }}
+                    sx={inputFormSx}
                     type="number"
                     onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
                       if (e.target.value.length > 6) {
@@ -473,7 +665,25 @@ export default function Index() {
                     }}
                   />
 
-                  <Button fullWidth variant="contained" type="submit">
+                  <Button
+                    fullWidth
+                    type="submit"
+                    sx={{
+                      py: 1.4,
+                      borderRadius: "16px",
+                      color: "#fff",
+                      fontWeight: 600,
+                      textTransform: "none",
+                      border: 1,
+                      background:
+                        "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+                      boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+                      },
+                    }}
+                  >
                     {t("submit")}
                   </Button>
                 </form>
@@ -486,6 +696,60 @@ export default function Index() {
                 signerInformation={signerInformation}
               />
             )}
+          </Box>
+
+          {/* Ağaç Resmi Alt Ortada */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: { xs: 64, md: 0 }, // footer yazılara yer aç
+              left: "50%",
+              transform: "translateX(-50%)",
+              opacity: 0.6,
+              pointerEvents: "none",
+            }}
+          >
+            <Box
+              component="img"
+              src="/verification/verificationTree.png"
+              alt=""
+              sx={{
+                width: { xs: 350, sm: 420, md: 500 }, // ✅ mobilde ekranı aşmaz
+                maxWidth: 500,
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </Box>
+          {/* Sol Alttaki Yazı */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 24,
+              left: { xs: "50%", md: 24 },
+              transform: { xs: "translateX(-50%)", md: "none" },
+              fontSize: { xs: 12, md: 14 },
+              color: "#7186a1",
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t("copyright", { year })}
+          </Box>
+          {/* Sağ Alttaki Yazı */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 24,
+              right: 24,
+              fontSize: 14,
+              color: "#7186a1",
+              textAlign: "right",
+              pointerEvents: "none",
+              display: { xs: "none", md: "block" }, // ✅ mobilde kapat
+            }}
+          >
+            {t("companyName")}
           </Box>
         </Box>
       </motion.div>

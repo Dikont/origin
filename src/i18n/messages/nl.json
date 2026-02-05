@@ -517,7 +517,9 @@
     "fieldCheckbox": "Selectievakje"
   },
   "checkSignature": {
-    "signatureVerification": "Handtekeningverificatie",
+    "companyName": "Dikont Software en Digitale Handtekening N.V.",
+    "copyright": "© {year} – Alle rechten voorbehouden.",
+    "signatureVerification": "Documentondertekening",
     "username": "Naam Achternaam",
     "email": "E-mail",
     "sendEmail": "E-mail verzenden",
@@ -571,7 +573,9 @@
     "pagination_back": "Terug",
     "pagination_next": "Volgende",
     "text_area_placeholder": "Voer tekst in",
-    "reject_contract": "Deze Overeenkomst is Afgewezen!",
+    "completed_contract": "Dit Document Is Voltooid !",
+    "completed_contract_desc": "Dit document is afgesloten voor verdere verwerking omdat het succesvol is ondertekend door alle ondertekenaars.",
+    "reject_contract": "Deze Overeenkomst is Afgewezen !",
     "reject_contract_desc": "Het ondertekeningsproces voor {docName} is afgesloten omdat het werd afgewezen door {rejectedBy}.",
     "reject_dialog_title": "Reject Contract",
     "reject_dialog_placeholder": "Reason for rejection...",

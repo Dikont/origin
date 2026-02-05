@@ -517,7 +517,9 @@
     "fieldCheckbox": "Checkbox"
   },
   "checkSignature": {
-    "signatureVerification": "Signature Verification",
+    "companyName": "Dikont Software and Digital Signature Inc.",
+    "copyright": "© {year} – All rights reserved.",
+    "signatureVerification": "Document Signing",
     "username": "Name Surname",
     "email": "Email",
     "sendEmail": "Send Email",
@@ -571,6 +573,8 @@
     "pagination_back": "Back",
     "pagination_next": "Next",
     "text_area_placeholder": "Enter text",
+    "completed_contract": "This Document Has Been Completed !",
+    "completed_contract_desc": "This document has been closed for further processing because it has been successfully signed by all signatories.",
     "reject_contract": "This Contract Has Been Rejected !",
     "reject_contract_desc": "The signing process for {docName} has been closed because it was rejected by {rejectedBy}.",
     "reject_dialog_title": "Reject Contract",

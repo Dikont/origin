@@ -512,7 +512,9 @@
     "fieldCheckbox": "Onay Kutusu"
   },
   "checkSignature": {
-    "signatureVerification": "İmza Doğrulama",
+    "companyName": "Dikont Yazılım ve Dijital İmza A.Ş.",
+    "copyright": "© {year} – Tüm hakları saklıdır.",
+    "signatureVerification": "Belge İmzalama",
     "username": "Ad Soyad",
     "email": "E-Posta",
     "sendEmail": "Eposta Gönder",
@@ -566,7 +568,9 @@
     "pagination_back": "Geri",
     "pagination_next": "İleri",
     "text_area_placeholder": "Metin girin",
-    "reject_contract": "Bu Sözleşme Reddedilmiştir !",
+    "completed_contract": "Bu Belge Tamamlanmıştır !",
+    "completed_contract_desc": "Bu belge, tüm imza sahipleri tarafından başarıyla imzalandığı için imza sürecine kapatılmıştır.",
+    "reject_contract": "Bu Belge Reddedilmiştir !",
     "reject_contract_desc": "Bu {docName} belgesi, {rejectedBy} tarafından reddedildiği için imzalama işlemine kapatılmıştır.",
     "reject_dialog_title": "Sözleşmeyi Reddet",
     "reject_dialog_placeholder": "Reddetme sebebi...",
