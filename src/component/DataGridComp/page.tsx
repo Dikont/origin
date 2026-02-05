@@ -11,8 +11,10 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  InputAdornment,
   LinearProgress,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -25,7 +27,7 @@ import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import EmailIcon from "@mui/icons-material/Email";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
 import { useSnackbar } from "../SnackbarProvider";
@@ -33,6 +35,7 @@ import PdfSinglePage from "./pdfSinglePage";
 import { useTranslations } from "next-intl";
 import CssDataGridResponsive from "@/component/cssDataGridResponsive";
 import FilterListIcon from "@mui/icons-material/FilterList"; // İsteğe bağlı ikon
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 export default function DataGridComp({ user, userRole }: any) {
   const t = useTranslations("followContracts");
@@ -45,6 +48,12 @@ export default function DataGridComp({ user, userRole }: any) {
   // --- FİLTRELEME STATE'İ ---
   // "ALL", "COMPLETED", "WAITING", "IN_PROGRESS", "REJECTED"
   const [filterStatus, setFilterStatus] = useState("ALL");
+
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const [searchText, setSearchText] = useState("");
 
   // delete modal
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -59,7 +68,6 @@ export default function DataGridComp({ user, userRole }: any) {
   const [pdfDoc, setPdfDoc] = useState<any>(null);
   const [pageNum, setPageNum] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [rendering, setRendering] = useState(false);
   const [scale, setScale] = useState(1.2);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -116,10 +124,8 @@ export default function DataGridComp({ user, userRole }: any) {
       flex: 1,
       align: "center",
       headerAlign: "center",
-      sortable: true,
-
-      sortComparator: (v1, v2) => v1 - v2,
-
+      sortable: false,
+      filterable: false,
       renderCell: (params: any) => {
         const status = params.row.status;
         const rate = params.row.signatureStatus;
@@ -131,7 +137,7 @@ export default function DataGridComp({ user, userRole }: any) {
               label={t("table_status.rejected")}
               color="error"
               variant="filled"
-              sx={{ fontWeight: 600 }}
+              sx={{ fontWeight: 500, px: 0.5, borderRadius: "999px" }}
             />
           );
         }
@@ -143,7 +149,7 @@ export default function DataGridComp({ user, userRole }: any) {
               label={t("table_status.completed")}
               color="success"
               variant="filled"
-              sx={{ fontWeight: 600 }}
+              sx={{ fontWeight: 500, px: 0.5 }}
             />
           );
         }
@@ -155,7 +161,7 @@ export default function DataGridComp({ user, userRole }: any) {
               label={t("table_status.waiting")}
               color="warning"
               variant="filled"
-              sx={{ fontWeight: 600 }}
+              sx={{ fontWeight: 500, px: 0.5 }}
             />
           );
         }
@@ -166,7 +172,7 @@ export default function DataGridComp({ user, userRole }: any) {
             label={t("table_status.in_progress")}
             color="info"
             variant="filled"
-            sx={{ fontWeight: 600 }}
+            sx={{ fontWeight: 500, px: 0.5 }}
           />
         );
       },
@@ -500,6 +506,34 @@ export default function DataGridComp({ user, userRole }: any) {
     });
   };
 
+  const filteredRows = useMemo(() => {
+    const q = searchText.trim().toLocaleLowerCase("tr-TR");
+    if (!q) return rows;
+
+    return rows.filter((row: any) => {
+      const haystack = [
+        row.creatorName,
+        row.sozlesme_name,
+        row.template_name,
+        row.createdDate,
+      ]
+        .join(" ")
+        .toLocaleLowerCase("tr-TR");
+
+      return haystack.includes(q);
+    });
+  }, [rows, searchText]);
+
+  const localeText = {
+    MuiTablePagination: {
+      labelRowsPerPage: t("table.rowsPerPage"), // "Sayfa başına satır"
+      labelDisplayedRows: ({ from, to, count }: any) =>
+        `${from}-${to} / ${count !== -1 ? count : `>${to}`}`,
+    },
+
+    noRowsLabel: t("table.noRows"), // "Kayıt bulunamadı"
+    noResultsOverlayLabel: t("table.noResults"), // arama sonrası da buna düşebilir
+  };
   return (
     <Box sx={{ width: "100%" }}>
       {loading && (
@@ -514,106 +548,175 @@ export default function DataGridComp({ user, userRole }: any) {
       )}
 
       {/* --- FİLTRE BUTONLARI BURAYA EKLENDİ --- */}
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: { xs: "stretch", md: "center" },
+          justifyContent: "space-between",
+          flexDirection: { xs: "column", md: "row" },
+          gap: 2,
+          mb: 2,
+        }}
       >
-        <Button
-          variant={filterStatus === "ALL" ? "contained" : "outlined"}
-          onClick={() => setFilterStatus("ALL")}
-          startIcon={<FilterListIcon />}
-          disableRipple // <--- 1. Dalga efektini kapatır
-          color="inherit"
+        {/* BUTONLAR */}
+        <Box
           sx={{
-            borderRadius: 5,
-            textTransform: "none",
-            fontWeight: 600,
-            transition: "none", // <--- 2. Renk geçişini anlık yapar (Animasyonu kapatır)
-            boxShadow: "none", // Dolu olduğunda gölgeyi de kapatabilirsin daha düz durur
-            "&:active": { boxShadow: "none" },
-            "&:focus": { outline: "none" }, // Tıkladıktan sonra odaklanma izini siler
+            display: { xs: "grid", sm: "flex", md: "flex" },
+            gridTemplateColumns: {
+              xs: "repeat(2, max-content)",
+              sm: "none",
+              md: "none",
+            },
+            justifyContent: {
+              xs: "flex-start",
+              sm: "flex-start",
+              md: "flex-start",
+            },
+            gap: 1,
+            width: { xs: "100%", md: "auto" },
+            flexWrap: { md: "wrap" },
+            minWidth: 0,
           }}
         >
-          Tümü
-        </Button>
+          <Button
+            variant={filterStatus === "ALL" ? "contained" : "outlined"}
+            onClick={() => setFilterStatus("ALL")}
+            startIcon={<FilterListIcon />}
+            disableRipple
+            color="inherit"
+            sx={{
+              borderRadius: 5,
+              textTransform: "none",
+              fontWeight: 600,
+              transition: "none",
+              boxShadow: "none",
+              height: 40,
+              "&:active": { boxShadow: "none" },
+              "&:focus": { outline: "none" },
+              justifyContent: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t("table_status.all")}
+          </Button>
 
-        <Button
-          variant={filterStatus === "COMPLETED" ? "contained" : "outlined"}
-          color="success"
-          onClick={() => setFilterStatus("COMPLETED")}
-          startIcon={<CheckCircleIcon />}
-          disableRipple
-          sx={{
-            borderRadius: 5,
-            textTransform: "none",
-            fontWeight: 600,
-            transition: "none", // Animasyon kapalı
-            boxShadow: "none",
-            "&:active": { boxShadow: "none" },
-            "&:focus": { outline: "none" },
-          }}
-        >
-          {t("table_status.completed")}
-        </Button>
+          <Button
+            variant={filterStatus === "COMPLETED" ? "contained" : "outlined"}
+            color="success"
+            onClick={() => setFilterStatus("COMPLETED")}
+            startIcon={<CheckCircleIcon />}
+            disableRipple
+            sx={{
+              borderRadius: 5,
+              textTransform: "none",
+              fontWeight: 600,
+              transition: "none",
+              boxShadow: "none",
+              height: 40,
+              "&:active": { boxShadow: "none" },
+              "&:focus": { outline: "none" },
+              justifyContent: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t("table_status.completed")}
+          </Button>
 
-        <Button
-          variant={filterStatus === "WAITING" ? "contained" : "outlined"}
-          color="warning"
-          onClick={() => setFilterStatus("WAITING")}
-          startIcon={<HourglassEmptyRoundedIcon />}
-          disableRipple
-          sx={{
-            borderRadius: 5,
-            textTransform: "none",
-            fontWeight: 600,
-            transition: "none", // Animasyon kapalı
-            boxShadow: "none",
-            "&:active": { boxShadow: "none" },
-            "&:focus": { outline: "none" },
-          }}
-        >
-          {t("table_status.waiting")}
-        </Button>
+          <Button
+            variant={filterStatus === "WAITING" ? "contained" : "outlined"}
+            color="warning"
+            onClick={() => setFilterStatus("WAITING")}
+            startIcon={<HourglassEmptyRoundedIcon />}
+            disableRipple
+            sx={{
+              borderRadius: 5,
+              textTransform: "none",
+              fontWeight: 600,
+              transition: "none",
+              boxShadow: "none",
+              height: 40,
+              "&:active": { boxShadow: "none" },
+              "&:focus": { outline: "none" },
+              justifyContent: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t("table_status.waiting")}
+          </Button>
 
-        <Button
-          variant={filterStatus === "IN_PROGRESS" ? "contained" : "outlined"}
-          color="info"
-          onClick={() => setFilterStatus("IN_PROGRESS")}
-          startIcon={<AutorenewIcon />}
-          disableRipple
-          sx={{
-            borderRadius: 5,
-            textTransform: "none",
-            fontWeight: 600,
-            transition: "none", // Animasyon kapalı
-            boxShadow: "none",
-            "&:active": { boxShadow: "none" },
-            "&:focus": { outline: "none" },
-          }}
-        >
-          {t("table_status.in_progress")}
-        </Button>
+          <Button
+            variant={filterStatus === "IN_PROGRESS" ? "contained" : "outlined"}
+            color="info"
+            onClick={() => setFilterStatus("IN_PROGRESS")}
+            startIcon={<AutorenewIcon />}
+            disableRipple
+            sx={{
+              borderRadius: 5,
+              textTransform: "none",
+              fontWeight: 600,
+              transition: "none",
+              boxShadow: "none",
+              height: 40,
+              "&:active": { boxShadow: "none" },
+              "&:focus": { outline: "none" },
+              justifyContent: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t("table_status.in_progress")}
+          </Button>
 
-        <Button
-          variant={filterStatus === "REJECTED" ? "contained" : "outlined"}
-          color="error"
-          onClick={() => setFilterStatus("REJECTED")}
-          startIcon={<DoNotDisturbOnIcon />}
-          disableRipple
-          sx={{
-            borderRadius: 5,
-            textTransform: "none",
-            fontWeight: 600,
-            transition: "none", // Animasyon kapalı
-            boxShadow: "none",
-            "&:active": { boxShadow: "none" },
-            "&:focus": { outline: "none" },
+          <Button
+            variant={filterStatus === "REJECTED" ? "contained" : "outlined"}
+            color="error"
+            onClick={() => setFilterStatus("REJECTED")}
+            startIcon={<DoNotDisturbOnIcon />}
+            disableRipple
+            sx={{
+              borderRadius: 5,
+              textTransform: "none",
+              fontWeight: 600,
+              transition: "none",
+              boxShadow: "none",
+              height: 40,
+              "&:active": { boxShadow: "none" },
+              "&:focus": { outline: "none" },
+              justifyContent: "center",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {t("table_status.rejected")}
+          </Button>
+        </Box>
+
+        {/* SEARCH */}
+        <TextField
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setPaginationModel((p) => ({ ...p, page: 0 }));
           }}
-        >
-          {t("table_status.rejected")}
-        </Button>
-      </Stack>
+          placeholder={t("table_status.searchPlaceholder")}
+          size="small"
+          sx={{
+            // xs'de tam kaplasın
+            width: { xs: "100%", md: 360 },
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+              backgroundColor: "rgba(17,24,39,0.03)",
+              height: 40,
+            },
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchRoundedIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+
       {/* -------------------------------------- */}
 
       <motion.div
@@ -626,20 +729,45 @@ export default function DataGridComp({ user, userRole }: any) {
       >
         <CssDataGridResponsive>
           <DataGrid
+            disableColumnMenu
             disableRowSelectionOnClick
             isRowSelectable={() => false}
             hideFooterSelectedRowCount
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            rows={filteredRows}
+            columns={columns}
+            pageSizeOptions={[5, 10, 25]}
+            localeText={localeText}
+            rowHeight={52}
+            columnHeaderHeight={52}
             initialState={{
               sorting: { sortModel: [{ field: "createdDate", sort: "desc" }] },
               pagination: { paginationModel: { pageSize: 10, page: 0 } },
             }}
-            pageSizeOptions={[5, 10, 25]}
-            rows={rows}
-            columns={columns}
             onRowClick={goDetail}
             sx={{
-              minWidth: "850px",
-              "& .MuiDataGrid-row": { cursor: "pointer" },
+              border: "none",
+              minWidth: 900,
+              height: "100%",
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "rgba(17, 24, 39, 0.03)",
+                borderBottom: "1px solid rgba(0,0,0,0.06)",
+              },
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: 600,
+                color: "#111827",
+              },
+              "& .MuiDataGrid-cell": {
+                borderBottom: "1px solid rgba(0,0,0,0.06)",
+                color: "#111827",
+              },
+              "& .MuiDataGrid-row:nth-of-type(odd)": {
+                backgroundColor: "rgba(17, 24, 39, 0.015)",
+              },
+              "& .MuiDataGrid-row:hover": {
+                backgroundColor: "rgba(59, 130, 246, 0.06)",
+              },
               "--DataGrid-cellFocusOutline": "none",
               "--DataGrid-columnHeaderFocusOutline": "none",
               "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
@@ -647,8 +775,11 @@ export default function DataGridComp({ user, userRole }: any) {
               },
               "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within":
                 { outline: "none" },
-              "& .MuiDataGrid-row.Mui-selected, & .MuiDataGrid-row.Mui-selected:hover":
-                { backgroundColor: "transparent" },
+              "& .MuiDataGrid-footerContainer": {
+                borderTop: "1px solid rgba(0,0,0,0.06)",
+                backgroundColor: "rgba(17, 24, 39, 0.02)",
+                minHeight: 52,
+              },
             }}
           />
         </CssDataGridResponsive>

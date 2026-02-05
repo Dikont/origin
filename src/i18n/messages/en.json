@@ -396,7 +396,7 @@
     "downloadPDF": "Download PDF",
     "bannerTitle": "Contract Tracking List",
     "bannerDesc": "Track your contract management and signing processes here.",
-    "colCreatorName": "Creator Name",
+    "colCreatorName": "User Name",
     "colContractName": "Contract Name",
     "colTemplateName": "Template Name",
     "colSignatureStatus": "Signature Status",
@@ -441,10 +441,17 @@
       "rejected": "Rejected"
     },
     "table_status": {
+      "searchPlaceholder": "Search...",
+      "all": "All",
       "waiting": "Waiting",
       "completed": "Completed",
       "in_progress": "In Progress",
       "rejected": "Rejected"
+    },
+    "table": {
+      "rowsPerPage": "Rows per page",
+      "noRows": "No rows",
+      "noResults": "No results found"
     },
     "contentTitle": "Content",
     "coverAlt": "Document Cover Page",

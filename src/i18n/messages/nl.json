@@ -358,7 +358,7 @@
     "weeklyInvites": "Wekelijkse handtekeninguitnodigingen",
     "signaturesLabel": "Handtekening",
     "recentContractsTitle": "Recente contracten",
-    "colContractNo": "Contractnr.",
+    "colContractNo": "Contractnr",
     "colContractName": "Contractnaam",
     "colStatus": "Situatie",
     "colFirstSentDate": "Eerste verzenddatum",
@@ -396,7 +396,7 @@
     "downloadPDF": "PDF downloaden",
     "bannerTitle": "Contractopvolgingslijst",
     "bannerDesc": "Volg hier je contractbeheer- en ondertekeningsprocessen.",
-    "colCreatorName": "Naam maker",
+    "colCreatorName": "Gebruikersnaam",
     "colContractName": "Contractnaam",
     "colTemplateName": "Sjabloonnaam",
     "colSignatureStatus": "Handtekeningstatus",
@@ -419,7 +419,7 @@
     "noPdfData": "Geen PDF-gegevens ontvangen van de server",
     "back": "Terug",
     "headerTitle": "Contractnaam",
-    "contractNo": "Contractnr.",
+    "contractNo": "Contractnr",
     "hash": "Hash",
     "createdAt": "Aangemaakt",
     "updatedAt": "Bijgewerkt",
@@ -441,10 +441,17 @@
       "rejected": "Afgewezen"
     },
     "table_status": {
+      "searchPlaceholder": "Zoek...",
+      "all": "Alle",
       "waiting": "In afwachting",
       "completed": "Voltooid",
       "in_progress": "Bezig",
       "rejected": "Afgewezen"
+    },
+    "table": {
+      "rowsPerPage": "Rijen per pagina",
+      "noRows": "Geen records",
+      "noResults": "Geen resultaten gevonden"
     },
     "contentTitle": "Inhoud",
     "coverAlt": "Documentomslagpagina",

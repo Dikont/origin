@@ -70,6 +70,7 @@ const makeRenderStatusChip =
         sx={{
           fontWeight: 700,
           borderRadius: "999px",
+          py: 2,
           px: 0.5,
           "& .MuiChip-icon": { ml: "6px" },
         }}

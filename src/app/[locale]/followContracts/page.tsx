@@ -3,6 +3,7 @@ import { Box, CardContent, Grid, Typography } from "@mui/material";
 import DataGridComp from "@/component/DataGridComp/page";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
+import { alpha } from "@mui/material/styles";
 
 export const metadata = {
   title: "Sözleşme Takip Listesi - İmza ve Durum Takibi | Dikont",
@@ -46,14 +47,31 @@ export default async function FollowContracts() {
           <CardContent
             sx={{
               display: "flex",
-              alignItems: "center",
               justifyContent: "space-between",
-              borderRadius: "10px",
+              position: "relative",
             }}
           >
             <Box>
-              <Typography variant="h5">{t("bannerTitle")}</Typography>
-              <Typography>{t("bannerDesc")}</Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: alpha("#fff", 1),
+                  fontWeight: 900,
+                  fontSize: { xs: 18, sm: 22 },
+                }}
+              >
+                {t("bannerTitle")}
+              </Typography>
+              <Typography
+                sx={{
+                  color: alpha("#fff", 0.82),
+                  fontSize: { xs: 13, sm: 14 },
+                  fontWeight: 500,
+                  mt: 0.5,
+                }}
+              >
+                {t("bannerDesc")}
+              </Typography>
             </Box>
             <Box></Box>
           </CardContent>

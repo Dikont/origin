@@ -391,7 +391,7 @@
     "downloadPDF": "PDF indir",
     "bannerTitle": "Sözleşme Takip Listesi",
     "bannerDesc": "Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
-    "colCreatorName": "Oluşturan Adı",
+    "colCreatorName": "Kullanıcı Adı",
     "colContractName": "Sözleşme Adı",
     "colTemplateName": "Şablon Adı",
     "colSignatureStatus": "İmza Durumu",
@@ -436,10 +436,17 @@
       "rejected": "Reddedildi"
     },
     "table_status": {
+      "searchPlaceholder": "Ara...",
+      "all": "Tümü",
       "waiting": "Bekleniyor",
       "completed": "Tamamlandı",
       "in_progress": "Devam Ediyor",
       "rejected": "Reddedildi"
+    },
+    "table": {
+      "rowsPerPage": "Satır / Sayfa",
+      "noRows": "Kayıt bulunamadı",
+      "noResults": "Sonuç bulunamadı"
     },
     "contentTitle": "İçerik",
     "coverAlt": "Belge Kapak Sayfası",
