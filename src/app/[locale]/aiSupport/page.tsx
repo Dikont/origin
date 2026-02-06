@@ -138,6 +138,7 @@ export default function Index() {
           <CardContent
             sx={{
               display: "flex",
+              alignItems: "center",
               justifyContent: "space-between",
               position: "relative",
             }}
@@ -164,6 +165,16 @@ export default function Index() {
                 {t("hero_subtitle")}
               </Typography>
             </Box>
+            <Box
+              component="img"
+              src="/aiBanner.svg"
+              alt="Sözleşme Listesi"
+              sx={{
+                width: { xs: 70, sm: 90 },
+                height: "auto",
+                flexShrink: 0, // sıkışmasın diye önemli
+              }}
+            />
           </CardContent>
         </CustomBannerCard>
       </Box>

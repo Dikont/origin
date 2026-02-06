@@ -182,6 +182,8 @@ export default async function Index() {
           <CardContent
             sx={{
               display: "flex",
+              alignItems: "center",
+
               justifyContent: "space-between",
               position: "relative",
             }}
@@ -208,6 +210,16 @@ export default async function Index() {
                 {t("page_subtitle")}
               </Typography>
             </Box>
+            <Box
+              component="img"
+              src="/raporBanner.svg"
+              alt="Sözleşme Listesi"
+              sx={{
+                width: { xs: 110, sm: 155 },
+                height: "auto",
+                flexShrink: 0, // sıkışmasın diye önemli
+              }}
+            />
           </CardContent>
         </CustomBannerCard>
       </Box>

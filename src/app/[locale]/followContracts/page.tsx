@@ -47,8 +47,10 @@ export default async function FollowContracts() {
           <CardContent
             sx={{
               display: "flex",
+              alignItems: "center",
               justifyContent: "space-between",
               position: "relative",
+              gap: 2,
             }}
           >
             <Box>
@@ -73,7 +75,17 @@ export default async function FollowContracts() {
                 {t("bannerDesc")}
               </Typography>
             </Box>
-            <Box></Box>
+            {/* SAĞ TARAF – SVG */}
+            <Box
+              component="img"
+              src="/sozlesmelistesiBanner.svg"
+              alt="Sözleşme Listesi"
+              sx={{
+                width: { xs: 80, sm: 110 },
+                height: "auto",
+                flexShrink: 0, // sıkışmasın diye önemli
+              }}
+            />
           </CardContent>
         </CustomBannerCard>
       </Grid>
