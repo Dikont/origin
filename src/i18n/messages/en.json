@@ -254,6 +254,7 @@
     "label_total": "Total Records",
     "label_signed": "Signed",
     "label_pending": "Pending",
+    "label_rejected": "Rejected",
     "period_today": "Daily Signature Report",
     "period_week": "Weekly Signature Report",
     "period_month": "Monthly Signature Report",

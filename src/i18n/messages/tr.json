@@ -250,6 +250,7 @@
     "label_total": "Toplam Kayıt",
     "label_signed": "İmzalı",
     "label_pending": "Bekleyen",
+    "label_rejected": "Reddedilen",
     "period_today": "Günlük İmza Raporu",
     "period_week": "Haftalık İmza Raporu",
     "period_month": "Aylık İmza Raporu",

@@ -254,6 +254,7 @@
     "label_total": "Totaal aantal records",
     "label_signed": "Getekend",
     "label_pending": "In behandeling",
+    "label_rejected": "Afgewezen",
     "period_today": "Dagelijks handtekeningrapport",
     "period_week": "Wekelijks handtekeningrapport",
     "period_month": "Maandelijks handtekeningrapport",
