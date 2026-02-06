@@ -367,7 +367,7 @@
     }
   },
   "template": {
-    "readyDraftsTitle": "Hazır Taslaklar",
+    "readyDraftsTitle": "Taslaklar",
     "uploadedDraftsTitle": "Yüklenen Taslaklar",
     "ready": {
       "termination": "Fesih Sözleşmesi",
@@ -385,6 +385,7 @@
     "applyButton": "Uygula",
     "deleteConfirmTitle": "Silinsin mi?",
     "deleteConfirmText": "Bu şablonu kalıcı olarak silmek istediğinizden emin misiniz?",
+    "deleteConfirmWarn": "Bu işlem geri alınamaz. Silinen taslak kalıcı olarak kaldırılır.",
     "cancel": "Vazgeç",
     "yes": "Evet"
   },
@@ -394,7 +395,7 @@
     "bannerDesc": "Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
     "colCreatorName": "Kullanıcı Adı",
     "colContractName": "Sözleşme Adı",
-    "colTemplateName": "Şablon Adı",
+    "colTemplateName": "Sözleşme Açıklaması",
     "colSignatureStatus": "İmza Durumu",
     "colCreatedDate": "Oluşturulma Tarihi",
     "situation": "Durum",
@@ -402,6 +403,7 @@
     "notProvided": "Girilmedi",
     "deleteConfirmTitle": "Silinsin mi?",
     "deleteConfirmText": "Bu imza sürecini silmek istediğinize emin misiniz?",
+    "deleteConfirmWarn": "Bu işlem geri alınamaz. Silinen imza süreci kalıcı olarak kaldırılır.",
     "cancel": "Vazgeç",
     "yes": "Evet",
     "snackErrorWithStatus": "Hata: {status}",

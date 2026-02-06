@@ -372,7 +372,7 @@
     }
   },
   "template": {
-    "readyDraftsTitle": "Ready Drafts",
+    "readyDraftsTitle": "Drafts",
     "uploadedDraftsTitle": "Uploaded Drafts",
     "ready": {
       "termination": "Termination Agreement",
@@ -390,6 +390,7 @@
     "applyButton": "Apply",
     "deleteConfirmTitle": "Delete?",
     "deleteConfirmText": "Are you sure you want to permanently delete this template?",
+    "deleteConfirmWarn": "This action cannot be undone. The deleted draft will be permanently removed.",
     "cancel": "Cancel",
     "yes": "Yes"
   },
@@ -399,7 +400,7 @@
     "bannerDesc": "Track your contract management and signing processes here.",
     "colCreatorName": "User Name",
     "colContractName": "Contract Name",
-    "colTemplateName": "Template Name",
+    "colTemplateName": "Contract Description",
     "colSignatureStatus": "Signature Status",
     "colCreatedDate": "Created Date",
     "situation": "Status",
@@ -407,6 +408,7 @@
     "notProvided": "Not Provided",
     "deleteConfirmTitle": "Delete?",
     "deleteConfirmText": "Are you sure you want to delete this signing process?",
+    "deleteConfirmWarn": "This action is irreversible. The deleted signature process is permanently removed.",
     "cancel": "Cancel",
     "yes": "Yes",
     "snackErrorWithStatus": "Error: {status}",

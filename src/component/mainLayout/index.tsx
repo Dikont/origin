@@ -666,7 +666,18 @@ export default function RootLayout({
                       <ListItem
                         disablePadding
                         onClick={() => {
-                          if (item.url) router.push(item.url);
+                          if (!item.url) return;
+
+                          if (item.target === "_blank") {
+                            window.open(
+                              item.url,
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                            return;
+                          }
+
+                          router.push(item.url);
                         }}
                       >
                         <ListItemButton

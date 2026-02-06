@@ -331,13 +331,6 @@ export default function Index({
     });
   };
 
-  // Tarih formatını güzel göstermek için helper fonksiyon ekle
-  const formatDateForDisplay = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("tr-TR"); // Türkçe format: gg.aa.yyyy
-  };
-
   const handleRemoveItem = (page: number, id: string) => {
     setItemsByPage((prev) => ({
       ...prev,

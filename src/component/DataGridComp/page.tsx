@@ -36,6 +36,9 @@ import { useTranslations } from "next-intl";
 import CssDataGridResponsive from "@/component/cssDataGridResponsive";
 import FilterListIcon from "@mui/icons-material/FilterList"; // İsteğe bağlı ikon
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { alpha } from "@mui/material/styles";
 
 export default function DataGridComp({ user, userRole }: any) {
   const t = useTranslations("followContracts");
@@ -716,7 +719,6 @@ export default function DataGridComp({ user, userRole }: any) {
           }}
         />
       </Box>
-
       {/* -------------------------------------- */}
 
       <motion.div
@@ -791,18 +793,174 @@ export default function DataGridComp({ user, userRole }: any) {
         onClose={() => !deleting && setConfirmOpen(false)}
         maxWidth="xs"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.14)",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.90) 100%)",
+            boxShadow: "0 18px 50px rgba(0,0,0,0.25)",
+            backdropFilter: "blur(10px)",
+          },
+        }}
       >
-        <DialogTitle>{t("deleteConfirmTitle")}</DialogTitle>
-        <DialogContent>{t("deleteConfirmText")}</DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)} disabled={deleting}>
+        {/* HEADER */}
+        <Box
+          sx={{
+            px: 2.2,
+            py: 1.8,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1.5,
+            background:
+              "linear-gradient(135deg, rgba(244,67,54,0.14) 0%, rgba(244,67,54,0.06) 100%)",
+            borderBottom: "1px solid rgba(0,0,0,0.06)",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: "12px",
+                display: "grid",
+                placeItems: "center",
+                background:
+                  "linear-gradient(135deg, rgba(244,67,54,0.25) 0%, rgba(244,67,54,0.12) 100%)",
+                border: "1px solid rgba(244,67,54,0.25)",
+              }}
+            >
+              <WarningAmberRoundedIcon sx={{ color: "#d32f2f" }} />
+            </Box>
+
+            <DialogTitle
+              sx={{
+                p: 0,
+                fontWeight: 900,
+                fontSize: 18,
+                color: "#1f2937",
+                lineHeight: 1.2,
+              }}
+            >
+              {t("deleteConfirmTitle")}
+            </DialogTitle>
+          </Box>
+
+          <Button
+            onClick={() => !deleting && setConfirmOpen(false)}
+            disabled={deleting}
+            sx={{
+              minWidth: 0,
+              width: 34,
+              height: 34,
+              borderRadius: 2,
+              color: "#374151",
+              backgroundColor: "rgba(0,0,0,0.05)",
+              border: "1px solid rgba(0,0,0,0.08)",
+              transition: "all .2s ease",
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.08)",
+                transform: "translateY(-1px)",
+              },
+            }}
+          >
+            <CloseRoundedIcon fontSize="small" />
+          </Button>
+        </Box>
+
+        {/* CONTENT */}
+        <DialogContent sx={{ px: 2.2, pt: 2, pb: 0 }}>
+          <Typography
+            sx={{
+              color: alpha("#111827", 0.78),
+              fontSize: 14,
+              fontWeight: 600,
+              lineHeight: 1.6,
+            }}
+          >
+            {t("deleteConfirmText")}
+          </Typography>
+
+          {/* İstersen opsiyonel uyarı */}
+          <Box
+            sx={{
+              mt: 1.6,
+              p: 1.2,
+              borderRadius: 2,
+              border: "1px dashed rgba(244,67,54,0.35)",
+              backgroundColor: "rgba(244,67,54,0.06)",
+            }}
+          >
+            <Typography
+              sx={{ fontSize: 12.5, fontWeight: 700, color: "#b71c1c" }}
+            >
+              {t("deleteConfirmWarn")}
+            </Typography>
+          </Box>
+        </DialogContent>
+
+        {/* ACTIONS */}
+        <DialogActions
+          sx={{
+            px: 2.2,
+            py: 2,
+            gap: 1.2,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button
+            onClick={() => setConfirmOpen(false)}
+            disabled={deleting}
+            fullWidth
+            sx={{
+              py: 1.2,
+              borderRadius: "10px",
+              fontWeight: 800,
+              textTransform: "none",
+              color: "#374151",
+              background:
+                "linear-gradient(135deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.04) 100%)",
+              border: "1px solid rgba(0,0,0,0.10)",
+              transition: "all .2s ease",
+              "&:hover": {
+                transform: "translateY(-1px)",
+                boxShadow: "0 8px 18px rgba(0,0,0,0.12)",
+                background:
+                  "linear-gradient(135deg, rgba(0,0,0,0.09) 0%, rgba(0,0,0,0.06) 100%)",
+              },
+            }}
+          >
             {t("cancel")}
           </Button>
+
           <Button
             variant="contained"
-            color="error"
             onClick={confirmDelete}
             disabled={deleting}
+            fullWidth
+            sx={{
+              py: 1.2,
+              borderRadius: "10px",
+              fontWeight: 900,
+              textTransform: "none",
+              color: "#fff",
+              background: "linear-gradient(135deg, #c62828 0%, #ef5350 100%)",
+              boxShadow: "0 10px 22px rgba(198,40,40,0.28)",
+              transition: "all .2s ease",
+              "&:hover": {
+                transform: "translateY(-1px)",
+                boxShadow: "0 14px 30px rgba(198,40,40,0.38)",
+                background: "linear-gradient(135deg, #ef5350 0%, #c62828 100%)",
+              },
+              "&.Mui-disabled": {
+                color: "rgba(255,255,255,0.85)",
+                background: "linear-gradient(135deg, #c62828 0%, #ef5350 100%)",
+                opacity: 0.55,
+              },
+            }}
           >
             {deleting ? (
               <CircularProgress size={18} sx={{ color: "#fff" }} />

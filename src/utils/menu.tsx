@@ -18,6 +18,7 @@ export type MenuItem = {
   text: string;
   url?: string;
   type: "subheader" | "item";
+  target?: "_blank"; // 👈 EKLENDİ
 };
 
 export function getMenuItems(
@@ -65,6 +66,7 @@ export function getMenuItems(
       icon: <DomainVerificationIcon sx={{ fontSize: 30 }} />,
       text: t("documentVerification"),
       url: `/${locale}/confirmationOfDocument`,
+      target: "_blank",
       type: "item",
     },
 

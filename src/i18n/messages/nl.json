@@ -372,7 +372,7 @@
     }
   },
   "template": {
-    "readyDraftsTitle": "Kant-en-klare concepten",
+    "readyDraftsTitle": "Concepten",
     "uploadedDraftsTitle": "Geüploade concepten",
     "ready": {
       "termination": "Beëindigingsovereenkomst",
@@ -390,6 +390,7 @@
     "applyButton": "Toepassen",
     "deleteConfirmTitle": "Verwijderen?",
     "deleteConfirmText": "Weet je zeker dat je deze sjabloon permanent wilt verwijderen?",
+    "deleteConfirmWarn": "Deze actie kan niet ongedaan worden gemaakt. Het verwijderde concept wordt permanent verwijderd.",
     "cancel": "Annuleren",
     "yes": "Ja"
   },
@@ -399,7 +400,7 @@
     "bannerDesc": "Volg hier je contractbeheer- en ondertekeningsprocessen.",
     "colCreatorName": "Gebruikersnaam",
     "colContractName": "Contractnaam",
-    "colTemplateName": "Sjabloonnaam",
+    "colTemplateName": "Contractbeschrijving",
     "colSignatureStatus": "Handtekeningstatus",
     "colCreatedDate": "Aanmaakdatum",
     "situation": "Situatie",
@@ -407,6 +408,7 @@
     "notProvided": "Niet opgegeven",
     "deleteConfirmTitle": "Verwijderen?",
     "deleteConfirmText": "Weet je zeker dat je dit ondertekeningsproces wilt verwijderen?",
+    "deleteConfirmWarn": "Deze actie is onomkeerbaar. Het proces voor het verwijderen van handtekeningen wordt permanent verwijderd.",
     "cancel": "Annuleren",
     "yes": "Ja",
     "snackErrorWithStatus": "Fout: {status}",
