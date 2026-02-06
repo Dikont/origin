@@ -12,6 +12,7 @@ import { cookies } from "next/headers";
 import { Paper } from "@mui/material";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+
 export const metadata = {
   title: "Şirket Profili - Lisans ve Paket Bilgileri | Dikont",
   description:
@@ -76,7 +77,7 @@ function StatCard({
       sx={{
         height: "100%",
         border: "1px solid",
-        borderColor: "grey.200",
+        borderColor: "#646E9F",
         bgcolor: "background.paper",
         borderRadius: 2,
         p: 2,
@@ -85,23 +86,18 @@ function StatCard({
         gap: 1,
         transition: "box-shadow .2s ease",
         "&:hover": {
-          boxShadow: "0 1px 0 rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.06)",
+          boxShadow:
+            "0 1px 0 rgba(255, 0, 0, 0.04), 0 6px 18px rgba(0,0,0,0.06)",
         },
       }}
     >
-      <Typography fontSize={13} color="text.secondary">
-        {label}
-      </Typography>
+      <Typography fontSize={14}>{label}</Typography>
 
       <Typography fontWeight={800} fontSize={24} lineHeight={1.1}>
         {nf(value)}
       </Typography>
 
-      {sublabel ? (
-        <Typography fontSize={12} color="text.secondary">
-          {sublabel}
-        </Typography>
-      ) : null}
+      {sublabel ? <Typography fontSize={12}>{sublabel}</Typography> : null}
     </Paper>
   );
 }
@@ -125,7 +121,7 @@ function ProgressStat({
       elevation={0}
       sx={{
         border: "1px solid",
-        borderColor: "grey.200",
+        borderColor: "#646E9F",
         borderRadius: 2,
         p: 2,
       }}
@@ -211,7 +207,7 @@ export default async function CompanyProfile() {
 
   if (!data) {
     return (
-      <Box bgcolor="white" p={2} border="1px solid #E0E0E0" borderRadius="8px">
+      <Box bgcolor="white" p={2} border="2px solid #2C1737" borderRadius="8px">
         <Typography>{t("errorLoadFailed")}</Typography>
       </Box>
     );
@@ -242,13 +238,11 @@ export default async function CompanyProfile() {
         {/* SOL: Şirket Kartı */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Box
-            border="1px solid #E0E0E0"
+            border="2px solid #2C1737"
             borderRadius="8px"
             p="24px"
             height={{ xs: "auto", md: "100%" }}
             sx={{
-              border: "1px solid",
-              borderColor: "grey.200",
               borderRadius: 2,
               p: 3,
               height: { xs: "auto", md: "100%" },
@@ -274,24 +268,29 @@ export default async function CompanyProfile() {
               {compDescription ? (
                 <Typography
                   fontSize={14}
+                  fontWeight={600}
                   color="text.secondary"
                   textAlign="center"
                 >
                   {compDescription}
                 </Typography>
               ) : null}
-              <Divider flexItem sx={{ my: 1.5 }} />
+              <Divider flexItem sx={{ my: 1.5, background: "#646E9F" }} />
               <Stack spacing={0.5} sx={{ width: "100%" }}>
                 <Typography fontSize={12} color="text.secondary">
                   {t("createdAtLabel")}
                 </Typography>
-                <Typography fontSize={14}>{formatDate(createdAt)}</Typography>
+                <Typography fontSize={14} fontWeight={600}>
+                  {formatDate(createdAt)}
+                </Typography>
               </Stack>
               <Stack spacing={0.5} sx={{ width: "100%" }}>
                 <Typography fontSize={12} color="text.secondary">
                   {t("updatedAtLabel")}
                 </Typography>
-                <Typography fontSize={14}>{formatDate(updatedAt)}</Typography>
+                <Typography fontSize={14} fontWeight={600}>
+                  {formatDate(updatedAt)}
+                </Typography>
               </Stack>
             </Stack>
           </Box>
@@ -303,13 +302,13 @@ export default async function CompanyProfile() {
             component={Paper}
             elevation={0}
             sx={{
-              border: "1px solid",
-              borderColor: "grey.200",
+              border: "2px solid",
+              borderColor: "2#C1737",
               borderRadius: 2,
               p: 3,
             }}
           >
-            <Typography mb={2} fontSize={18} fontWeight={700}>
+            <Typography mb={2} fontSize={22} fontWeight={700}>
               {t("titleStats")}
             </Typography>
 
@@ -369,13 +368,13 @@ export default async function CompanyProfile() {
             component={Paper}
             elevation={0}
             sx={{
-              border: "1px solid",
-              borderColor: "grey.200",
+              border: "2px solid",
+              borderColor: "#2C1737",
               borderRadius: 2,
               p: 3,
             }}
           >
-            <Typography mb={2} fontSize={18} fontWeight={700}>
+            <Typography mb={2} fontSize={22} fontWeight={700}>
               {t("progressTitle")}
             </Typography>
 
@@ -408,23 +407,26 @@ export default async function CompanyProfile() {
             component={Paper}
             elevation={0}
             sx={{
-              border: "1px solid",
-              borderColor: "grey.200",
+              border: "2px solid",
+              borderColor: "#2C1737",
               borderRadius: 2,
               p: 3,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            <Typography mb={2} fontSize={18} fontWeight={700}>
+            <Typography mb={2} fontSize={22} fontWeight={700}>
               {t("timelineTitle")}
             </Typography>
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Box>
-                  <Typography fontSize={14} color="#8c8c8c">
+                  <Typography fontSize={12} color="text.secondary">
                     {t("firstDocSent")}
                   </Typography>
-                  <Typography fontSize={14}>
+                  <Typography fontSize={14} fontWeight={600}>
                     {formatDate(firstDocumentSent)}
                   </Typography>
                 </Box>
@@ -432,98 +434,66 @@ export default async function CompanyProfile() {
 
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Box>
-                  <Typography fontSize={14} color="#8c8c8c">
+                  <Typography fontSize={12} color="text.secondary">
                     {t("lastDocSigned")}
                   </Typography>
-                  <Typography fontSize={14}>
+                  <Typography fontSize={14} fontWeight={600}>
                     {formatDate(lastDocumentSigned)}
                   </Typography>
                 </Box>
               </Grid>
             </Grid>
 
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 2, background: "#646E9F" }} />
 
-            <Stack gap={1}>
-              <Typography fontSize={14} color="#8c8c8c">
-                {t("packageTitle")}
-              </Typography>
-
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Typography fontSize={14}>{t("packageCurrent")}</Typography>
-                <Chip
-                  label={t("packageUnlimited")}
-                  size="small"
-                  sx={{
-                    bgcolor: "info.50",
-                    color: "info.dark",
-                    border: "1px solid",
-                    borderColor: "info.100",
-                    borderRadius: "999px",
-                    height: 28,
-                    "& .MuiChip-label": { px: 1.5, fontWeight: 700 },
-                  }}
-                />
-              </Stack>
-
-              <Typography mt={1} fontSize={14} color="#8c8c8c">
-                {t("licenseEnd")}
-              </Typography>
-              <Typography fontSize={14}>{t("notSpecified")}</Typography>
-
-              <Typography mt={1} fontSize={14} color="#8c8c8c">
-                {t("verificationType")}
-              </Typography>
-              <Typography fontSize={14}>{t("verificationEmail")}</Typography>
-            </Stack>
+            {/* İnce şerit: AI & Haklar özet */}
+            <Box
+              mt={2}
+              component={Paper}
+              elevation={0}
+              sx={{
+                mt: "auto",
+                p: "12px",
+                border: "1px solid",
+                borderColor: "#646E9F",
+                borderRadius: 2,
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 1.5,
+                alignItems: "center",
+                bgcolor: "grey.50",
+              }}
+            >
+              <Chip
+                color="info"
+                variant="outlined"
+                label={t("summaryAiTokens", { count: nf(totalAITokens ?? 0) })}
+              />
+              <Chip
+                color="default"
+                variant="outlined"
+                label={t("summaryDocumentRights", {
+                  count: nf(totalDocumentRights ?? 0),
+                })}
+              />
+              <Chip
+                color="info"
+                variant="outlined"
+                label={`${t("summaryGroupPercent")} ${(
+                  groupCompletionRate ?? 0
+                ).toFixed(2)}%`}
+              />
+              <Chip
+                color="success"
+                variant="outlined"
+                label={`${t("summaryPagePercent")} ${(
+                  pageCompletionRate ?? 0
+                ).toFixed(2)}%`}
+              />
+            </Box>
           </Box>
         </Grid>
       </Grid>
-
-      {/* İnce şerit: AI & Haklar özet */}
-      <Box
-        mt={2}
-        component={Paper}
-        elevation={0}
-        sx={{
-          p: "12px",
-          border: "1px solid",
-          borderColor: "grey.200",
-          borderRadius: 2,
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 1.5,
-          alignItems: "center",
-          bgcolor: "grey.50",
-        }}
-      >
-        <Chip
-          color="info"
-          variant="outlined"
-          label={t("summaryAiTokens", { count: nf(totalAITokens ?? 0) })}
-        />
-        <Chip
-          color="default"
-          variant="outlined"
-          label={t("summaryDocumentRights", {
-            count: nf(totalDocumentRights ?? 0),
-          })}
-        />
-        <Chip
-          color="info"
-          variant="outlined"
-          label={`${t("summaryGroupPercent")} ${(
-            groupCompletionRate ?? 0
-          ).toFixed(2)}%`}
-        />
-        <Chip
-          color="success"
-          variant="outlined"
-          label={`${t("summaryPagePercent")} ${(
-            pageCompletionRate ?? 0
-          ).toFixed(2)}%`}
-        />
-      </Box>
     </Box>
   );
 }
