@@ -26,6 +26,8 @@ import {
   setSignerTabs,
 } from "@/store/slices/formSlice";
 import { useTranslations } from "next-intl";
+import IconButton from "@mui/material/IconButton";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 type TPageImage = string; // Blob URL
 
@@ -121,7 +123,7 @@ export default function PdfCanvasPage() {
           setDocumentNameAndDesc({
             DocumentName: resDocPayload.documentGroupName,
             DocumentDesc: resDocPayload.documentGroupDesc,
-          })
+          }),
         );
 
         const res = await fetch("/api/getPagesForDocTakip", {
@@ -140,8 +142,8 @@ export default function PdfCanvasPage() {
         const docs = Array.isArray(payload)
           ? payload
           : Array.isArray(payload?.docs)
-          ? payload.docs!
-          : [];
+            ? payload.docs!
+            : [];
 
         const signerTabs = Array.isArray((payload as any)?.vw_SignerTabs)
           ? (payload as any).vw_SignerTabs
@@ -203,8 +205,16 @@ export default function PdfCanvasPage() {
   }, []);
 
   useEffect(() => {
-    renderPage(pageNumber, canvasRef);
-  }, [pdfDoc, pageNumber]);
+    if (stepCount !== 1) return;
+    if (!isUploaded) return;
+    if (!pdfDoc && !imageUrls.length) return;
+
+    const raf = requestAnimationFrame(() => {
+      renderPage(pageNumber, canvasRef);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [stepCount, isUploaded, pdfDoc, imageUrls, pageNumber]);
 
   useEffect(() => {
     if (modalOpen) {
@@ -216,7 +226,7 @@ export default function PdfCanvasPage() {
 
   const renderPage = async (
     num: number,
-    ref: React.RefObject<HTMLCanvasElement>
+    ref: React.RefObject<HTMLCanvasElement>,
   ) => {
     if (!ref.current) return;
     setIsLoading(true);
@@ -311,6 +321,51 @@ export default function PdfCanvasPage() {
     if (modalPage < numPages) setModalPage((prev) => prev + 1);
   };
 
+  const resetUpload = () => {
+    // modal açıksa kapat
+    setModalOpen(false);
+
+    // PDF state reset
+    setPdfDoc(null);
+    setNumPages(0);
+    setPageNumber(1);
+    setModalPage(1);
+
+    // Template/FollowCard image state reset + blob url cleanup
+    revokeAll(imageUrls);
+    setImageUrls([]);
+    setImageBase64s([]);
+
+    // Upload state reset
+    setIsUploaded(false);
+    setIsDragging(false);
+
+    // file input reset (aynı dosyayı tekrar seçebilmek için)
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    // canvas temizle (önizleme + modal)
+    const c1 = canvasRef.current;
+    if (c1) c1.getContext("2d")?.clearRect(0, 0, c1.width, c1.height);
+
+    const c2 = modalCanvasRef.current;
+    if (c2) c2.getContext("2d")?.clearRect(0, 0, c2.width, c2.height);
+
+    // (Opsiyonel ama temiz) Redux form datasını da sıfırla
+    dispatch(setDocs([] as any));
+    dispatch(setRecipients([] as any));
+    dispatch(setSignerTabs([] as any));
+    dispatch(
+      setDocumentNameAndDesc({ DocumentName: "", DocumentDesc: "" } as any),
+    );
+  };
+
+  useEffect(() => {
+    return () => {
+      revokeAll(imageUrls);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageUrls]);
+
   return (
     <>
       {isLoading && (
@@ -329,7 +384,7 @@ export default function PdfCanvasPage() {
         <Grid container>
           {stepCount === 1 && (
             <Grid size={12}>
-              <Typography variant="h4" sx={{ mb: 3 }}>
+              <Typography variant="h4" fontWeight={600} sx={{ mb: 3 }}>
                 {t("uploadTitle")}
               </Typography>
 
@@ -350,7 +405,7 @@ export default function PdfCanvasPage() {
                     }}
                     sx={{
                       height: 300,
-                      border: "2px dashed #aaa",
+                      border: "4px dashed #646E9F",
                       borderRadius: 2,
                       backgroundColor: isDragging ? "#e0f7fa" : "#f9f9f9",
                       textAlign: "center",
@@ -362,11 +417,35 @@ export default function PdfCanvasPage() {
                     }}
                     onDrop={handleDrop}
                   >
-                    <Typography variant="h6">{t("dropOrUpload")}</Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: "#000000",
+                        fontWeight: 600,
+                        mb: 1,
+                      }}
+                    >
+                      {t("dropOrUpload")}
+                    </Typography>
                     <Button
                       variant="contained"
                       color="warning"
                       onClick={handleUploadClick}
+                      sx={{
+                        py: 1,
+                        px: 3,
+                        borderRadius: 2,
+                        color: "#fff",
+                        fontWeight: 600,
+                        textTransform: "none",
+                        background:
+                          "linear-gradient(135deg, #5C2230 0%, #453562 100%)",
+                        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                        "&:hover": {
+                          background:
+                            "linear-gradient(135deg, #796171 0%, #646E9F 100%)",
+                        },
+                      }}
                     >
                       {t("start")}
                     </Button>
@@ -387,12 +466,28 @@ export default function PdfCanvasPage() {
                         padding: "20px",
                         position: "relative",
                         overflow: "hidden",
-                        border: "1px solid #ccc",
+                        border: "2px solid #646E9F",
                         borderRadius: 2,
                         "&:hover .previewOverlay": { opacity: 1 },
                       }}
                       className="prev12312312321iewContainer"
                     >
+                      <IconButton
+                        onClick={resetUpload}
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          zIndex: 5,
+                          color: "#fff",
+                          backgroundColor: "rgba(0,0,0,0.35)",
+                          backdropFilter: "blur(6px)",
+                          "&:hover": { backgroundColor: "rgba(0,0,0,0.55)" },
+                        }}
+                      >
+                        <CloseRoundedIcon fontSize="small" />
+                      </IconButton>
                       <canvas
                         ref={canvasRef}
                         style={{ width: "100%", height: "100%" }}
@@ -415,7 +510,25 @@ export default function PdfCanvasPage() {
                         }}
                         onClick={() => setModalOpen(true)}
                       >
-                        <Button variant="contained" color="warning">
+                        <Button
+                          variant="contained"
+                          sx={{
+                            py: 1,
+                            px: 2,
+                            borderRadius: 2,
+                            color: "#fff",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            border: 1,
+                            background:
+                              "linear-gradient(135deg, #5C2230 0%, #453562 100%)",
+                            boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                            "&:hover": {
+                              background:
+                                "linear-gradient(135deg, #796171 0%, #646E9F 100%)",
+                            },
+                          }}
+                        >
                           {t("preview")}
                         </Button>
                       </Box>
@@ -424,7 +537,6 @@ export default function PdfCanvasPage() {
                     <Box
                       sx={{
                         height: 150,
-                        border: "2px dashed #aaa",
                         borderRadius: 2,
                         display: "flex",
                         flexDirection: "column",
@@ -434,6 +546,7 @@ export default function PdfCanvasPage() {
                         textAlign: "center",
                         padding: "20px",
                         backgroundColor: isDragging ? "#e0f7fa" : "#f9f9f9",
+                        border: "3px dashed #646E9F",
                         p: 2,
                         width: "200px",
                       }}
@@ -451,10 +564,34 @@ export default function PdfCanvasPage() {
                         setIsDragging(false);
                       }}
                     >
-                      <Typography fontSize={"14px"}>
+                      <Typography
+                        fontSize={"14px"}
+                        sx={{
+                          color: "#000000",
+                          fontWeight: 300,
+                        }}
+                      >
                         {t("dropOrUpload")}
                       </Typography>
-                      <Button variant="contained" onClick={handleUploadClick}>
+                      <Button
+                        variant="contained"
+                        onClick={handleUploadClick}
+                        sx={{
+                          py: 1,
+                          px: 2,
+                          borderRadius: 2,
+                          color: "#fff",
+                          fontWeight: 600,
+                          textTransform: "none",
+                          background:
+                            "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+                          boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+                          },
+                        }}
+                      >
                         {t("upload")}
                       </Button>
                       <input
@@ -516,9 +653,23 @@ export default function PdfCanvasPage() {
                 <Box display={"flex"} justifyContent={"flex-end"} my="20px">
                   <Button
                     variant="contained"
-                    color="success"
                     size="large"
                     onClick={() => setStepCount(2)}
+                    sx={{
+                      py: 1,
+                      px: 3,
+                      borderRadius: 2,
+                      color: "#fff",
+                      fontWeight: 600,
+                      textTransform: "none",
+                      background:
+                        "linear-gradient(135deg, #025f4d 0%, #01775f 100%)",
+                      boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+                      },
+                    }}
                   >
                     {t("continue")}
                   </Button>
@@ -529,7 +680,7 @@ export default function PdfCanvasPage() {
 
           {stepCount === 2 && (
             <Box width={"100%"}>
-              <Typography variant="h4" sx={{ mb: 3 }}>
+              <Typography variant="h4" fontWeight={600} sx={{ mb: 3 }}>
                 {t("addRecipientsTitle")}
               </Typography>
               <AddRecipients setStepCount={setStepCount} />
@@ -538,7 +689,7 @@ export default function PdfCanvasPage() {
 
           {stepCount === 3 && (
             <Box width={"100%"}>
-              <Typography variant="h4" sx={{ mb: 3 }}>
+              <Typography variant="h4" fontWeight={600} sx={{ mb: 3 }}>
                 {t("addDescriptionTitle")}
               </Typography>
               <AddMassage setStepCount={setStepCount} />
@@ -547,7 +698,7 @@ export default function PdfCanvasPage() {
 
           {stepCount === 4 && (
             <Box width={"100%"}>
-              <Typography variant="h4" sx={{ mb: 3 }}>
+              <Typography variant="h4" fontWeight={600} sx={{ mb: 3 }}>
                 {t("addSignatureTitle")}
               </Typography>
               <FileOperations

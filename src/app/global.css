@@ -9,59 +9,42 @@ body {
 
 /* Genel Wrapper Ayarları */
 .react-tel-input {
-  font-family: inherit;
+  font-family: "Poppins", sans-serif !important;
 }
 
-/* --- RECIPIENT FORM ÖZEL SINIFLARI --- */
-/* Bu sınıflar RecipientForm.tsx içindeki proplarla eşleşir */
+/* --- RECIPIENT FORM MODERN TELEFON TASARIMI (GÜNCEL) --- */
 
+/* Dış Kutu: Arka plan transparan, border yumuşak */
 .recipient-phone-container {
   width: 100% !important;
-  border: 1px solid #d0d0d0 !important;
-  border-radius: 4px !important;
+  /* Dashboard'daki input border rengiyle aynı yapıyoruz */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
   height: 56px !important;
-  background: #fafafa !important;
+  background: transparent !important;
   display: flex !important;
   align-items: center !important;
-  padding-left: 0 !important;
-  box-sizing: border-box !important;
-  position: relative !important;
+  transition: all 0.2s ease-in-out;
+}
+.recipient-phone-container.error-border {
+  border: 1px solid #d32f2f !important;
 }
 
-.recipient-phone-input {
-  background: transparent !important;
-  border: none !important;
-  outline: none !important;
-  width: 100% !important;
-  height: 54px !important;
-  border-radius: 8px !important;
-  font-size: 16px !important;
-  color: #333 !important;
-  padding-left: 52px !important;
+/* Üstüne gelince veya tıklayınca border parlasın */
+.recipient-phone-container:hover,
+.recipient-phone-container:focus-within {
+  border-color: #ffffff !important;
 }
 
-/* Standart Dropdown (Recipient Form İçin) */
-.recipient-phone-dropdown {
-  top: 58px !important;
-  left: 0 !important;
-  border-radius: 8px !important;
-  z-index: 99999 !important;
-  background: #fff !important;
-  color: #000 !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-}
-
-.recipient-phone-dropdown .country:hover {
-  background-color: #f0f0f0 !important;
-}
-
-/* Standart Bayrak Butonu */
+/* Bayrak Butonu: Dikey çizgiyi tamamen kaldırdık */
 .recipient-phone-button {
-  width: 48px !important;
+  width: 45px !important;
   height: 100% !important;
   background: transparent !important;
   border: none !important;
-  border-radius: 4px 0 0 4px !important;
+  border-right: none !important; /* Dikey çizgiyi yok eden kritik satır */
+  border-radius: 12px 0 0 12px !important;
+  padding-left: 8px !important;
 }
 
 .recipient-phone-button .selected-flag {
@@ -70,6 +53,62 @@ body {
   height: 100% !important;
 }
 
+/* Giriş Alanı: Yazı beyaz, hizalama jilet gibi */
+.recipient-phone-input {
+  background: transparent !important;
+  font-family: "Poppins", sans-serif !important; /* Fontu Poppins yaptık */
+  font-weight: 600 !important; /* Tasarımdaki ağırlığa uydurduk */
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  padding-left: 48px !important; /* Çizgi kalktığı için ideal boşluk */
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Placeholder Rengi: Diğer TextField'lar ile senkronize (rgba 0.5) */
+.recipient-phone-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 1 !important;
+}
+
+/* --- DROPDOWN (ÜLKE LİSTESİ) DÜZENLEMELERİ --- */
+
+.recipient-phone-dropdown {
+  background: #2c345a !important; /* Panelin koyu tonu */
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  margin-top: 5px !important;
+  overflow-x: hidden !important;
+}
+
+/* Üzerine gelince (Hover) durumu */
+.recipient-phone-dropdown .country:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* SEÇİLİ DURUM (Highlight): Yazının beyaz kalmasını sağlar */
+.recipient-phone-dropdown .country.highlight {
+  background-color: #646e9f !important; /* Senin ana mor tonun */
+  color: #ffffff !important; /* Beyaz içinde beyaz kalmasını engeller */
+}
+
+/* Ülke isimlerinin yanındaki alan kodları (Örn: +90) */
+.recipient-phone-dropdown .dial-code {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Dropdown içindeki scrollbar tasarımı */
+.recipient-phone-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+.recipient-phone-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
 /* =========================================
    2. LOGIN SAYFASI ÖZELLEŞTİRMELERİ (DÜZELTİLMİŞ HALİ)
    Sadece .login-phone-override sınıfı altındakileri etkiler.

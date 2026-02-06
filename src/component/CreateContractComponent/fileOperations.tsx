@@ -64,7 +64,7 @@ export default function Index({
         fieldType: d.fieldType,
         icon: d.icon,
       })),
-    [t]
+    [t],
   );
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -80,14 +80,14 @@ export default function Index({
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const router = useRouter();
   const documentNameAndDesc = useSelector(
-    (s: RootState) => s.form.documentNameAndDesc
+    (s: RootState) => s.form.documentNameAndDesc,
   ) as DocNameDesc | null;
 
   const recipients = useSelector(
-    (s: RootState) => s.form.recipients
+    (s: RootState) => s.form.recipients,
   ) as Recipient[];
   const savedsignerTabDatas = useSelector(
-    (s: RootState) => s.form.signerTabs
+    (s: RootState) => s.form.signerTabs,
   ) as Recipient[];
 
   type SavedDoc = {
@@ -99,11 +99,11 @@ export default function Index({
   const savedDocs = useSelector((s: RootState) => s.form.docs) as SavedDoc[];
   const pageIndex = useMemo(() => buildPageIndex(savedDocs), [savedDocs]);
   const [selectedKey, setSelectedKey] = useState<string>(
-    recipients?.[0]?.Signer || ""
+    recipients?.[0]?.Signer || "",
   );
   const selectedRecipient = useMemo(
     () => recipients.find((r) => r.Signer === selectedKey),
-    [recipients, selectedKey]
+    [recipients, selectedKey],
   );
 
   const [userId, setUserId] = useState<string | number | undefined>(undefined);
@@ -122,7 +122,7 @@ export default function Index({
   const DRAG_THRESHOLD = 3;
   const dragStartXY = useRef<{ x: number; y: number } | null>(null);
   const [itemsByPage, setItemsByPage] = useState<Record<number, PlacedItem[]>>(
-    {}
+    {},
   );
   const lastDragRef = useRef<{ id: string; at: number } | null>(null);
 
@@ -209,7 +209,7 @@ export default function Index({
       setItemsByPage((prev) => {
         const list = prev[dragging.page] ?? [];
         const next = list.map((it) =>
-          it.id === dragging.id ? { ...it, x: xPct, y: yPct } : it
+          it.id === dragging.id ? { ...it, x: xPct, y: yPct } : it,
         );
         return { ...prev, [dragging.page]: next };
       });
@@ -256,7 +256,7 @@ export default function Index({
 
   const { canvasRef, numPages, pageNumber, setPageNumber } = usePdfRenderer(
     pdfDoc,
-    imageUrls
+    imageUrls,
   );
 
   const [textFieldValues, setTextFieldValues] = useState<
@@ -367,7 +367,7 @@ export default function Index({
 
       const getCookie = (name: string): string | null => {
         const match = document.cookie.match(
-          new RegExp(`(?:^|; )${name}=([^;]*)`)
+          new RegExp(`(?:^|; )${name}=([^;]*)`),
         );
         return match ? decodeURIComponent(match[1]) : null;
       };
@@ -396,7 +396,7 @@ export default function Index({
         setLoading(false);
         showSnackbar(
           control == 1 ? t("createdAndMailed") : t("createdAndSaved"),
-          "success"
+          "success",
         );
       } else {
         setLoading(false);
@@ -426,7 +426,7 @@ export default function Index({
         size: m?.FontSize ?? "24",
       };
     },
-    [textFieldValues]
+    [textFieldValues],
   );
 
   const commitEdit = () => {
@@ -501,7 +501,7 @@ export default function Index({
             </Select>
           </FormControl>
 
-          <Typography variant="h6" mt={2} mb={1}>
+          <Typography variant="h5" fontWeight={600} mt={2} mb={1}>
             {t("standardFields")}
           </Typography>
           <Box>
@@ -517,7 +517,7 @@ export default function Index({
                   onDragStart={(e) => {
                     e.dataTransfer.setData(
                       "application/json",
-                      JSON.stringify(item)
+                      JSON.stringify(item),
                     );
                     const img = fieldRefs.current[idx];
                     if (img) e.dataTransfer.setDragImage(img, 0, 0);
@@ -567,7 +567,7 @@ export default function Index({
         >
           <Box
             sx={{
-              border: "2px dashed #888",
+              border: "3px dashed #646E9F",
               p: 1.5,
               borderRadius: 2,
               backgroundColor: "#fafafa",
@@ -819,17 +819,39 @@ export default function Index({
             color="success"
             onClick={() => handleSave(1)}
             fullWidth
-            sx={{ mb: 2 }}
-            // disabled={isDisabled}
+            sx={{
+              py: 1.5,
+              px: 3,
+              mb: 2,
+              borderRadius: 1,
+              color: "#fff",
+              fontWeight: 600,
+              textTransform: "none",
+              background: "linear-gradient(135deg, #025f19 0%, #01773c 100%)",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+              },
+            }}
           >
             {t("sendForSign")}
           </Button>
           <Button
-            variant="contained"
-            color="primary"
             onClick={() => handleSave(2)}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{
+              py: 1.5,
+              mb: 2,
+              borderRadius: 1,
+              color: "#fff",
+              fontWeight: 600,
+              textTransform: "none",
+              background: "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+              },
+            }}
           >
             {t("save")}
           </Button>
@@ -839,6 +861,21 @@ export default function Index({
             fullWidth
             type="a"
             href="/dashboard"
+            sx={{
+              py: 1.5,
+              mb: 2,
+              borderRadius: 1,
+              color: "#555",
+              fontWeight: 600,
+              textTransform: "none",
+              background:
+                "linear-gradient(135deg, #00000027 0%, #00000027 100%)",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #e6e6e6 0%, #d6d6d6 100%)",
+                boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
+              },
+            }}
           >
             {t("exit")}
           </Button>

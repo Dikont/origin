@@ -20,12 +20,6 @@ import { useSnackbar } from "@/component/SnackbarProvider";
 import { useTranslations } from "next-intl";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { Poppins } from "next/font/google";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["500"],
-});
 
 type Recipient = {
   label: string;
@@ -139,7 +133,19 @@ export default function RecipientForm({
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
       {fields.map((id, key) => (
-        <Box padding="30px" border={"1px solid #bdbcbcff"} mb={"20px"} key={id}>
+        <Box
+          padding="30px"
+          border={"2px solid #fff"}
+          borderRadius={4}
+          mb={"20px"}
+          key={id}
+          sx={{
+            backgroundImage:
+              "linear-gradient(135deg, #646E9F 0%, #453562 100%)",
+            boxShadow:
+              "0px 10px 30px rgba(0, 0, 0, 0.3), 0px 4px 10px rgba(0, 0, 0, 0.2)",
+          }}
+        >
           <Box
             mb={1}
             display="flex"
@@ -149,9 +155,10 @@ export default function RecipientForm({
             {/* ... Box içi kodları ... */}
             <Box display="flex-row" alignItems="start">
               <Typography
-                className={poppins.className}
                 sx={{
                   fontSize: 12,
+                  fontWeight: 700,
+                  color: "#fff",
                 }}
               >
                 {t("emailLanguageTitle")}
@@ -163,8 +170,46 @@ export default function RecipientForm({
                 size="small"
                 error={!!(errors as any)[id]?.language}
                 sx={{
-                  minWidth: 130,
-                  color: "inherit",
+                  minWidth: 140,
+                  color: "#fff",
+                  borderRadius: "8px", // Köşeleri yumuşattık
+                  backgroundColor: "rgba(255, 255, 255, 0.1)", // Hafif transparan arka plan
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(255, 255, 255, 0.3)", // Border'ı belirgin ama yumuşak yaptık
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#fff", // Üzerine gelince parlasın
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#fff", // Seçildiğinde border netleşsin
+                  },
+                  "& .MuiSvgIcon-root": {
+                    color: "#fff", // Yan taraftaki ok ikonu beyaz olsun
+                  },
+                  fontSize: "14px",
+                  height: "40px",
+                }}
+                // Açılan menü (dropdown) tasarımı için:
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: "#2c345a", // Dashboard rengine yakın koyu bir ton
+                      color: "#fff",
+                      marginTop: "8px",
+                      "& .MuiMenuItem-root": {
+                        fontSize: "14px",
+                        "&:hover": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        },
+                        "&.Mui-selected": {
+                          backgroundColor: "rgba(255, 255, 255, 0.2)",
+                          "&:hover": {
+                            backgroundColor: "rgba(255, 255, 255, 0.25)",
+                          },
+                        },
+                      },
+                    },
+                  },
                 }}
               >
                 <MenuItem value="tr">{t("trLanguage")}</MenuItem>
@@ -184,18 +229,42 @@ export default function RecipientForm({
               onClick={() => handleRemove(id)}
               disabled={fields.length === 1}
               aria-label={t("delete")}
+              sx={{
+                borderRadius: "999px",
+                display: "grid",
+                placeItems: "center",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+                // ContractInfo'daki kırmızı badge stili
+                backgroundColor: "rgba(211, 47, 47, 0.6)",
+                border: "1px solid rgba(211, 47, 47, 0.6)",
+                color: "#fff",
+                boxShadow: "0 10px 22px rgba(211,47,47,0.18)",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  backgroundColor: "rgba(211, 47, 47, 0.8)",
+                  boxShadow: "0 12px 25px rgba(211,47,47,0.30)",
+                  transform: "scale(1.05)",
+                },
+                "&:disabled": {
+                  backgroundColor: "rgba(156, 163, 175, 0.3)",
+                  border: "1px solid rgba(156, 163, 175, 0.3)",
+                  color: "rgba(255, 255, 255, 0.3)",
+                  boxShadow: "none",
+                },
+              }}
             >
-              <DeleteIcon />
+              <DeleteIcon sx={{ fontSize: 25 }} />
             </IconButton>
           </Box>
 
           <Box
             sx={{
-              border: "1px solid #ddd",
-              borderRadius: 2,
-              padding: 2,
+              border: "1px solid #fff",
+              borderRadius: 4,
+              padding: 3,
               mb: 2,
-              backgroundColor: "#fafafa",
+              mt: 2,
             }}
           >
             <Grid container spacing={2}>
@@ -207,6 +276,48 @@ export default function RecipientForm({
                   error={!!errors[id]?.name}
                   helperText={errors[id]?.name}
                   id={id}
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      color: "#fff !important",
+                      fontWeight: 600,
+                    },
+
+                    // normal label
+                    "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
+
+                    // focus
+                    "& .MuiInputLabel-root.Mui-focused": { color: "#fff" },
+
+                    // ✅ error label (burası eksikti)
+                    "& .MuiInputLabel-root.Mui-error": {
+                      color: "#fd9d9d !important",
+                    },
+
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "rgba(255,255,255,0.3)",
+                        borderRadius: "12px",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "rgba(255,255,255,0.6)",
+                      },
+                      "&.Mui-focused fieldset": { borderColor: "#fff" },
+                      "&.Mui-error fieldset": {
+                        borderColor: "#fd9d9d !important",
+                      },
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow:
+                          "0 0 0 1000px transparent inset !important",
+                        WebkitTextFillColor: "#fff !important",
+                        transition: "background-color 5000s ease-in-out 0s",
+                      },
+                    },
+
+                    "& .MuiFormHelperText-root.Mui-error": {
+                      color: "#fd9d9d !important",
+                      fontWeight: 500,
+                    },
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
@@ -217,6 +328,48 @@ export default function RecipientForm({
                   autoCapitalize="none"
                   error={!!errors[id]?.email}
                   helperText={errors[id]?.email}
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      color: "#fff !important",
+                      fontWeight: 600,
+                    },
+
+                    // normal label
+                    "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.7)" },
+
+                    // focus
+                    "& .MuiInputLabel-root.Mui-focused": { color: "#fff" },
+
+                    // ✅ error label (burası eksikti)
+                    "& .MuiInputLabel-root.Mui-error": {
+                      color: "#fd9d9d !important",
+                    },
+
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "rgba(255,255,255,0.3)",
+                        borderRadius: "12px",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "rgba(255,255,255,0.6)",
+                      },
+                      "&.Mui-focused fieldset": { borderColor: "#fff" },
+                      "&.Mui-error fieldset": {
+                        borderColor: "#fd9d9d !important",
+                      },
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow:
+                          "0 0 0 1000px transparent inset !important",
+                        WebkitTextFillColor: "#fff !important",
+                        transition: "background-color 5000s ease-in-out 0s",
+                      },
+                    },
+
+                    "& .MuiFormHelperText-root.Mui-error": {
+                      color: "#fd9d9d !important",
+                      fontWeight: 500,
+                    },
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
@@ -224,13 +377,23 @@ export default function RecipientForm({
                   <PhoneInput
                     country="tr"
                     value={""}
+                    placeholder="1 (702) 123-4567" // Placeholder buraya
                     onChange={(value) => {
                       const input = document.querySelector(
                         `input[name="phone-${id}"]`,
                       ) as HTMLInputElement;
                       if (input) input.value = value;
                     }}
-                    inputProps={{ name: `phone-${id}` }}
+                    inputProps={{
+                      name: `phone-${id}`,
+                      // Bazı durumlarda placeholder buraya da gerekebilir
+                      placeholder: "1 (702) 123-4567",
+                    }}
+                    dropdownStyle={{
+                      backgroundColor: "#2c345a",
+                      color: "white",
+                      textAlign: "left", // Yazıların sola hizalı olduğundan emin olalım
+                    }}
                     containerClass="recipient-phone-container"
                     inputClass="recipient-phone-input"
                     buttonClass="recipient-phone-button"
@@ -238,15 +401,17 @@ export default function RecipientForm({
                   />
 
                   {errors[id]?.phone && (
-                    <p
-                      style={{
-                        color: "red",
-                        fontSize: "12px",
-                        marginTop: "4px",
+                    <Typography
+                      sx={{
+                        color: "#fd9d9d", // Daha canlı, okunabilir bir kırmızı
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        mt: "4px",
+                        ml: "14px",
                       }}
                     >
                       {errors[id]?.phone}
-                    </p>
+                    </Typography>
                   )}
                 </Box>
               </Grid>
@@ -256,6 +421,47 @@ export default function RecipientForm({
                   fullWidth
                   name={`label-${id}`}
                   label={t("labelOptionalLabel")}
+                  sx={{
+                    // 1. Yazı ve Label Rengi
+                    "& .MuiInputBase-input": {
+                      color: "#ffffff !important", // Yazı her zaman beyaz
+                      fontWeight: 600,
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "rgba(255, 255, 255, 0.7)", // Normalde hafif transparan beyaz
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#ffffff", // Tıklanınca (focus) tam beyaz
+                    },
+
+                    // 2. Border (Kenarlık) Ayarları
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "rgba(255, 255, 255, 0.3)", // Normal border
+                        borderRadius: "12px",
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "rgba(255, 255, 255, 0.6)", // Üstüne gelince beyazımsı
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "#ffffff", // Tıklanınca tam beyaz border
+                      },
+
+                      // 3. Autofill (Otomatik Doldurma) Beyazlığını Yok Etme
+                      "& input:-webkit-autofill": {
+                        WebkitBoxShadow:
+                          "0 0 0 1000px transparent inset !important", // Arka planı şeffaf tutar
+                        WebkitTextFillColor: "#ffffff !important", // Autofill yazısını beyaz yapar
+                        transition: "background-color 5000s ease-in-out 0s",
+                      },
+                    },
+
+                    // 4. Placeholder Rengi
+                    "& .MuiOutlinedInput-input::placeholder": {
+                      color: "rgba(255, 255, 255, 0.5)",
+                      opacity: 1,
+                    },
+                  }}
                 />
               </Grid>
             </Grid>
@@ -270,19 +476,64 @@ export default function RecipientForm({
         justifyContent={"space-between"}
         width={"100%"}
       >
-        <Button onClick={handleAdd} variant="outlined" startIcon={<AddIcon />}>
+        <Button
+          onClick={handleAdd}
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            py: 1,
+            px: 2,
+            borderRadius: 2,
+            color: "#fff",
+            fontWeight: 600,
+            textTransform: "none",
+            background: "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+            boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+            },
+          }}
+        >
           {t("addRecipient")}
         </Button>
 
         <Box display={"flex"} gap={3}>
           <Button
             variant="contained"
-            color="primary"
             onClick={() => setStepCount((prev) => prev - 1)}
+            sx={{
+              py: 1,
+              px: 3,
+              borderRadius: 2,
+              color: "#fff",
+              fontWeight: 600,
+              textTransform: "none",
+              background: "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+              },
+            }}
           >
             {t("back")}
           </Button>
-          <Button type="submit" variant="contained" color="success">
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              py: 1,
+              px: 3,
+              borderRadius: 2,
+              color: "#fff",
+              fontWeight: 600,
+              textTransform: "none",
+              background: "linear-gradient(135deg, #025f4d 0%, #01775f 100%)",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #01775f 0%, #025f4d 100%)",
+              },
+            }}
+          >
             {t("continue")}
           </Button>
         </Box>
