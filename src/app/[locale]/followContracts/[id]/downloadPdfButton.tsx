@@ -86,7 +86,19 @@ export function DownloadPdfButton() {
     <Button
       variant="contained"
       onClick={handleDownloadPdf}
-      sx={{ p: "8px 16px" }}
+      sx={{
+        py: 1,
+        px: 2,
+        borderRadius: 2,
+        color: "#fff",
+        fontWeight: 600,
+        textTransform: "none",
+        background: "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+        "&:hover": {
+          background: "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+        },
+      }}
     >
       {t("downloadFollowing")}
     </Button>

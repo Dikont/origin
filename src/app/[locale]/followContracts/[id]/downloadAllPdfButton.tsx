@@ -29,11 +29,11 @@ export default function DownloadAllPdfButton() {
       const b64 =
         typeof data === "string"
           ? data
-          : data?.result ?? data?.pdf ?? data?.data;
+          : (data?.result ?? data?.pdf ?? data?.data);
       if (!b64) throw new Error(t("noPdfData"));
 
       const bin = atob(
-        b64.indexOf("base64,") >= 0 ? b64.split("base64,")[1] : b64
+        b64.indexOf("base64,") >= 0 ? b64.split("base64,")[1] : b64,
       );
       const bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -57,7 +57,19 @@ export default function DownloadAllPdfButton() {
     <Button
       variant="contained"
       onClick={handleDownload}
-      sx={{ p: "8px 16px" }}
+      sx={{
+        py: 1,
+        px: 2,
+        borderRadius: 2,
+        color: "#fff",
+        fontWeight: 600,
+        textTransform: "none",
+        background: "linear-gradient(135deg, #003383 0%, #0156a7 100%)",
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+        "&:hover": {
+          background: "linear-gradient(135deg, #0156a7 0%, #003383 100%)",
+        },
+      }}
       disabled={downloading}
       startIcon={
         downloading ? <CircularProgress size={18} color="inherit" /> : undefined

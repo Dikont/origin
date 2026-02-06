@@ -79,7 +79,7 @@ export default function HiddenDiv({
   const extractSentAt = (
     meta: any,
     signerUpdated?: string | null,
-    docUpdated?: string | null
+    docUpdated?: string | null,
   ) =>
     meta?.sentAt || meta?.lastReminderAt || signerUpdated || docUpdated || null;
 
@@ -264,11 +264,11 @@ export default function HiddenDiv({
                   const sentAt = extractSentAt(
                     metaObj,
                     s?.updatedAt,
-                    docMeta?.updatedAt
+                    docMeta?.updatedAt,
                   );
                   const email = extractEmail(
                     metaObj,
-                    s?.signerMail && s.signerMail !== "-" ? s.signerMail : null
+                    s?.signerMail && s.signerMail !== "-" ? s.signerMail : null,
                   );
                   const phone =
                     s?.phoneNumber && s.phoneNumber !== "-"
@@ -293,8 +293,8 @@ export default function HiddenDiv({
                   const statusLabel = isRejectedSigner
                     ? "✗ " + t("status.rejected")
                     : isSigned
-                    ? "✓ " + t("status.signed")
-                    : "○ " + t("status.pending");
+                      ? "✓ " + t("status.signed")
+                      : "○ " + t("status.pending");
 
                   return (
                     <div

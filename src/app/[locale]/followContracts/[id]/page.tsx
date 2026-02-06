@@ -164,8 +164,12 @@ export default async function Page({ params, searchParams }: any) {
           href="/followContracts"
           startIcon={<ArrowBackIcon />}
           variant="outlined"
-          color="primary"
           size="small"
+          sx={{
+            fontWeight: 600,
+            border: 2,
+            borderRadius: 2,
+          }}
         >
           {t("back")}
         </Button>
@@ -179,9 +183,10 @@ export default async function Page({ params, searchParams }: any) {
       <Paper
         elevation={1}
         sx={{
-          p: { xs: 2, md: 3 },
+          p: { xs: 2, md: 2 },
           mb: 3,
-          borderLeft: `4px solid ${UI.primary}`,
+          borderRadius: 4,
+          border: `2px solid ${UI.primary}`,
           background: UI.headerBg,
         }}
       >
@@ -219,7 +224,7 @@ export default async function Page({ params, searchParams }: any) {
       {/* İmzacı listesi */}
       <Box sx={{ mb: 3 }}>
         <Typography
-          variant="h6"
+          variant="h5"
           fontWeight={700}
           sx={{ color: UI.primary, mb: 1 }}
         >
@@ -391,8 +396,8 @@ export default async function Page({ params, searchParams }: any) {
                 variant="outlined"
                 sx={{
                   p: 2,
-                  borderRadius: 2,
-                  borderLeft: `4px solid ${borderColor}`,
+                  borderRadius: 4,
+                  border: `2px solid ${borderColor}`,
                   background: bgColor,
                 }}
               >
@@ -512,8 +517,9 @@ export default async function Page({ params, searchParams }: any) {
             <Paper
               elevation={1}
               sx={{
-                p: { xs: 2, md: 3 },
-                borderLeft: "4px solid #dc2626",
+                p: { xs: 2, md: 2 },
+                borderRadius: 4,
+                border: "2px solid #dc2626",
                 background: "#fee2e2",
               }}
             >
