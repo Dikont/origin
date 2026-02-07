@@ -752,6 +752,9 @@ export default function DataGridComp({ user, userRole }: any) {
               border: "none",
               minWidth: 900,
               height: "100%",
+              "& .MuiDataGrid-row": {
+                cursor: "pointer",
+              },
               "& .MuiDataGrid-columnHeaders": {
                 backgroundColor: "rgba(17, 24, 39, 0.03)",
                 borderBottom: "1px solid rgba(0,0,0,0.06)",

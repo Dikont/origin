@@ -76,7 +76,7 @@ export const labelByType: Record<string, string> = DRAGGABLE_FIELD_DEFS.reduce(
     acc[f.fieldType] = f.label;
     return acc;
   },
-  {}
+  {},
 );
 export function buildPageIndex(
   docs?: Array<{
@@ -84,7 +84,7 @@ export function buildPageIndex(
     isFirstPage?: boolean;
     createdAt?: string;
     updatedAt?: string;
-  }>
+  }>,
 ): Record<number, number> {
   if (!Array.isArray(docs) || docs.length === 0) return {};
   // 1) Önce ilk sayfayı (isFirstPage) başa al, sonra createdAt veya id ile sırala
@@ -166,7 +166,7 @@ export function normalizeByDocumentId(rows: SavedTab[]): SavedTab[] {
 
 export function mapSavedToPlaced(
   s: SavedTab,
-  recipients: Recipient[]
+  recipients: Recipient[],
 ): PlacedItem {
   let userMail: string;
 
@@ -229,7 +229,7 @@ export function seedTextValueIfNeeded(s: SavedTab, placedId: string) {
         const [, day, month, year] = match;
         textContent = `${year}-${month.padStart(2, "0")}-${day.padStart(
           2,
-          "0"
+          "0",
         )}`;
       } else {
         // Format tanınamadıysa bugünün tarihini kullan
@@ -298,7 +298,7 @@ export function usePdfRenderer(pdfDoc: any, imageUrls?: string[]) {
         }
       }
     },
-    [pdfDoc, imageUrls]
+    [pdfDoc, imageUrls],
   );
 
   useEffect(() => {
@@ -314,7 +314,7 @@ export function usePdfRenderer(pdfDoc: any, imageUrls?: string[]) {
         } catch {}
       }
     },
-    []
+    [],
   );
 
   return { canvasRef, numPages, pageNumber, setPageNumber };
@@ -349,6 +349,7 @@ export function buildPayload(params: {
   pdfDoc: any;
   compOfUser: any;
   pageBase64s?: string[]; // NEW
+  isTemplate: boolean;
 }) {
   const {
     documentNameAndDesc,
@@ -359,6 +360,7 @@ export function buildPayload(params: {
     pdfDoc,
     compOfUser,
     pageBase64s, // NEW
+    isTemplate,
   } = params;
 
   const toSignItems = (items: PlacedItem[]) =>
@@ -446,7 +448,7 @@ export function buildPayload(params: {
       writer: userId,
       DocumentRelatedComp: compOfUser?.toString?.(),
       VisibilitySetting: "1",
-      isTemplate: pageBase64s && pageBase64s.length ? "true" : "false",
+      isTemplate: String(isTemplate),
       pages,
     };
   })();

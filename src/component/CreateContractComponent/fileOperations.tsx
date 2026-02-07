@@ -356,6 +356,7 @@ export default function Index({
         pdfDoc,
         compOfUser,
         pageBase64s,
+        isTemplate: control === 2,
       });
 
       const getCookie = (name: string): string | null => {
