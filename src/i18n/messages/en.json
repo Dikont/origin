@@ -465,7 +465,16 @@
     "contract_report_title": "Contract Tracking Report",
     "technical_detail_title": "Technical Details",
     "pdf_generated_at": "This report was generated on",
-    "pdf_generated_end": ""
+    "pdf_generated_end": "",
+    "copySigningLink": "Copy Signing Link",
+    "copySigningLinkMissing": "Signing link not available",
+    "copyLink": {
+      "button": "Copy signing link",
+      "tooltip": "Copy signing link",
+      "disabled": "Signing link is not available",
+      "success": "Signing link copied",
+      "error": "Copy failed"
+    }
   },
   "createContract": {
     "uploadTitle": "Upload Document",

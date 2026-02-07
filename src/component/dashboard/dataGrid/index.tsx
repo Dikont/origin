@@ -148,14 +148,28 @@ export default function DataGridComponent({ data }: { data: ApiItem[] }) {
   ];
 
   const rows = useMemo(() => {
-    return (data ?? []).map((i) => ({
-      id: String(i.documentGroupId),
-      documentGroupId: i.documentGroupId,
-      documentGroupName: i.documentGroupName || "-",
-      status: getStatus(i),
-      createdAt: fmtDate(i.firstSentDate),
-      updatedAt: fmtDate(i.lastSignDate),
-    }));
+    const mapped = (data ?? []).map((i) => {
+      const createdTs = i.firstSentDate
+        ? new Date(i.firstSentDate).getTime()
+        : 0;
+
+      return {
+        id: String(i.documentGroupId),
+        documentGroupId: i.documentGroupId,
+        documentGroupName: i.documentGroupName || "-",
+        status: getStatus(i),
+        // sırf sıralama için
+        createdTs,
+        // ekranda görünen string
+        createdAt: fmtDate(i.firstSentDate),
+        updatedAt: fmtDate(i.lastSignDate),
+      };
+    });
+
+    // sayfa açılınca en yeni -> en eski
+    mapped.sort((a, b) => b.createdTs - a.createdTs);
+
+    return mapped;
   }, [data, locale]);
 
   const filteredRows = useMemo(() => {

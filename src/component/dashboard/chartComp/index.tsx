@@ -100,7 +100,9 @@ function toLineProps(arr: Point[], t: ReturnType<typeof useTranslations>) {
   const yValues = labels.map((x) => x.count);
 
   const max = Math.max(0, ...yValues);
-  const niceMax = Math.max(10, Math.ceil(max / 10) * 10);
+  const niceMaxBase = Math.max(10, Math.ceil(max / 10) * 10);
+
+  const niceMax = niceMaxBase + Math.max(1, Math.ceil(niceMaxBase * 0.1));
 
   const tickStyleX = {
     fontFamily: "Arial, sans-serif",

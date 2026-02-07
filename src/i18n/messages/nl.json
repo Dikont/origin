@@ -465,7 +465,16 @@
     "contract_report_title": "Contract Opvolgrapport",
     "technical_detail_title": "Technische details",
     "pdf_generated_at": "Dit rapport is gegenereerd op",
-    "pdf_generated_end": ""
+    "pdf_generated_end": "",
+    "copySigningLink": "Ondertekenlink Kopiëren",
+    "copySigningLinkMissing": "Ondertekenlink niet beschikbaar",
+    "copyLink": {
+      "button": "Ondertekenlink kopiëren",
+      "tooltip": "Ondertekenlink kopiëren",
+      "disabled": "Ondertekenlink niet beschikbaar",
+      "success": "Ondertekenlink gekopieerd",
+      "error": "Kopiëren mislukt"
+    }
   },
   "createContract": {
     "uploadTitle": "Document uploaden",

@@ -20,7 +20,7 @@
     "about": "Hakkımızda",
     "download": "PDF Indir",
     "downloadFollowing": "Sözleşme Takip Belgesi",
-    "changePassword": "Sifre Değiştir"
+    "changePassword": "Şifre Değiştir"
   },
   "companyProfile": {
     "errorLoadFailed": "Şirket bilgileri yüklenemedi.",
@@ -292,7 +292,7 @@
     "newPas": "Yeni Şifre",
     "newPasAgain": "Yeni Şifreyi Tekrar Girin",
     "send": "Gönder",
-    "changePassword": "Sifre Değiştir",
+    "changePassword": "Şifre Değiştir",
     "name": "Adınız",
     "phoneNumber": "Telefon Numaranız"
   },
@@ -460,7 +460,16 @@
     "contract_report_title": "Sözleşme Takip Raporu",
     "technical_detail_title": "Teknik Detaylar",
     "pdf_generated_at": "Bu rapor",
-    "pdf_generated_end": "tarihinde oluşturulmuştur."
+    "pdf_generated_end": "tarihinde oluşturulmuştur.",
+    "copySigningLink": "İmzalama Linkini Kopyala",
+    "copySigningLinkMissing": "İmzalama Linki Bulunamadı",
+    "copyLink": {
+      "button": "İmzalama linkini kopyala",
+      "tooltip": "İmzalama linkini kopyala",
+      "disabled": "İmzalama linki yok",
+      "success": "İmzalama linki kopyalandı",
+      "error": "Kopyalama başarısız"
+    }
   },
   "createContract": {
     "uploadTitle": "Doküman Yükleme",

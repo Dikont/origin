@@ -19,6 +19,8 @@ import { getTranslations } from "next-intl/server";
 import HiddenDiv from "./hiddenDiv";
 import { DownloadPdfButton } from "./downloadPdfButton";
 import DownloadAllPdfButton from "./downloadAllPdfButton";
+import CopySigningLinkButton from "./copySigningLinkButton";
+
 const UI = {
   primary: "#1976d2",
   headerBg: "#f3f8ff",
@@ -137,6 +139,10 @@ export default async function Page({ params, searchParams }: any) {
   const createdAt = fmt(docMeta?.createdAt);
   const updatedAt = fmt(docMeta?.updatedAt);
 
+  // İmzalama linki
+  const signingUrl =
+    data?.groupSignatureUrl || docMeta?.groupSignatureUrl || null;
+
   // PDF için tarih
   const pdfDate = new Date().toLocaleString("tr-TR", {
     year: "numeric",
@@ -174,6 +180,11 @@ export default async function Page({ params, searchParams }: any) {
           {t("back")}
         </Button>
         <Box display={"flex"} gap={"20px"}>
+          <CopySigningLinkButton
+            url={signingUrl}
+            label={t("copySigningLink")}
+            disabledLabel={t("copySigningLinkMissing")}
+          />
           <DownloadPdfButton />
           {Number(signatureStatus) === 100 && <DownloadAllPdfButton />}
         </Box>
