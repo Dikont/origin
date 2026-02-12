@@ -10,6 +10,7 @@ const PUBLIC_ROUTES = [
   "forgotPassword",
   "sifre-sifirla",
   "confirmationOfDocument",
+  "uploadedDocument",
 ];
 
 function splitPath(pathname: string) {
@@ -55,7 +56,7 @@ export function middleware(req: NextRequest) {
 
   const isAuthPage = pathWithoutLocale === "login";
   const isPublicPage = PUBLIC_ROUTES.some((r) =>
-    pathWithoutLocale.startsWith(r)
+    pathWithoutLocale.startsWith(r),
   );
 
   // Path tanımları

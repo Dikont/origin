@@ -344,15 +344,15 @@
     "rejectedContracts": "Rejected Contracts",
     "quickAccessTitle": "Quick Access",
     "contractsTitle": "Contracts",
-    "contractsDesc": " Track your contract management and signing processes here.",
+    "contractsDesc": "Manage your contracts and track the signing processes here.",
     "newContractTitle": "New Contract",
-    "newContractDesc": "Track your contract management and signing processes here.",
+    "newContractDesc": "Create a new contract, add parties, and start the signing process.",
     "verifyTitle": "Contract Verification",
     "verifyDesc": "Verify and manage all your documents securely.",
     "aiEnhanceTitle": "AI-Powered Document Enhancement",
     "aiEnhanceDesc": "Analyze and enhance your documents with AI.",
     "archiveTitle": "Contract Archive",
-    "archiveDesc": "Track your contract management and signing processes here.",
+    "archiveDesc": "Access your saved draft contracts here and continue editing them.",
     "reportsTitle": "Reports",
     "reportsDesc": "Reporting & Integration.",
     "weeklyCompletedSignatures": "Weekly Completed Signatures",
@@ -603,5 +603,14 @@
     "reject_error": "Rejection process failed.",
     "server_error": "A server error occurred.",
     "rejected_success": "The contract has been successfully rejected."
+  },
+  "uploadedDocument": {
+    "uploadButton": "Download",
+    "download": {
+      "success": "PDF is downloading...",
+      "error": "Failed to download PDF"
+    },
+    "companyName": "Dikont Software and Digital Signature Inc.",
+    "copyright": "© {year} – All rights reserved."
   }
 }

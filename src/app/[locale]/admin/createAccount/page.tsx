@@ -13,6 +13,9 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useSnackbar } from "@/component/SnackbarProvider";
 import { useRouter } from "next/navigation";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 type Company = {
   id: number;
   compName: string;
@@ -34,9 +37,11 @@ export default function CreateAccount() {
     FirstName: "",
     LastName: "",
     userRole: "CompanyUser" as Role,
+    PhoneNumber: "",
     superUser: "",
     superPassword: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -60,38 +65,64 @@ export default function CreateAccount() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch("/api/admin/createAccount", {
+      const raw = String(form.PhoneNumber || "").trim();
+      const PhoneNumber = raw ? (raw.startsWith("+") ? raw : `+${raw}`) : "";
+      if (!PhoneNumber) {
+        showSnackbar("Telefon numarası zorunlu.", "error");
+        return;
+      }
+      const payload = { ...form, PhoneNumber };
+      const res1 = await fetch("/api/admin/createAccount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
-      const data = await res.json().catch(() => ({}));
+      const data1 = await res1.json().catch(() => ({}));
 
-      if (!res.ok) throw new Error(data?.error || data?.message || "Hata");
+      // ❗createAccount başarısızsa: upstream errors/message göster
+      if (!res1.ok) {
+        const msg =
+          Array.isArray(data1?.errors) && data1.errors.length > 0
+            ? data1.errors.map((e: any) => e.description).join(" • ")
+            : data1?.error || data1?.message || "Hata";
+        showSnackbar(msg, "error");
+        return;
+      }
 
-      if (data.loginResult.succeeded) {
-        try {
-          const res = await fetch("/api/admin/complete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id: requestId,
-            }),
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data?.error || JSON.stringify(data));
-          if (data.message == "Kullanıcı kaydı tamamlandı.") {
-            showSnackbar("Kullanıcı oluşturuldu.", "success");
-            router.push("/admin");
-          } else {
-            showSnackbar("İstek onaylanamadı veya hata oluştu", "error");
-          }
-        } catch (e: any) {
-          console.error(e);
+      // ✅ createAccount başarılı: loginResult bekleme
+      showSnackbar(data1?.message || "Kullanıcı oluşturuldu.", "success");
+
+      // complete adımı
+      try {
+        const res2 = await fetch("/api/admin/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: requestId }),
+        });
+
+        const data2 = await res2.json().catch(() => ({}));
+
+        if (!res2.ok) {
+          showSnackbar(
+            data2?.error || data2?.message || "İstek onaylanamadı",
+            "error",
+          );
+          return;
         }
-        showSnackbar("Kullanıcı oluşturuldu.", "success");
-      } else {
-        showSnackbar("Kullanıcı oluşturulamadı.", "error");
+
+        if (data2.message == "Kullanıcı kaydı tamamlandı.") {
+          showSnackbar("Kayıt tamamlandı.", "success");
+          router.push("/admin");
+        } else {
+          showSnackbar("İstek onaylanamadı veya hata oluştu", "error");
+        }
+      } catch (e) {
+        console.error(e);
+        // createAccount başarılı ama complete patladıysa:
+        showSnackbar(
+          "Kullanıcı oluşturuldu ama onay adımı başarısız.",
+          "error",
+        );
       }
     } catch (err: any) {
       showSnackbar("Kullanıcı oluşturulamadı.", "error");
@@ -201,6 +232,17 @@ export default function CreateAccount() {
           onChange={onChange("LastName")}
         />
       </Stack>
+      <Box sx={{ mb: 2 }}>
+        <Typography sx={{ fontSize: 12, fontWeight: 700, mb: 0.5 }}>
+          Phone Number
+        </Typography>
+
+        <PhoneInput
+          country="tr"
+          value={(form.PhoneNumber || "").replace(/^\+/, "")}
+          onChange={(value) => setForm((p) => ({ ...p, PhoneNumber: value }))}
+        />
+      </Box>
 
       <Divider sx={{ my: 2 }} />
 

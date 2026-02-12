@@ -344,15 +344,15 @@
     "rejectedContracts": "Afgewezen Contract",
     "quickAccessTitle": "Snelle toegang",
     "contractsTitle": "Contracten",
-    "contractsDesc": "Beheer en volg hier al je contracten.",
+    "contractsDesc": "Beheer uw contracten en volg hier de ondertekeningsprocessen.",
     "newContractTitle": "Nieuw contract",
-    "newContractDesc": "Beheer en volg hier al je contracten.",
+    "newContractDesc": "Maak een nieuw contract aan, voeg partijen toe en start het ondertekeningsproces.",
     "verifyTitle": "Contractverificatie",
     "verifyDesc": "Verifieer en beheer al je documenten veilig.",
     "aiEnhanceTitle": "AI-gestuurde documentverbetering",
     "aiEnhanceDesc": "Analyseer en verbeter je documenten met AI.",
     "archiveTitle": "Contractarchief",
-    "archiveDesc": "Beheer en volg hier al je contractarchieven.",
+    "archiveDesc": "Bekijk hier uw opgeslagen conceptcontracten en ga verder met bewerken.",
     "reportsTitle": "Rapporten",
     "reportsDesc": "Rapportage & Integratie.",
     "weeklyCompletedSignatures": "Wekelijks voltooide handtekeningen",
@@ -603,5 +603,14 @@
     "reject_error": "Het weigeren is mislukt.",
     "server_error": "Er is een serverfout opgetreden.",
     "rejected_success": "Het contract is succesvol geweigerd."
+  },
+  "uploadedDocument": {
+    "uploadButton": "Downloaden",
+    "download": {
+      "success": "PDF wordt gedownload...",
+      "error": "PDF downloaden mislukt"
+    },
+    "companyName": "Dikont Software en Digitale Handtekening N.V.",
+    "copyright": "© {year} – Alle rechten voorbehouden."
   }
 }

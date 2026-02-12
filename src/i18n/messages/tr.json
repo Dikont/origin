@@ -339,15 +339,15 @@
     "rejectedContracts": "Reddedilen Sözleşme",
     "quickAccessTitle": "Hızlı Erişim",
     "contractsTitle": "Sözleşmeler",
-    "contractsDesc": " Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
+    "contractsDesc": "Sözleşmelerinizi yönetin ve imzalama süreçlerini buradan takip edin.",
     "newContractTitle": "Yeni Sözleşme",
-    "newContractDesc": "Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
+    "newContractDesc": "Yeni bir sözleşme oluşturun, tarafları ekleyin ve imza sürecini başlatın.",
     "verifyTitle": "Sözleşme Doğrulama",
     "verifyDesc": "Tüm belgelerinizi güvenle doğrulayın ve yönetin.",
     "aiEnhanceTitle": "AI ile Belge Geliştirme",
     "aiEnhanceDesc": "Belgelerinizi yapay zeka ile analiz edin ve geliştirin.",
     "archiveTitle": "Sözleşme Arşiv",
-    "archiveDesc": "Sözleşme yönetimi ve imzalama işlemlerinizi buradan takip edebilirsiniz.",
+    "archiveDesc": "Kaydettiğiniz taslak sözleşmelere buradan erişin ve düzenlemeye devam edin.",
     "reportsTitle": "Raporlar",
     "reportsDesc": "Raporlama ve Entegrasyon.",
     "weeklyCompletedSignatures": "Haftalık Tamamlanan İmza",
@@ -598,5 +598,14 @@
     "reject_error": "Reddetme işlemi başarısız.",
     "server_error": "Sunucu hatası oluştu.",
     "rejected_success": "Sözleşme başarıyla reddedildi."
+  },
+  "uploadedDocument": {
+    "uploadButton": "İndir",
+    "download": {
+      "success": "PDF indiriliyor...",
+      "error": "PDF indirilemedi"
+    },
+    "companyName": "Dikont Yazılım ve Dijital İmza A.Ş.",
+    "copyright": "© {year} – Tüm hakları saklıdır."
   }
 }

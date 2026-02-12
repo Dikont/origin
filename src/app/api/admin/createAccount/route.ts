@@ -46,6 +46,18 @@ export async function POST(req: Request) {
         }
       }
 
+      // ✅ PhoneNumber zorunlu + normalize
+      if (!obj?.PhoneNumber || String(obj.PhoneNumber).trim().length === 0) {
+        return NextResponse.json(
+          { error: "PhoneNumber zorunlu" },
+          { status: 400 },
+        );
+      }
+
+      obj.PhoneNumber = String(obj.PhoneNumber).trim();
+      if (!obj.PhoneNumber.startsWith("+"))
+        obj.PhoneNumber = `+${obj.PhoneNumber}`;
+
       const form = new FormData();
       Object.entries(obj || {}).forEach(([k, v]) => {
         if (v === undefined || v === null) return;
@@ -73,7 +85,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     return NextResponse.json(
       { error: "CreateAccount hatası", details: String(err?.message ?? err) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
