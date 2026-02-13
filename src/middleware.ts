@@ -10,7 +10,7 @@ const PUBLIC_ROUTES = [
   "forgotPassword",
   "sifre-sifirla",
   "confirmationOfDocument",
-  // "uploadedDocument",
+  "uploadedDocument",
 ];
 
 function splitPath(pathname: string) {
